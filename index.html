@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>avesso — marketing de conteúdo pra quem não quer fazer marketing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#F3EADA;
+    --yellow:#E8CE9A;
+    --coffee:#3D2A1E;
+    --brown:#6E4A34;
+    --clay:#B8825A;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html{
+    scroll-behavior:smooth;
+    scroll-padding-top:20px;
+  }
+
+  body{
+    background:var(--sand);
+    color:var(--coffee);
+    font-family:'Work Sans',sans-serif;
+    font-weight:400;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    z-index:1000;
+    top:0;
+    left:0;
+    width:100%;
+    height:2px;
+    background:var(--yellow);
+    transform-origin:left;
+    transform:scaleX(0);
+    pointer-events:none;
+  }
+
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:400;
+    line-height:1.08;
+    letter-spacing:-.025em;
+  }
+
+  p{color:var(--coffee)}
+  a{color:inherit}
+  button,input,textarea{font:inherit}
+
+  .wrap{
+    width:min(100% - 56px, 1040px);
+    margin:0 auto;
+    position:relative;
+  }
+
+  section{
+    position:relative;
+    padding:160px 0;
+    overflow:hidden;
+  }
+
+  /* ================= HERO ================= */
+
+  .hero{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    background:var(--sand);
+  }
+
+  .hero-wrap{
+    min-height:calc(100vh - 80px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .hero-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:clamp(90px,14vh,150px);
+  }
+
+  .mark{
+    width:max-content;
+    perspective:600px;
+  }
+
+  .mark img{
+    width:130px;
+    height:auto;
+    display:block;
+    transition:transform .55s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .mark:hover img{
+    transform:translateY(-4px) rotate(-1.2deg) scale(1.015);
+  }
+
+  .hero-label{
+    max-width:245px;
+    transition:transform .4s ease, opacity .4s ease;
+    margin-top:8px;
+    font-size:11px;
+    line-height:1.5;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    text-align:right;
+    color:var(--coffee);
+    opacity:.75;
+  }
+
+  .hero-content{
+    max-width:760px;
+    margin-left:8%;
+    position:relative;
+    z-index:2;
+  }
+
+  .hero h1{
+    max-width:700px;
+    transition:letter-spacing .45s ease, transform .45s ease;
+    font-size:clamp(38px,5.2vw,64px);
+    margin-bottom:42px;
+  }
+
+  .hero h1:hover{
+    letter-spacing:-.018em;
+    transform:translateX(2px);
+  }
+
+  .hero-copy{
+    max-width:520px;
+  }
+
+  .hero-copy p{
+    font-size:14px;
+    line-height:1.75;
+    margin-bottom:16px;
+    color:var(--brown);
+  }
+
+  .hero-copy p:hover{
+    opacity:1;
+    transform:translateX(3px);
+  }
+
+  .hero-copy p + p{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:18px;
+    line-height:1.5;
+    color:var(--coffee);
+    margin-top:8px;
+    margin-bottom:48px;
+  }
+  .hero-scroll{
+    position:absolute;
+    left:8%;
+    bottom:8px;
+    color:var(--coffee);
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    line-height:1;
+    opacity:.7;
+    animation:scrollCue 1.8s ease-in-out infinite;
+  }
+
+  @keyframes scrollCue{
+    0%,100%{transform:translateY(0);opacity:.55}
+    50%{transform:translateY(7px);opacity:1}
+  }
+
+  /* ================= SHARED ================= */
+
+  .eyebrow{
+    display:block;
+    margin-bottom:18px;
+    font-size:11px;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    opacity:.75;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:54px;
+    padding:0 30px;
+    margin-top:4px;
+    background:var(--coffee);
+    color:var(--sand);
+    border:0;
+    border-radius:1px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:500;
+    letter-spacing:.02em;
+    cursor:pointer;
+    transition:transform .25s ease,background-color .25s ease,box-shadow .25s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-2px);
+    background:#2f2018;
+    box-shadow:0 8px 22px rgba(61,42,30,.13);
+  }
+
+  .btn::after{
+    content:"→";
+    display:inline-block;
+    margin-left:0;
+    width:0;
+    overflow:hidden;
+    opacity:0;
+    transition:width .3s ease, margin-left .3s ease, opacity .3s ease;
+  }
+
+  .btn:hover::after{
+    width:16px;
+    margin-left:9px;
+    opacity:.8;
+  }
+
+  /* ================= PROPOSTA ================= */
+
+  .proposta{
+    padding-top:180px;
+    padding-bottom:180px;
+    background:var(--coffee);
+    color:var(--sand);
+    min-height:76vh;
+    display:flex;
+    align-items:center;
+  }
+
+  .proposta::before{
+    content:"a";
+    position:absolute;
+    right:-5%;
+    bottom:-30%;
+    font-family:'Fraunces',serif;
+    font-size:70vw;
+    line-height:.7;
+    color:var(--yellow);
+    opacity:.045;
+    pointer-events:none;
+  }
+
+  .proposta .wrap{max-width:1040px}
+
+  .proposta h2{
+    max-width:760px;
+    font-size:clamp(34px,4.6vw,56px);
+    margin-bottom:42px;
+    color:var(--sand);
+  }
+
+  .proposta p{
+    max-width:610px;
+    font-size:15px;
+    color:var(--sand);
+    opacity:.86;
+  }
+
+  .proposta .signature-line{
+    margin-top:42px;
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--yellow);
+    opacity:.9;
+  }
+
+  /* ================= MODO ================= */
+
+  .modo{
+    padding-top:170px;
+    padding-bottom:180px;
+    background:var(--sand);
+    color:var(--coffee);
+  }
+
+  .modo .wrap{
+    max-width:1040px;
+  }
+
+  .modo h2{
+    max-width:600px;
+    font-size:clamp(34px,4.6vw,58px);
+  }
+
+  .price{
+    margin:54px 0 34px;
+    font-family:'Fraunces',serif;
+    font-size:clamp(48px,7vw,76px);
+    line-height:.9;
+  }
+
+  .price small{
+    display:block;
+    margin-top:13px;
+    font-family:'Work Sans',sans-serif;
+    font-size:13px;
+    line-height:1;
+    color:var(--brown);
+  }
+
+  .includes{
+    list-style:none;
+    max-width:680px;
+    margin:0 0 30px;
+    border-top:1px solid rgba(61,42,30,.25);
+  }
+
+  .includes li{
+    padding:18px 0;
+    border-bottom:1px solid rgba(61,42,30,.25);
+    font-size:15px;
+    transition:padding-left .25s ease;
+  }
+
+  .includes li{
+    position:relative;
+  }
+
+  .includes li::before{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-1px;
+    width:0;
+    height:1px;
+    background:var(--coffee);
+    transition:width .35s ease;
+  }
+
+  .includes li:hover{
+    padding-left:7px;
+  }
+
+  .includes li:hover::before{
+    width:28px;
+  }
+
+  .fineprint{
+    font-size:13px;
+    color:var(--brown);
+  }
+
+  /* ================= CONTINUIDADE ================= */
+
+  .continuidade{
+    background:var(--coffee);
+    color:var(--sand);
+    padding-top:170px;
+    padding-bottom:170px;
+    position:relative;
+  }
+
+  .continuidade::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:50%;
+    width:min(1040px,calc(100% - 56px));
+    height:1px;
+    background:rgba(232,206,154,.18);
+    transform:translateX(-50%);
+  }
+
+  .continuidade h3{
+    max-width:560px;
+    font-size:clamp(30px,4.2vw,48px);
+    margin-bottom:24px;
+    color:var(--sand);
+  }
+
+  .continuidade p{
+    max-width:560px;
+    font-size:15px;
+    color:var(--sand);
+    opacity:.78;
+  }
+
+  .mensal{
+    margin:42px 0 8px;
+    font-family:'Fraunces',serif;
+    font-size:clamp(42px,5vw,60px);
+    line-height:1;
+    color:var(--yellow);
+  }
+
+  .mensal span{
+    margin-left:7px;
+    font-family:'Work Sans',sans-serif;
+    font-size:14px;
+    color:var(--sand);
+    opacity:.7;
+  }
+
+  .small-note{
+    font-size:13px!important;
+    color:var(--sand)!important;
+    opacity:.6!important;
+  }
+
+  /* ================= NIVEIS ================= */
+
+  .niveis{
+    background:var(--sand);
+    padding-top:80px;
+  }
+
+  .niveis h2{
+    max-width:700px;
+    font-size:clamp(32px,4.4vw,54px);
+    margin-bottom:82px;
+  }
+
+  .nivel-item{
+    max-width:760px;
+    padding:25px 0;
+    border-top:1px solid rgba(61,42,30,.2);
+    transition:transform .3s ease;
+  }
+
+  .nivel-item:last-child{
+    border-bottom:1px solid rgba(61,42,30,.2);
+  }
+
+  .nivel-item:hover{
+    transform:translateX(6px);
+  }
+
+  .nivel-item .tag{
+    transition:letter-spacing .3s ease, color .3s ease;
+  }
+
+  .nivel-item:hover .tag{
+    letter-spacing:.16em;
+    color:var(--coffee);
+  }
+
+  .tag{
+    display:block;
+    margin-bottom:6px;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--brown);
+  }
+
+  .nivel-item p{
+    font-size:16px;
+  }
+
+  /* ================= CONTATO ================= */
+
+  .contato{
+    padding-top:170px;
+    padding-bottom:170px;
+    background:var(--coffee);
+    color:var(--sand);
+  }
+
+  .contato .wrap{max-width:760px}
+
+  .contato h2{
+    color:var(--sand);
+    font-size:clamp(40px,5.4vw,62px);
+    margin-bottom:28px;
+  }
+
+  .contato .sub{
+    max-width:590px;
+    margin-bottom:58px;
+    color:var(--yellow);
+    opacity:.85;
+    font-size:15px;
+  }
+
+  form{
+    display:flex;
+    flex-direction:column;
+    gap:30px;
+  }
+
+  .field label{
+    display:block;
+    margin-bottom:8px;
+    font-size:12px;
+    color:var(--yellow);
+    opacity:.9;
+  }
+
+  .field input[type="text"],
+  .field input[type="email"],
+  .field textarea{
+    width:100%;
+    padding:9px 0;
+    background:transparent;
+    border:0;
+    border-bottom:1px solid rgba(232,206,154,.35);
+    outline:0;
+    color:var(--sand);
+    font-size:16px;
+    transition:border-color .25s ease,padding-left .25s ease;
+  }
+
+  .field input:hover,
+  .field textarea:hover{
+    border-bottom-color:rgba(232,206,154,.65);
+  }
+
+  .field input:focus,
+  .field textarea:focus{
+    border-bottom-color:var(--yellow);
+    padding-left:6px;
+  }
+
+  .field textarea{
+    min-height:70px;
+    resize:vertical;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder{
+    color:rgba(232,206,154,.4);
+  }
+
+  .radios{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .radios label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:15px;
+    color:var(--sand);
+    cursor:pointer;
+    opacity:.9;
+    transition:transform .2s ease,opacity .2s ease;
+  }
+
+  .radios label:hover{
+    transform:translateX(4px);
+    opacity:1;
+  }
+
+  .radios input[type="radio"]{
+    width:16px;
+    height:16px;
+    accent-color:var(--yellow);
+  }
+
+  .submit-row{margin-top:8px}
+
+  .submit-row .btn{
+    width:100%;
+    background:var(--sand);
+    color:var(--coffee);
+  }
+
+  .submit-row .btn:hover{
+    background:var(--sand);
+  }
+
+  .note{
+    margin-top:14px;
+    font-size:12px;
+    color:var(--yellow);
+    opacity:.55;
+  }
+
+  footer{
+    padding:45px 0;
+    background:var(--sand);
+    color:var(--brown);
+    text-align:center;
+    font-size:13px;
+  }
+
+  /* ================= REVEAL ================= */
+
+  .reveal{
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .reveal.visible{
+    opacity:1;
+    transform:none;
+  }
+
+  .reveal-delay-1{transition-delay:.08s}
+  .reveal-delay-2{transition-delay:.16s}
+  .reveal-delay-3{transition-delay:.24s}
+
+  @media (max-width:700px){
+    .wrap{width:min(100% - 40px,1040px)}
+
+    section{padding:105px 0}
+
+    .hero{
+      min-height:94vh;
+    }
+
+    .hero-wrap{
+      min-height:calc(94vh - 40px);
+    }
+
+    .hero-top{
+      margin-bottom:65px;
+    }
+
+    .mark img{width:112px}
+
+    .hero-label{
+      max-width:155px;
+      font-size:9px;
+    }
+
+    .hero-content{
+      margin-left:0;
+      max-width:100%;
+    }
+
+    .hero h1{
+      font-size:clamp(36px,9.5vw,50px);
+      max-width:100%;
+    }
+
+    .hero-copy p{
+      font-size:15px;
+    }
+
+    .hero-copy p + p{
+      font-size:19px;
+    }
+
+    .hero-scroll{
+      left:auto;
+      right:4px;
+      bottom:4px;
+    }
+
+    .btn{
+      width:100%;
+    }
+
+    .proposta h2,
+    .modo h2,
+    .niveis h2,
+    .contato h2{
+      max-width:100%;
+    }
+
+    .price{
+      margin-top:42px;
+    }
+
+    .continuidade{
+      padding-top:120px;
+      padding-bottom:120px;
+    }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+
+    *,
+    *::before,
+    *::after{
+      animation:none!important;
+      transition:none!important;
+    }
+
+    .reveal{
+      opacity:1;
+      transform:none;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+      <div class="wrap hero-wrap">
+
+        <div class="hero-top">
+          <div class="mark">
+            <img src="foto-perfil.png" alt="avesso">
+          </div>
+          <span class="hero-label">estúdio de marketing de conteúdo<br>para quem não quer fazer marketing.</span>
+        </div>
+
+        <div class="hero-content">
+          <h1 class="reveal">tem gente que não quer virar blogueiro do próprio negócio.</h1>
+
+          <div class="hero-copy">
+            <p class="reveal reveal-delay-1">não quer aparecer o tempo todo, não quer viver de câmera na mão, não quer que o valor do que faz dependa de quantas vezes apareceu essa semana.</p>
+            <p class="reveal reveal-delay-2">isso não é falta de vontade. é só que o trabalho já é grande o suficiente.</p>
+          </div>
+
+          <a href="#modo" class="btn reveal reveal-delay-3">quero minha base pronta</a>
+        </div>
+        <div class="hero-scroll" aria-hidden="true">↓</div>
+
+      </div>
+    </section>
+
+    <!-- PROPOSTA -->
+    <section class="proposta">
+      <div class="wrap">
+        <span class="eyebrow reveal">a avesso</span>
+        <h2 class="reveal">a avesso é um estúdio de marketing de conteúdo pra quem não quer fazer marketing.</h2>
+        <p class="reveal reveal-delay-1">marketing sem cobrança de exposição, sem correria de postar todo dia, sem a sensação de estar sempre devendo alguma coisa pras redes.</p>
+        <p class="signature-line reveal reveal-delay-2">você decide quanto aparece. se aparece.</p>
+      </div>
+    </section>
+
+    <!-- MODO AVESSO -->
+    <section class="modo" id="modo">
+      <div class="wrap">
+        <span class="eyebrow reveal">modo avesso</span>
+        <h2 class="reveal">sua base, pronta e sua.</h2>
+
+        <div class="price reveal reveal-delay-1">
+          r$ 6.000
+          <small>pagamento único</small>
+        </div>
+
+        <ul class="includes">
+          <li class="reveal reveal-delay-1">identidade de marca completa</li>
+          <li class="reveal reveal-delay-1">landing page</li>
+          <li class="reveal reveal-delay-2">base de conteúdo pronta para suas redes</li>
+          <li class="reveal reveal-delay-2">perfil no google</li>
+          <li class="reveal reveal-delay-3">manual pra você seguir sozinho, no seu ritmo</li>
+        </ul>
+
+        <p class="fineprint reveal">sem mensalidade obrigatória. sem letra miúda.</p>
+      </div>
+    </section>
+
+    <!-- CONTINUIDADE -->
+    <section class="continuidade">
+      <div class="wrap">
+        <h3 class="reveal">quer continuar sem pensar nisso?</h3>
+        <p class="reveal reveal-delay-1">depois da base pronta, se preferir que a gente continue cuidando da manutenção — stories, anúncios, ajustes —</p>
+        <div class="mensal reveal reveal-delay-2">r$ 1.500<span>/mês</span></div>
+        <p class="small-note reveal reveal-delay-3">sem contrato de fidelidade. você sai quando quiser.</p>
+      </div>
+    </section>
+
+    <!-- NÍVEIS -->
+    <section class="niveis">
+      <div class="wrap">
+        <h2 class="reveal">o quanto você aparece é sempre sua escolha.</h2>
+
+        <div class="nivel-item reveal reveal-delay-1">
+          <span class="tag">zero aparição</span>
+          <p>conteúdo em imagem, sem rosto, sem vídeo.</p>
+        </div>
+
+        <div class="nivel-item reveal reveal-delay-2">
+          <span class="tag">aparição pontual</span>
+          <p>vídeos estratégicos, só pra humanizar a marca.</p>
+        </div>
+
+        <div class="nivel-item reveal reveal-delay-3">
+          <span class="tag">presença plena</span>
+          <p>se um dia você quiser aparecer mais, a base já está pronta pra isso.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTATO -->
+    <section class="contato" id="contato">
+      <div class="wrap">
+        <h2 class="reveal">vamos conversar?</h2>
+        <p class="sub reveal reveal-delay-1">atendemos poucos negócios por vez, pra dar atenção de verdade a cada um. conte com sinceridade — isso já nos ajuda a saber se faz sentido pros dois lados.</p>
+
+        <form action="https://formspree.io/f/xbgrznvb" method="POST">
+
+          <div class="field reveal">
+            <label for="empresa">nome da empresa</label>
+            <input type="text" id="empresa" name="nome da empresa" required>
+          </div>
+
+          <div class="field reveal">
+            <label for="nome">seu nome</label>
+            <input type="text" id="nome" name="seu nome" required>
+          </div>
+
+          <div class="field reveal">
+            <label>sua função</label>
+            <div class="radios">
+              <label><input type="radio" name="funcao" value="dono/a" required> dono/a</label>
+              <label><input type="radio" name="funcao" value="socio/a"> sócio/a</label>
+              <label><input type="radio" name="funcao" value="outro"> outro</label>
+            </div>
+          </div>
+
+          <div class="field reveal">
+            <label>sua empresa tem equipe?</label>
+            <div class="radios">
+              <label><input type="radio" name="equipe" value="so eu" required> só eu</label>
+              <label><input type="radio" name="equipe" value="equipe pequena (2-5)"> equipe pequena (2-5 pessoas)</label>
+              <label><input type="radio" name="equipe" value="equipe maior"> equipe maior</label>
+            </div>
+          </div>
+
+          <div class="field reveal">
+            <label for="oquefaz">conte em poucas linhas o que sua empresa faz</label>
+            <textarea id="oquefaz" name="o que a empresa faz" required></textarea>
+          </div>
+
+          <div class="field reveal">
+            <label>você pode investir r$ 6.000 no momento?</label>
+            <div class="radios">
+              <label><input type="radio" name="investimento" value="sim, posso investir agora" required> sim, posso investir agora</label>
+              <label><input type="radio" name="investimento" value="estou me planejando, quero entender melhor"> estou me planejando, quero entender melhor antes</label>
+              <label><input type="radio" name="investimento" value="so queria conhecer, sem previsao"> só queria conhecer, sem previsão de investir ainda</label>
+            </div>
+          </div>
+
+          <div class="field reveal">
+            <label for="contexto">o que eu deveria saber antes de conversarmos?</label>
+            <textarea id="contexto" name="contexto" placeholder="o que te fez procurar a avesso, alguma urgência, o que for relevante"></textarea>
+          </div>
+
+          <div class="field reveal">
+            <label for="email">seu e-mail</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+
+          <div class="field reveal">
+            <label for="whats">seu whatsapp (opcional)</label>
+            <input type="text" id="whats" name="whatsapp">
+          </div>
+
+          <div class="submit-row reveal">
+            <button type="submit" class="btn">enviar</button>
+            <p class="note">as respostas chegam direto no e-mail da avesso. sem newsletter, sem spam.</p>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">avesso — marketing de conteúdo</div>
+  </footer>
+
+<script>
+  const revealItems = document.querySelectorAll('.reveal');
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.10,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  revealItems.forEach(item => revealObserver.observe(item));
+
+  const progressBar = document.createElement('div');
+  progressBar.setAttribute('aria-hidden','true');
+  progressBar.style.cssText = `
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:2px;
+    background:var(--yellow);
+    transform-origin:left center;
+    transform:scaleX(0);
+    z-index:1001;
+    pointer-events:none;
+  `;
+  document.body.appendChild(progressBar);
+const updateScroll = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = max > 0 ? window.scrollY / max : 0;
+
+    progressBar.style.transform = `scaleX(${progress})`;
+  };
+
+  window.addEventListener('scroll', updateScroll, {passive:true});
+  window.addEventListener('resize', updateScroll);
+  updateScroll();
+</script>
+</body>
+</html>
