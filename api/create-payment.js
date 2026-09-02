@@ -1,3 +1,5 @@
+import { dbUpsertPagamento, resolvePrices } from '../lib/services.js';
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -30,10 +32,12 @@ export default async function handler(req, res) {
     return;
   }
 
-  // o valor cobrado vem sempre da variável de ambiente do servidor,
-  // nunca do que o navegador manda — assim ninguém consegue "pagar menos"
-  // mexendo na página.
-  const amount = parseFloat(process.env.GUIA_PRICE || '39.90');
+  // o valor cobrado vem sempre do servidor (banco, com a variável de
+  // ambiente como reserva) — nunca do que o navegador manda, assim
+  // ninguém consegue "pagar menos" mexendo na página. é o mesmo valor que
+  // o /api/config mostra na tela, e o mesmo que o painel /painel edita.
+  const { guiaPrice } = await resolvePrices();
+  const amount = guiaPrice;
 
   try {
     const idempotencyKey = (typeof crypto !== 'undefined' && crypto.randomUUID)
@@ -63,6 +67,19 @@ export default async function handler(req, res) {
     }
 
     const txData = data.point_of_interaction && data.point_of_interaction.transaction_data;
+
+    // guarda o registro do pagamento (se o supabase estiver configurado) —
+    // é daqui que o check-status vai pegar o e-mail depois, pra mandar o
+    // código quando o pix confirmar. se isso falhar, não atrapalha o pix
+    // (a função já engole o próprio erro; o await aqui é só pra garantir
+    // que a função termine antes da vercel encerrar essa execução).
+    await dbUpsertPagamento({
+      payment_id: String(data.id),
+      email: email,
+      amount: amount,
+      status: data.status,
+      code_sent: false
+    });
 
     res.status(200).json({
       payment_id: data.id,

@@ -1,0 +1,1300 @@
+<meta charset="UTF-8">
+<title>Caderno de Marca</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;0,9..144,700;1,9..144,450;1,9..144,600&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+/* ---------------------------------- tokens ---------------------------------- */
+:root{
+  --paper:#F4ECDD;
+  --paper-deep:#EADFC7;
+  --paper-deeper:#E1D3B4;
+  --ink:#28190F;
+  --brown:#3D2A1E;
+  --brown-soft:#8A6A47;
+  --brass:#A8763C;
+  --brass-ink:#5c4223;
+  --line:rgba(42,29,20,0.16);
+  --line-strong:rgba(42,29,20,0.30);
+  --paper-rgb:244,236,221;
+  --logo-chip:#F4ECDD;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1B120B; --paper-deep:#251A10; --paper-deeper:#2F2113;
+    --ink:#F1E6D3; --brown:#EFE0C6; --brown-soft:#C9AD84;
+    --brass:#D9A657; --brass-ink:#F3D8A4;
+    --line:rgba(241,230,211,0.14); --line-strong:rgba(241,230,211,0.28);
+    --paper-rgb:27,18,11;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1B120B; --paper-deep:#251A10; --paper-deeper:#2F2113;
+  --ink:#F1E6D3; --brown:#EFE0C6; --brown-soft:#C9AD84;
+  --brass:#D9A657; --brass-ink:#F3D8A4;
+  --line:rgba(241,230,211,0.14); --line-strong:rgba(241,230,211,0.28);
+  --paper-rgb:27,18,11;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--brass);color:var(--paper);}
+h1,h2,h3{font-family:'Fraunces',ui-serif,Georgia,serif;font-weight:600;text-wrap:balance;margin:0;color:var(--brown);}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--brass-ink);font-weight:500;
+}
+button{font-family:inherit;}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important;}}
+
+/* ---------------------------------- progress rail ---------------------------------- */
+.rail{
+  position:sticky;top:0;z-index:40;
+  background:rgba(var(--paper-rgb),0.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.rail-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 20px;overflow-x:auto;}
+.rail-brand{
+  display:flex;align-items:center;padding-right:12px;border-right:1px solid var(--line);flex-shrink:0;
+}
+.logo-badge{
+  background:var(--logo-chip);border-radius:7px;display:inline-flex;align-items:center;
+  padding:5px 9px;flex-shrink:0;
+}
+.logo-badge img{display:block;height:20px;width:auto;}
+.stamps{display:flex;gap:6px;flex-shrink:0;}
+.stamp{
+  width:30px;height:30px;border-radius:50%;border:1.4px dashed var(--line-strong);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--brown-soft);
+  background:transparent;cursor:pointer;flex-shrink:0;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+}
+.stamp:hover{transform:translateY(-1px);}
+.stamp.done{border-style:solid;border-color:var(--brass);background:var(--brass);color:var(--paper);}
+
+/* ---------------------------------- shell ---------------------------------- */
+main{max-width:720px;margin:0 auto;padding:0 20px;}
+section{padding:60px 0;border-bottom:1px solid var(--line);}
+section:last-of-type{border-bottom:none;}
+.section-head{margin-bottom:24px;}
+.section-num{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--brass-ink);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block;
+}
+h2{font-size:clamp(24px,4vw,32px);}
+.dek{margin-top:10px;font-size:16px;color:var(--brown-soft);max-width:60ch;}
+p{margin:0 0 14px;max-width:66ch;}
+.prose p:last-child{margin-bottom:0;}
+.prose h3{font-size:18px;margin:26px 0 10px;}
+
+/* ---------------------------------- hero ---------------------------------- */
+.hero{padding:68px 0 52px;border-bottom:1px solid var(--line);}
+.hero h1{font-size:clamp(38px,7vw,60px);line-height:1.02;letter-spacing:-.01em;}
+.hero .sub{font-family:'Fraunces',serif;font-style:italic;font-weight:450;font-size:clamp(17px,2.2vw,21px);color:var(--brown-soft);margin-top:14px;}
+.hero .lede{margin-top:20px;font-size:16.5px;max-width:56ch;color:var(--ink);}
+.hero-field{margin-top:32px;max-width:420px;}
+.hero-cta{margin-top:20px;}
+
+/* ---------------------------------- form controls ---------------------------------- */
+label{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--brown-soft);margin-bottom:7px;
+}
+input[type=text],input[type=time],textarea,select{
+  width:100%;padding:11px 13px;background:var(--paper-deep);
+  border:1px solid var(--line-strong);border-radius:3px;color:var(--ink);
+  font-family:'Archivo',sans-serif;font-size:15px;transition:border-color .15s ease;
+}
+input[type=text]:focus,input[type=time]:focus,textarea:focus,select:focus{border-color:var(--brass);}
+textarea{resize:vertical;min-height:60px;font-family:'Archivo',sans-serif;}
+.field{margin-bottom:18px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:560px){.grid2{grid-template-columns:1fr;}}
+.hint{font-size:12.5px;color:var(--brown-soft);margin-top:6px;}
+
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:7px 13px;border-radius:20px;border:1px solid var(--line-strong);
+  background:transparent;color:var(--brown-soft);font-size:13.5px;cursor:pointer;transition:all .15s ease;
+}
+.chip:hover{border-color:var(--brass);}
+.chip.on{background:var(--brown);border-color:var(--brown);color:var(--paper);}
+
+.check-item{display:flex;gap:14px;align-items:flex-start;padding:15px 2px;border-top:1px solid var(--line);cursor:pointer;}
+.check-item:first-child{border-top:none;}
+.check-item input{margin-top:4px;width:17px;height:17px;accent-color:var(--brass);flex-shrink:0;}
+.check-item .txt{display:flex;flex-direction:column;gap:3px;}
+.check-item .d{font-size:14.5px;color:var(--ink);line-height:1.5;}
+.check-item.checked .d{color:var(--brown-soft);text-decoration:line-through;text-decoration-color:var(--line-strong);}
+
+.checklist-box{background:var(--paper-deep);border:1px solid var(--line-strong);border-radius:4px;padding:6px 22px;margin:18px 0;}
+.checklist-title{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--brass-ink);margin:18px 0 2px;
+}
+.checklist-status{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--brown-soft);margin:10px 0 4px;}
+
+.pullquote{
+  margin:22px 0;padding:18px 22px;border-left:3px solid var(--brass);
+  background:var(--paper-deep);border-radius:0 4px 4px 0;
+}
+.pullquote p{
+  margin:0;font-family:'Fraunces',serif;font-style:italic;font-weight:450;
+  font-size:17px;line-height:1.5;color:var(--brown);max-width:none;
+}
+
+/* checklist item with expandable "como fazer" */
+.check-item.with-how{padding-bottom:10px;}
+.check-item .how-toggle{
+  margin-top:6px;background:none;border:none;padding:0;
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.04em;
+  color:var(--brass-ink);cursor:pointer;text-decoration:underline;text-underline-offset:3px;
+}
+.how-body{
+  display:none;margin-top:8px;padding:12px 14px;background:var(--paper-deeper);
+  border-radius:3px;font-size:13.5px;color:var(--brown-soft);line-height:1.6;
+}
+.how-body.open{display:block;}
+
+/* rede social cards (marco 3) */
+.rede-grid{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+.rede-card{
+  display:flex;gap:14px;align-items:flex-start;padding:16px 18px;
+  background:var(--paper-deep);border:1px solid var(--line-strong);border-radius:5px;
+  cursor:pointer;transition:border-color .15s ease;
+}
+.rede-card:hover{border-color:var(--brass);}
+.rede-card.on{border-color:var(--brass);background:var(--paper-deeper);}
+.rede-card input{margin-top:3px;width:18px;height:18px;accent-color:var(--brass);flex-shrink:0;}
+.rede-card .rede-name{font-weight:600;color:var(--ink);margin-bottom:3px;}
+.rede-card .rede-desc{font-size:13.5px;color:var(--brown-soft);line-height:1.5;}
+.rede-limit-note{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--brass-ink);margin-top:10px;}
+
+/* draggable idea chips + drop targets (marco 4) */
+.idea-chip{
+  padding:8px 14px;border-radius:20px;border:1px solid var(--line-strong);
+  background:var(--paper-deep);color:var(--ink);font-size:13px;cursor:grab;
+  user-select:none;
+}
+.idea-chip:active{cursor:grabbing;}
+.idea-chip.dragging{opacity:.4;}
+td.dropzone.drag-over input{border-color:var(--brass);background:var(--paper-deeper);}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:2px;
+  border:1.4px solid var(--brown);background:var(--brown);color:var(--paper);
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+  letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:transform .12s ease;
+}
+.btn:hover{transform:translateY(-1px);}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.btn.small{padding:9px 15px;font-size:11.5px;}
+.btn.ghost{background:transparent;color:var(--brown);}
+
+/* prompt box (marco 1) */
+.prompt-box{
+  margin-top:20px;background:var(--paper-deep);border:1px dashed var(--line-strong);
+  border-radius:4px;padding:20px 22px;position:relative;
+}
+.prompt-box::before{
+  content:"prompt personalizável";position:absolute;top:-10px;left:20px;
+  background:var(--brass);color:var(--paper);font-family:'IBM Plex Mono',monospace;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:2px;
+}
+.prompt-body{font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--ink);}
+.prompt-body b{color:var(--brass-ink);font-weight:600;}
+.prompt-actions{margin-top:14px;}
+
+/* table */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line-strong);border-radius:4px;}
+table{border-collapse:collapse;width:100%;min-width:560px;}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:13.5px;}
+th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--brown-soft);background:var(--paper-deep);}
+tr:last-child td{border-bottom:none;}
+table input[type=text],table input[type=number]{padding:6px 8px;font-size:13px;}
+.prio-input{width:56px;text-align:center;}
+
+.base-box{background:var(--paper-deep);border:1px solid var(--line-strong);border-radius:4px;padding:6px 24px;margin-top:18px;}
+.base-status{margin:14px 2px 6px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--brass-ink);}
+
+/* closing */
+.stamp-wall{display:flex;flex-wrap:wrap;gap:14px;margin:26px 0;}
+.stamp-wall .swi{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--brown-soft);text-align:center;width:82px;}
+.swi .circ{width:46px;height:46px;border-radius:50%;border:1.6px dashed var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--brown-soft);}
+.swi.done .circ{border-style:solid;border-color:var(--brass);background:var(--brass);color:var(--paper);}
+.swi.done{color:var(--brown);}
+
+.dossie{margin-top:30px;background:var(--paper-deep);border:1px solid var(--line-strong);border-radius:6px;padding:28px 30px;text-align:center;}
+.dossie h3{font-size:20px;margin-bottom:6px;}
+.dossie .dossie-sub{font-size:13.5px;color:var(--brown-soft);margin-bottom:18px;}
+.dossie-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;justify-content:center;}
+
+footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--brown-soft);}
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translate(-50%,10px);background:var(--brown);color:var(--paper);
+  padding:12px 20px;border-radius:4px;font-size:13.5px;font-family:'IBM Plex Mono',monospace;
+  opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;z-index:100;max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+
+/* ---------------------------------- print ---------------------------------- */
+@media print{
+  body{background:#fff;}
+  .rail, .toast, button, #m4-prompts, .dossie-actions, footer{display:none !important;}
+  .how-body{max-height:none !important;display:block !important;}
+  section{page-break-inside:avoid;}
+  a[href]::after{content:"";}
+}
+</style>
+
+<div class="rail">
+  <div class="rail-inner">
+    <div class="rail-brand"><span class="logo-badge"><img src="data:image/png;base64,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" alt="avesso"></span></div>
+    <div class="stamps" id="stamps"></div>
+  </div>
+</div>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="s-hero">
+    <span class="eyebrow">um guia interativo do estúdio avesso</span>
+    <h1 style="margin-top:10px;">Marketing<br>essencial</h1>
+    <div class="sub">o suficiente pra sair do zero, sem depender de uma equipe de marketing</div>
+    <p class="lede">Você não precisa saber tudo sobre marketing — essa não é a sua profissão. Este caderno é um mapa do básico bem feito: leia cada marco, responda o que for seu, e no final você recebe um dossiê da sua marca com um checklist do que ainda falta fazer.</p>
+    <div class="hero-field">
+      <label for="in-nome">Como se chama o seu negócio?</label>
+      <input type="text" id="in-nome" placeholder="ex.: Ateliê da Bia, Marina Consultoria...">
+    </div>
+    <div class="hero-cta">
+      <button class="btn" id="btn-start">Começar pela introdução ↓</button>
+    </div>
+  </section>
+
+  <!-- INTRO -->
+  <section id="s-intro">
+    <div class="section-head">
+      <span class="section-num">Introdução</span>
+      <h2>Não é sobre fazer tudo</h2>
+    </div>
+    <div class="prose">
+      <p>Você não precisa saber tudo sobre marketing. Essa não é a sua profissão.</p>
+      <p>Nessa fase em que ainda não dá pra pagar uma equipe ou um profissional qualificado, o que importa é uma coisa simples: não ficar parada.</p>
+      <p>Este guia é para quem já entendeu que precisa estar presente no digital — mas não de qualquer jeito. Se você não sabe bem por onde começar, aqui está o essencial: onde estar presente e como.</p>
+      <p>Não é um curso completo de marketing. É um mapa do básico bem feito — o suficiente para você sair do zero com uma presença digital clara, organizada e que representa o seu trabalho de verdade.</p>
+    </div>
+  </section>
+
+  <!-- BASE -->
+  <section id="s-base">
+    <div class="section-head">
+      <span class="section-num">Antes de tudo</span>
+      <h2>A base</h2>
+    </div>
+    <div class="prose">
+      <p>Antes de qualquer post, perfil ou identidade visual, uma coisa precisa estar clara.</p>
+      <p>Marketing é o telhado da casa. Ele não sustenta nada sozinho — só cobre o que já foi construído embaixo.</p>
+      <p>Você pode ter o Instagram mais bonito da sua área, mas se o atendimento é ruim, os prazos não são cumpridos ou o serviço deixa a desejar, o marketing só vai fazer o problema aparecer mais rápido — e para mais gente. Marketing amplifica o que você já é. Antes de construir o telhado, garanta que a base está pronta:</p>
+    </div>
+    <div class="base-box"><div id="checks-base"></div></div>
+    <div class="base-status" id="base-status"></div>
+    <div class="prose" style="margin-top:16px;">
+      <p>Se algum desses pontos ainda não está sólido, vale a pena resolver isso em paralelo. O restante deste guia parte do princípio de que a base existe — e que agora é hora de comunicar bem o que você já faz bem.</p>
+    </div>
+  </section>
+
+  <!-- MARCO 0 -->
+  <section id="s-m0">
+    <div class="section-head">
+      <span class="section-num">Marco 0</span>
+      <h2>Nome, branding e identidade visual</h2>
+    </div>
+    <div class="prose">
+      <p>Antes de criar perfis e postar conteúdo, você precisa saber com clareza quem é a sua marca. Sem isso, qualquer post — por mais bonito que seja — vai parecer genérico.</p>
+      <h3>Perguntas essenciais para conhecer a sua marca</h3>
+      <p>Responda com calma. Não existe resposta certa — existe a resposta que é verdadeira para o seu negócio.</p>
+    </div>
+
+    <div class="field">
+      <label for="m0-faz">O que você faz, exatamente?</label>
+      <textarea id="m0-faz" placeholder="Descreva sem jargão, como se explicasse para alguém de fora da sua área."></textarea>
+    </div>
+    <div class="field">
+      <label for="m0-para">Para quem você faz isso? Quem é o seu público — e quem não é?</label>
+      <textarea id="m0-para"></textarea>
+    </div>
+    <div class="field">
+      <label for="m0-dif">Por que alguém escolheria você e não o concorrente?</label>
+      <textarea id="m0-dif"></textarea>
+    </div>
+    <div class="field">
+      <label for="m0-servicos">Quais são os seus principais serviços ou produtos?</label>
+      <textarea id="m0-servicos"></textarea>
+    </div>
+    <div class="field">
+      <label>Qual sensação você quer que as pessoas sintam ao conhecer a sua marca?</label>
+      <div class="chip-row" id="m0-sensacoes">
+        <button class="chip" data-v="confiança">confiança</button>
+        <button class="chip" data-v="delicadeza">delicadeza</button>
+        <button class="chip" data-v="ousadia">ousadia</button>
+        <button class="chip" data-v="acolhimento">acolhimento</button>
+        <button class="chip" data-v="sofisticação">sofisticação</button>
+        <button class="chip" data-v="energia">energia</button>
+        <button class="chip" data-v="seriedade">seriedade</button>
+        <button class="chip" data-v="leveza">leveza</button>
+      </div>
+      <div class="hint">Escolha até 3.</div>
+    </div>
+    <div class="field">
+      <label for="m0-pessoa">Se a sua marca fosse uma pessoa, como ela se vestiria, falaria e se comportaria?</label>
+      <textarea id="m0-pessoa"></textarea>
+    </div>
+    <div class="field">
+      <label for="m0-nome-check">Você já tem um nome? Ele é fácil de lembrar, escrever e pronunciar? Está disponível como @ nas redes e como domínio?</label>
+      <textarea id="m0-nome-check"></textarea>
+    </div>
+    <div class="field">
+      <label>Você já tem cores, fontes e logo definidos, ou vai construir isso do zero?</label>
+      <div class="chip-row" id="m0-visual">
+        <button class="chip" data-v="Já tem cores, fontes e logo definidos">já tenho definidos</button>
+        <button class="chip" data-v="Vai construir a identidade visual do zero">vou construir do zero</button>
+      </div>
+      <div class="checklist-box" id="box-visual-dev" style="display:none;margin-top:14px;"><div id="checks-visualdev"></div></div>
+    </div>
+
+    <div class="prose">
+      <h3>Evite a aparência genérica</h3>
+      <p>O erro mais comum nessa fase é usar um template pronto sem adaptar nada — mesma fonte, mesma paleta, mesmo layout que centenas de outras marcas na sua área.</p>
+      <p>Você não precisa de uma identidade visual complexa. Precisa de poucos elementos, bem escolhidos e usados sempre da mesma forma: uma paleta de cores, uma ou duas fontes, e um elemento gráfico que se repete (pode ser tão simples quanto um traço, uma forma ou um jeito específico de organizar as informações).</p>
+    </div>
+    <div class="pullquote"><p>É essa repetição que cria reconhecimento. Uma marca genérica muda de cara a cada post; uma marca com identidade é reconhecível mesmo sem o nome escrito.</p></div>
+  </section>
+
+  <!-- MARCO 1 -->
+  <section id="s-m1">
+    <div class="section-head">
+      <span class="section-num">Marco 1</span>
+      <h2>Perfil da Empresa no Google</h2>
+    </div>
+    <div class="prose">
+      <p>O Perfil da Empresa no Google (antigo Google Meu Negócio) é, muitas vezes, o primeiro contato que um cliente em potencial tem com você — antes mesmo do Instagram. É ele que aparece quando alguém pesquisa o seu nome ou o seu serviço na região.</p>
+      <h3>Passo a passo</h3>
+    </div>
+    <div class="checklist-box"><div id="checks-m1"></div></div>
+
+    <div class="prose">
+      <h3>Dica: prompt personalizável</h3>
+      <p>Use o prompt abaixo em qualquer ferramenta de IA (como o Claude), preenchendo os campos entre colchetes com as suas informações. Ele gera uma primeira versão da descrição — revise depois para garantir que soa como você, e não como um texto genérico de IA.</p>
+    </div>
+    <div class="field" style="max-width:280px;">
+      <label for="m1-tom">Tom da descrição</label>
+      <select id="m1-tom">
+        <option value="próximo e profissional">próximo e profissional</option>
+        <option value="acolhedor">acolhedor</option>
+        <option value="direto">direto</option>
+      </select>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-body" id="prompt-m1"></div>
+      <div class="prompt-actions">
+        <button class="btn small" id="copy-prompt-m1">Copiar prompt</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARCO 2 -->
+  <section id="s-m2">
+    <div class="section-head">
+      <span class="section-num">Marco 2</span>
+      <h2>WhatsApp Business</h2>
+    </div>
+    <div class="prose">
+      <p>O WhatsApp costuma ser o canal onde a venda realmente acontece. Vale configurar bem, porque é ali que a pessoa decide confiar em você ou não.</p>
+      <h3>O que configurar</h3>
+    </div>
+    <div class="checklist-box"><div id="checks-m2"></div></div>
+    <div class="prose">
+      <p>O objetivo aqui não é automatizar o atendimento — é garantir que ele seja rápido, organizado e não dependa da sua memória.</p>
+    </div>
+  </section>
+
+  <!-- MARCO 3 -->
+  <section id="s-m3">
+    <div class="section-head">
+      <span class="section-num">Marco 3</span>
+      <h2>Redes sociais</h2>
+    </div>
+    <div class="prose">
+      <p>Você não precisa estar em todas as redes sociais. Precisa estar onde o seu público está — e presente de verdade, não só com o perfil criado.</p>
+      <h3>Descubra onde faz sentido estar</h3>
+      <p>Leia a descrição de cada rede e marque as que fazem sentido pro seu negócio. <b>Dica: escolha no máximo 3 pra começar.</b></p>
+    </div>
+    <div class="rede-grid" id="rede-grid"></div>
+    <div class="rede-limit-note" id="rede-limit-note"></div>
+    <div class="prose" style="margin-top:18px;">
+      <p>Você não precisa virar blogueira da própria marca — não é preciso dar bom dia, boa tarde, nem comemorar o dia da árvore. O conteúdo precisa ser útil e estratégico, não constante por constante. Mostrar o seu rosto humaniza a marca e ajuda a criar confiança — mas não é obrigatório. O essencial é que o perfil transmita clareza e confiança, com ou sem o seu rosto nele.</p>
+      <h3>O que o seu Instagram (ou rede escolhida) precisa ter</h3>
+    </div>
+    <div class="checklist-box"><div id="checks-m3"></div></div>
+    <div class="prose">
+      <p>O ideal é ter entre 15 e 27 posts essenciais publicados antes de começar a divulgar o perfil ativamente.</p>
+      <h3>Teste do cliente em potencial</h3>
+      <p>Antes de considerar o perfil pronto, olhe para ele como se fosse um possível cliente vendo pela primeira vez.</p>
+    </div>
+    <div class="checklist-box"><div id="checks-teste"></div></div>
+  </section>
+
+  <!-- MARCO 4 -->
+  <section id="s-m4">
+    <div class="section-head">
+      <span class="section-num">Marco 4</span>
+      <h2>Manutenção</h2>
+    </div>
+    <div class="prose">
+      <p>Ter um perfil bem montado é só o começo. O que mantém ele vivo é a manutenção — e ela não precisa ser diária nem exaustiva.</p>
+      <h3>Plano de conteúdo simples</h3>
+      <p>1 a 2 conteúdos por semana no feed — não é preciso postar vídeo todos os dias. 1 a 3 stories por dia — isso é indispensável. Pense nos stories como a placa de "aberto" da sua empresa: eles mostram que você está ativa, mesmo sem um conteúdo elaborado. Um story pode ser simples: um bastidor do trabalho, uma dúvida respondida, um resultado entregue, uma repostagem de um cliente marcando você. O que importa é a constância, não a produção.</p>
+    </div>
+    <div class="field">
+      <label>Ideias de conteúdo — arraste (ou clique e depois clique no campo) pra organizar sua semana</label>
+      <div class="chip-row" id="m4-prompts">
+        <button class="idea-chip" draggable="true" data-v="Depoimento de um cliente">Depoimento de um cliente</button>
+        <button class="idea-chip" draggable="true" data-v="Bastidor do trabalho">Bastidor do trabalho</button>
+        <button class="idea-chip" draggable="true" data-v="Responder caixinha de pergunta">Responder caixinha de pergunta</button>
+        <button class="idea-chip" draggable="true" data-v="Fazer uma trend que faz sentido pro meu negócio">Fazer uma trend que faz sentido pro meu negócio</button>
+        <button class="idea-chip" draggable="true" data-v="Criar um post sobre mim">Criar um post sobre mim</button>
+        <button class="idea-chip" draggable="true" data-v="Contar minha história">Contar minha história</button>
+        <button class="idea-chip" draggable="true" data-v="Me posicionar, mostrando meu diferencial">Me posicionar, mostrando meu diferencial</button>
+        <button class="idea-chip" draggable="true" data-v="Fazer uma enquete">Fazer uma enquete</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table id="m4-table">
+        <thead><tr><th>Dia</th><th>Story (1–3/dia)</th><th>Post no feed (1–2/semana)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="checklist-box" style="margin-top:20px;"><div id="checks-m4"></div></div>
+
+    <div class="prose">
+      <h3>Dica: prompt pra planejar a semana</h3>
+      <p>Sem ideia pra preencher algum dia? Use o prompt abaixo numa ferramenta de IA pra receber sugestões específicas pro seu negócio.</p>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-body" id="prompt-m4"></div>
+      <div class="prompt-actions">
+        <button class="btn small" id="copy-prompt-m4">Copiar prompt</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FECHAMENTO -->
+  <section id="s-fim">
+    <div class="section-head">
+      <span class="section-num">Para fechar</span>
+      <h2>O seu caderno até aqui</h2>
+    </div>
+    <div class="prose">
+      <p>Marketing essencial não é sobre fazer tudo. É sobre fazer o suficiente, bem feito, de forma consistente. Recapitulando o caminho: a base vem primeiro; o marco 0 é uma identidade clara; o marco 1, um Perfil da Empresa no Google completo e verificado; o marco 2, um WhatsApp Business organizado; o marco 3, presença estratégica em até 2 redes sociais; o marco 4, manutenção simples.</p>
+      <p>Você não precisa ser perfeita nem estar em todo lugar. Precisa estar presente onde importa, de um jeito que representa o seu trabalho de verdade.</p>
+    </div>
+
+    <div class="stamp-wall" id="stamp-wall"></div>
+
+    <div class="dossie">
+      <h3 id="dossie-title">Dossiê do seu negócio</h3>
+      <div class="dossie-sub">O que você já definiu, reunido em um só lugar.</div>
+      <div class="dossie-actions">
+        <button class="btn" id="dl-dossie">Baixar dossiê e checklist (.pdf)</button>
+        <button class="btn ghost" id="dl-guide">Baixar guia para imprimir</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>estúdio avesso — caderno de marca · o progresso fica salvo neste navegador · feito por rocholab</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------------------------- state ---------------------------------- */
+var DEFAULT_STATE = {
+  nome:"",
+  checks:{},
+  m0:{faz:"",para:"",dif:"",servicos:"",sensacoes:[],pessoa:"",nomeCheck:"",visual:""},
+  m1:{tom:"próximo e profissional"},
+  m2:{},
+  m3:{redes:{}},
+  m4:{cal:{}}
+};
+var STORAGE_KEY = "avesso-caderno-marca-v3";
+var state = loadState();
+
+function loadState(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    var parsed = JSON.parse(raw);
+    var merged = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    Object.assign(merged, parsed);
+    merged.m0 = Object.assign(merged.m0, parsed.m0);
+    merged.m1 = Object.assign(merged.m1, parsed.m1);
+    merged.m2 = Object.assign(merged.m2, parsed.m2);
+    merged.m3 = Object.assign(merged.m3, parsed.m3);
+    merged.m4 = Object.assign(merged.m4, parsed.m4);
+    merged.checks = Object.assign({}, parsed.checks);
+    return merged;
+  }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+}
+function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+function nome(){ return (state.nome||"").trim() || "o seu negócio"; }
+
+var toastEl = document.getElementById("toast");
+var toastTimer = null;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 2400);
+}
+
+/* ---------------------------------- downloads capability ---------------------------------- */
+var downloadsNS = null;
+(function initCaps(){
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("downloads").then(function(ns){ downloadsNS = ns; }).catch(function(){ downloadsNS = null; });
+  }
+})();
+async function offerDownload(filename, data){
+  if(downloadsNS){
+    try{ await downloadsNS.save({filename:filename, data:data}); toast("Arquivo salvo: " + filename); return; }
+    catch(err){ if(err && err.code === "declined") return; }
+  }
+  if(typeof data === "string"){
+    try{ await navigator.clipboard.writeText(data); toast("Download indisponível aqui — texto copiado."); return; }
+    catch(e){}
+  }
+  toast("Não consegui salvar o arquivo neste ambiente.");
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); toast("Prompt copiado."); }
+  catch(e){ toast("Não consegui copiar automaticamente — selecione o texto manualmente."); }
+}
+
+/* ---------------------------------- generic checklist ---------------------------------- */
+function renderChecklist(containerId, groupKey, items){
+  var el = document.getElementById(containerId);
+  items.forEach(function(text, i){
+    var id = groupKey + i;
+    if(state.checks[id] === undefined) state.checks[id] = false;
+    var label = document.createElement("label");
+    label.className = "check-item";
+    label.innerHTML = '<input type="checkbox"><span class="txt"><span class="d">'+text+'</span></span>';
+    var input = label.querySelector("input");
+    input.checked = state.checks[id];
+    label.classList.toggle("checked", input.checked);
+    input.addEventListener("change", function(){
+      state.checks[id] = input.checked;
+      label.classList.toggle("checked", input.checked);
+      saveState(); refreshStamps();
+    });
+    el.appendChild(label);
+  });
+}
+function groupDone(groupKey, count){
+  for(var i=0;i<count;i++){ if(!state.checks[groupKey+i]) return false; }
+  return true;
+}
+function groupPending(groupKey, items){
+  var pending = [];
+  items.forEach(function(text,i){ if(!state.checks[groupKey+i]) pending.push(text); });
+  return pending;
+}
+
+/* ---------------------------------- rail / stamps ---------------------------------- */
+var MARCOS = [
+  {id:"s-intro", key:"intro", label:"I"},
+  {id:"s-base",  key:"base",  label:"B"},
+  {id:"s-m0",    key:"m0",    label:"0"},
+  {id:"s-m1",    key:"m1",    label:"1"},
+  {id:"s-m2",    key:"m2",    label:"2"},
+  {id:"s-m3",    key:"m3",    label:"3"},
+  {id:"s-m4",    key:"m4",    label:"4"},
+  {id:"s-fim",   key:"fim",   label:"F"}
+];
+var stampsEl = document.getElementById("stamps");
+MARCOS.forEach(function(m){
+  var b = document.createElement("button");
+  b.className = "stamp"; b.textContent = m.label; b.title = m.id;
+  b.addEventListener("click", function(){ document.getElementById(m.id).scrollIntoView({behavior:"smooth", block:"start"}); });
+  stampsEl.appendChild(b); m.el = b;
+});
+
+function isDone(key){
+  if(key==="intro") return true;
+  if(key==="base") return groupDone("base",4);
+  if(key==="m0") return !!(state.m0.faz.trim() && state.m0.para.trim() && state.m0.dif.trim());
+  if(key==="m1") return groupDone("m1",8);
+  if(key==="m2") return groupDone("m2",8);
+  if(key==="m3") return groupDone("m3i",5);
+  if(key==="m4") return groupDone("m4",1);
+  if(key==="fim") return isDone("base") && isDone("m0") && isDone("m1") && isDone("m2") && isDone("m3") && isDone("m4");
+  return false;
+}
+/* ---------------------------------- hero ---------------------------------- */
+var inNome = document.getElementById("in-nome");
+inNome.value = state.nome;
+inNome.addEventListener("input", function(){ state.nome = inNome.value; saveState(); refreshStamps(); });
+document.getElementById("btn-start").addEventListener("click", function(){
+  document.getElementById("s-intro").scrollIntoView({behavior:"smooth"});
+});
+
+/* ---------------------------------- chip helper ---------------------------------- */
+function wireChips(containerId, arr, max, single){
+  var el = document.getElementById(containerId);
+  var buttons = el.querySelectorAll(".chip");
+  function render(){ buttons.forEach(function(b){ b.classList.toggle("on", arr.indexOf(b.dataset.v) > -1); }); }
+  buttons.forEach(function(b){
+    b.addEventListener("click", function(){
+      var v = b.dataset.v;
+      if(single){
+        arr.length = 0; arr.push(v);
+      }else{
+        var idx = arr.indexOf(v);
+        if(idx>-1){ arr.splice(idx,1); }
+        else{ if(max && arr.length>=max) arr.shift(); arr.push(v); }
+      }
+      render(); saveState(); refreshStamps();
+    });
+  });
+  render();
+}
+
+/* ---------------------------------- BASE ---------------------------------- */
+renderChecklist("checks-base","base",[
+  "Atendimento consistente — a pessoa se sente bem tratada do início ao fim.",
+  "Prazos cumpridos — o que foi combinado é entregue quando foi combinado.",
+  "Qualidade real — o serviço ou produto entrega o que promete.",
+  "Organização interna — você sabe o que está pendente, com quem e para quando."
+]);
+function renderBaseStatus(){
+  var n=0; for(var i=0;i<4;i++) if(state.checks["base"+i]) n++;
+  document.getElementById("base-status").textContent = n===4
+    ? "Base confirmada (4 de 4)."
+    : n + " de 4 confirmados.";
+}
+document.getElementById("checks-base").addEventListener("change", renderBaseStatus);
+renderBaseStatus();
+
+/* ---------------------------------- MARCO 0 ---------------------------------- */
+var m0fields = ["faz","para","dif","servicos","pessoa","nomeCheck"];
+m0fields.forEach(function(f){
+  var el = document.getElementById("m0-" + (f==="nomeCheck" ? "nome-check" : f));
+  el.value = state.m0[f];
+  el.addEventListener("input", function(){ state.m0[f] = el.value; saveState(); refreshStamps(); });
+});
+wireChips("m0-sensacoes", state.m0.sensacoes, 3);
+var VISUAL_DO_ZERO = "Vai construir a identidade visual do zero";
+renderChecklist("checks-visualdev","visualdev",["Desenvolver identidade visual (paleta de cores, fontes e um elemento gráfico que se repete)."]);
+function refreshVisualBox(){
+  document.getElementById("box-visual-dev").style.display = (state.m0.visual === VISUAL_DO_ZERO) ? "block" : "none";
+}
+(function wireVisual(){
+  var el = document.getElementById("m0-visual");
+  var buttons = el.querySelectorAll(".chip");
+  function render(){ buttons.forEach(function(b){ b.classList.toggle("on", b.dataset.v === state.m0.visual); }); }
+  buttons.forEach(function(b){
+    b.addEventListener("click", function(){
+      state.m0.visual = b.dataset.v; render(); refreshVisualBox(); saveState(); refreshStamps();
+    });
+  });
+  render(); refreshVisualBox();
+})();
+
+/* ---------------------------------- MARCO 1 ---------------------------------- */
+renderChecklist("checks-m1","m1",[
+  "Acesse google.com/business e crie o perfil com o nome exato da sua marca.",
+  "Escolha a categoria que melhor descreve o seu serviço.",
+  "Defina se você atende em endereço fixo, se vai até o cliente, ou ambos.",
+  "Preencha horário de atendimento, telefone/WhatsApp e site ou link da landing page.",
+  "Verifique o perfil (código por correio, telefone ou e-mail).",
+  "Escreva a descrição do negócio (use o prompt personalizável abaixo).",
+  "Adicione fotos: fachada/local, você atendendo, produtos ou resultados entregues.",
+  "Ative a opção de receber e responder avaliações — e responda todas, boas ou ruins."
+]);
+var m1tom = document.getElementById("m1-tom");
+m1tom.value = state.m1.tom;
+function renderPrompt(){ document.getElementById("prompt-m1").textContent = buildPromptM1(); }
+m1tom.addEventListener("change", function(){ state.m1.tom = m1tom.value; saveState(); renderPrompt(); });
+document.getElementById("m0-faz").addEventListener("input", renderPrompt);
+document.getElementById("m0-para").addEventListener("input", renderPrompt);
+document.getElementById("m0-dif").addEventListener("input", renderPrompt);
+document.getElementById("m0-servicos").addEventListener("input", renderPrompt);
+
+function buildPromptM1(){
+  var servico = state.m0.servicos.trim() || state.m0.faz.trim() || "[serviço ou produto]";
+  var publico = state.m0.para.trim() || "[público-alvo]";
+  var dif = state.m0.dif.trim() || "[diferencial]";
+  return "Escreva uma descrição para o Perfil da Empresa no Google do negócio " + nome() + ",\n" +
+    "que atua com " + servico + " para " + publico + ".\n" +
+    "O diferencial do negócio é " + dif + ".\n" +
+    "O tom deve ser " + state.m1.tom + ".\n" +
+    "A descrição deve ter até 750 caracteres, ser clara e objetiva,\n" +
+    "sem clichês de marketing e sem soar como um texto genérico.";
+}
+renderPrompt();
+document.getElementById("copy-prompt-m1").addEventListener("click", function(){ copyText(buildPromptM1()); });
+
+/* ---------------------------------- MARCO 2 ---------------------------------- */
+function renderChecklistHow(containerId, groupKey, items){
+  var el = document.getElementById(containerId);
+  items.forEach(function(item, i){
+    var id = groupKey + i;
+    if(state.checks[id] === undefined) state.checks[id] = false;
+    var label = document.createElement("label");
+    label.className = "check-item with-how";
+    label.innerHTML = '<input type="checkbox"><span class="txt"><span class="d">'+item.t+'</span>' +
+      '<button type="button" class="how-toggle">como fazer</button>' +
+      '<div class="how-body">'+item.how+'</div></span>';
+    var input = label.querySelector("input");
+    input.checked = state.checks[id];
+    label.classList.toggle("checked", input.checked);
+    input.addEventListener("change", function(){
+      state.checks[id] = input.checked;
+      label.classList.toggle("checked", input.checked);
+      saveState(); refreshStamps();
+    });
+    var howBody = label.querySelector(".how-body");
+    var howToggle = label.querySelector(".how-toggle");
+    howToggle.addEventListener("click", function(e){
+      e.preventDefault(); e.stopPropagation();
+      howBody.classList.toggle("open");
+      howToggle.textContent = howBody.classList.contains("open") ? "esconder" : "como fazer";
+    });
+    el.appendChild(label);
+  });
+}
+renderChecklistHow("checks-m2","m2",[
+  {t:"Baixe o WhatsApp Business e migre o número (ou use um número exclusivo pro negócio).",
+   how:"Baixe o app \"WhatsApp Business\" na loja do seu celular. Ele pode migrar o número que você já usa ou registrar um número novo, exclusivo pro trabalho."},
+  {t:"Perfil: foto, nome da marca, descrição curta, horário de atendimento, endereço e link.",
+   how:"Em Configurações > Configurações da empresa > Perfil, preencha cada campo. Use o mesmo nome e a mesma foto/logo do resto da sua marca."},
+  {t:"Catálogo: principais produtos ou serviços com foto, descrição e valor.",
+   how:"Em Ferramentas comerciais > Catálogo, adicione cada item com uma foto, descrição curta e valor (ou faixa de valor, se variar por projeto)."},
+  {t:"Mensagem de saudação para quem chama pela primeira vez.",
+   how:"Em Ferramentas comerciais > Mensagens de saudação, ative e escreva uma mensagem curta se apresentando e perguntando o que a pessoa precisa."},
+  {t:"Mensagem de ausência avisando o horário em que você volta a responder.",
+   how:"Em Ferramentas comerciais > Mensagem de ausência, ative e defina um horário (ou deixe sempre ativa) avisando quando você volta a responder."},
+  {t:"Respostas rápidas para perguntas frequentes.",
+   how:"Em Ferramentas comerciais > Respostas rápidas, cadastre um atalho (ex.: /valor) pra cada pergunta que você recebe com frequência."},
+  {t:"Etiquetas para organizar as conversas por status.",
+   how:"Segure uma conversa na lista e escolha Etiquetar. Crie etiquetas como \"novo contato\", \"orçamento enviado\", \"fechado\" e \"pós-venda\"."},
+  {t:"Link direto (wa.me) na bio do Instagram, no Perfil do Google e na landing page.",
+   how:"Seu link é wa.me/ + seu número com DDI e DDD, sem espaços ou símbolos (ex.: wa.me/5511999999999). Cole esse link nos outros perfis."}
+]);
+
+/* ---------------------------------- MARCO 3 ---------------------------------- */
+var REDES = [
+  {nome:"Instagram", desc:"Rede visual, boa pra mostrar processo, resultados e o rosto da marca. Funciona bem pra quase qualquer tipo de negócio."},
+  {nome:"TikTok", desc:"Vídeos curtos, tom mais informal e espontâneo. Bom alcance orgânico, mas exige aparecer e gravar com frequência."},
+  {nome:"Facebook", desc:"Público mais maduro, forte em grupos e recomendações locais. Bom se o seu cliente usa marketplace ou grupos de bairro."},
+  {nome:"YouTube", desc:"Vídeos mais longos, ótimo pra explicar processo ou ensinar algo. Exige mais tempo de produção, mas fica pesquisável por muito tempo."},
+  {nome:"Pinterest", desc:"Vitrine visual de referência. Funciona mais como catálogo de inspiração do que como rede social — bom pra decoração, moda, gastronomia, design."},
+  {nome:"WhatsApp (canal/status)", desc:"Canal direto com quem já é cliente ou já te segue. Bom pra avisos, bastidor e ofertas — não depende de algoritmo."}
+];
+var redeGrid = document.getElementById("rede-grid");
+REDES.forEach(function(rede){
+  if(state.m3.redes[rede.nome] === undefined) state.m3.redes[rede.nome] = false;
+  var card = document.createElement("label");
+  card.className = "rede-card";
+  card.innerHTML = '<input type="checkbox"><span><div class="rede-name">'+rede.nome+'</div><div class="rede-desc">'+rede.desc+'</div></span>';
+  var input = card.querySelector("input");
+  input.checked = state.m3.redes[rede.nome];
+  card.classList.toggle("on", input.checked);
+  input.addEventListener("change", function(){
+    state.m3.redes[rede.nome] = input.checked;
+    card.classList.toggle("on", input.checked);
+    saveState(); refreshRedeLimitNote(); refreshStamps();
+    if(typeof renderPromptM4 === "function") renderPromptM4();
+  });
+  redeGrid.appendChild(card);
+});
+function selectedRedes(){ return REDES.filter(function(r){ return state.m3.redes[r.nome]; }).map(function(r){ return r.nome; }); }
+function refreshRedeLimitNote(){
+  var n = selectedRedes().length;
+  var note = document.getElementById("rede-limit-note");
+  note.textContent = n > 3 ? "Você marcou " + n + " redes — considere focar em até 3 pra começar bem." : "";
+}
+refreshRedeLimitNote();
+renderChecklistHow("checks-m3","m3i",[
+  {t:"Nome de usuário e nome de exibição claros e fáceis de encontrar.",
+   how:"Use o mesmo nome em todas as redes, o mais próximo possível do nome da sua marca — sem números ou pontos extras que dificultem a busca."},
+  {t:"Bio: o que você faz, para quem, e um motivo para seguir.",
+   how:"Duas ou três linhas: o que você faz, pra quem, e o que a pessoa ganha seguindo (dicas, bastidor, novidades)."},
+  {t:"Link na bio direcionando para a landing page ou WhatsApp.",
+   how:"Se você só tem um link pra usar, priorize o WhatsApp (wa.me/seunumero) — é o canal mais direto pra fechar."},
+  {t:"Destaques organizados por tema (sobre mim, serviços, depoimentos, dúvidas, portfólio).",
+   how:"Grave stories rápidos sobre cada tema e salve como destaque — não precisa ser produzido, só organizado."},
+  {t:"Posts estruturais que qualquer pessoa nova no perfil precisa ver pra entender seu trabalho.",
+   how:"Pense nos 4 ou 5 posts que resumem quem você é, o que faz e por que confiar em você — fixe ou deixe fácil de achar no feed."}
+]);
+renderChecklist("checks-teste","teste",[
+  "O que eu faço está claro em poucos segundos de rolagem?",
+  "Meu diferencial está visível, ou preciso explicar pessoalmente?",
+  "Tem depoimento ou prova social de algum cliente real?",
+  "O perfil passa confiança e parece um negócio real e ativo?"
+]);
+
+/* ---------------------------------- MARCO 4 ---------------------------------- */
+var DIAS = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"];
+var m4tbody = document.querySelector("#m4-table tbody");
+var lastFocused = null;
+DIAS.forEach(function(dia){
+  if(!state.m4.cal[dia]) state.m4.cal[dia] = {story:"", post:""};
+  var d = state.m4.cal[dia];
+  var tr = document.createElement("tr");
+  tr.innerHTML = '<td class="mono" style="white-space:nowrap;">'+dia+'</td><td class="dropzone"><input type="text" class="c-story" placeholder="ideia de story"></td><td class="dropzone"><input type="text" class="c-post" placeholder="ideia de post"></td>';
+  var cStory = tr.querySelector(".c-story"), cPost = tr.querySelector(".c-post");
+  cStory.value = d.story; cPost.value = d.post;
+  cStory.addEventListener("input", function(){ d.story = cStory.value; saveState(); });
+  cPost.addEventListener("input", function(){ d.post = cPost.value; saveState(); });
+  [cStory, cPost].forEach(function(inp){
+    inp.addEventListener("focus", function(){ lastFocused = inp; });
+    var td = inp.closest("td");
+    td.addEventListener("dragover", function(e){ e.preventDefault(); td.classList.add("drag-over"); });
+    td.addEventListener("dragleave", function(){ td.classList.remove("drag-over"); });
+    td.addEventListener("drop", function(e){
+      e.preventDefault(); td.classList.remove("drag-over");
+      var text = e.dataTransfer.getData("text/plain");
+      if(text){ inp.value = text; inp.dispatchEvent(new Event("input")); }
+    });
+  });
+  m4tbody.appendChild(tr);
+});
+document.querySelectorAll("#m4-prompts .idea-chip").forEach(function(chip){
+  chip.addEventListener("dragstart", function(e){
+    e.dataTransfer.setData("text/plain", chip.dataset.v);
+    chip.classList.add("dragging");
+  });
+  chip.addEventListener("dragend", function(){ chip.classList.remove("dragging"); });
+  chip.addEventListener("click", function(){
+    if(lastFocused){ lastFocused.value = chip.dataset.v; lastFocused.dispatchEvent(new Event("input")); }
+    else{ toast("Arraste a ideia pra um campo, ou clique num campo primeiro."); }
+  });
+});
+renderChecklist("checks-m4","m4",[
+  "Escolhi as ideias de conteúdo da semana."
+]);
+function buildPromptM4(){
+  var faz = state.m0.faz.trim() || "[o que você faz]";
+  var para = state.m0.para.trim() || "[para quem você faz]";
+  var dif = state.m0.dif.trim() || "[seu diferencial]";
+  var redes = selectedRedes();
+  var redesTxt = redes.length ? redes.join(" e ") : "[suas redes prioritárias]";
+  var sens = state.m0.sensacoes.length ? state.m0.sensacoes.join(", ") : "[tom da marca]";
+  return "Sugira 5 ideias de conteúdo para a semana de [data ou período] de " + nome() + ",\n" +
+    "que atua com " + faz + " para " + para + ".\n" +
+    "Meu diferencial é " + dif + ".\n" +
+    "As redes prioritárias são " + redesTxt + ".\n" +
+    "O tom deve transmitir " + sens + ".\n" +
+    "Nessa semana, quero dar destaque para: [produto, serviço ou promoção do momento].\n" +
+    "Tem alguma data comemorativa, sazonalidade ou novidade do negócio que eu deva aproveitar: [se houver, descreva aqui].\n" +
+    "Meu objetivo principal com essa semana de conteúdo é: [vender / atrair novos clientes / engajar quem já me segue / educar sobre o que eu faço].\n" +
+    "Quero variar entre bastidor, prova social e posicionamento — sem repetir a mesma ideia da semana passada: [se quiser, cole aqui o que já postou].\n" +
+    "Liste no formato: dia da semana - ideia de story - ideia de post (quando fizer sentido).";
+}
+function renderPromptM4(){ document.getElementById("prompt-m4").textContent = buildPromptM4(); }
+renderPromptM4();
+document.getElementById("copy-prompt-m4").addEventListener("click", function(){ copyText(buildPromptM4()); });
+document.getElementById("m0-faz").addEventListener("input", renderPromptM4);
+document.getElementById("m0-para").addEventListener("input", renderPromptM4);
+
+/* ---------------------------------- DOSSIÊ + DIRECIONAMENTO ---------------------------------- */
+function pendingActions(){
+  var actions = [];
+  groupPending("base",[
+    "Atendimento consistente","Prazos cumpridos","Qualidade real","Organização interna"
+  ]).forEach(function(t){ actions.push("Base — " + t); });
+  if(!state.m0.faz.trim() || !state.m0.para.trim() || !state.m0.dif.trim()){
+    actions.push("Marco 0 — responda o que você faz, pra quem e seu diferencial.");
+  }
+  if(state.m0.visual === VISUAL_DO_ZERO && !state.checks["visualdev0"]){
+    actions.push("Marco 0 — desenvolver identidade visual (paleta, fontes e elemento gráfico).");
+  }
+  groupPending("m1",[
+    "Criar o perfil em google.com/business","Escolher a categoria certa","Definir a forma de atendimento",
+    "Preencher horário, telefone e site","Verificar o perfil","Escrever a descrição com o prompt",
+    "Adicionar as fotos","Ativar e responder avaliações"
+  ]).forEach(function(t){ actions.push("Marco 1 — " + t); });
+  groupPending("m2",[
+    "Migrar para o WhatsApp Business","Preencher o perfil","Cadastrar catálogo","Configurar saudação",
+    "Configurar mensagem de ausência","Cadastrar respostas rápidas","Criar etiquetas","Colocar o link wa.me"
+  ]).forEach(function(t){ actions.push("Marco 2 — " + t); });
+  if(selectedRedes().length === 0){
+    actions.push("Marco 3 — escolher em quais redes sociais vale a pena estar.");
+  }
+  groupPending("m3i",[
+    "Nome de usuário e exibição claros","Escrever a bio","Colocar link na bio",
+    "Organizar destaques","Publicar posts estruturais"
+  ]).forEach(function(t){ actions.push("Marco 3 — " + t); });
+  groupPending("m4",["Escolher ideias da semana","Marcar stories no calendário"]).forEach(function(t){ actions.push("Marco 4 — " + t); });
+  return actions;
+}
+var WALL_LABELS = [
+  {key:"base", t:"a base"}, {key:"m0", t:"marco 0"}, {key:"m1", t:"marco 1"},
+  {key:"m2", t:"marco 2"}, {key:"m3", t:"marco 3"}, {key:"m4", t:"marco 4"}
+];
+function renderStampWall(){
+  var wall = document.getElementById("stamp-wall");
+  wall.innerHTML = "";
+  WALL_LABELS.forEach(function(w){
+    var done = isDone(w.key);
+    var div = document.createElement("div");
+    div.className = "swi" + (done ? " done" : "");
+    div.innerHTML = '<div class="circ">'+(done?"✓":"·")+'</div><div>'+w.t+'</div>';
+    wall.appendChild(div);
+  });
+}
+function refreshStamps(){
+  MARCOS.forEach(function(m){ m.el.classList.toggle("done", isDone(m.key)); });
+  renderStampWall();
+}
+function genDossieText(){
+  var redes = selectedRedes();
+  var lines = [];
+  lines.push("DOSSIÊ DE MARCA — " + nome().toUpperCase());
+  lines.push("estúdio avesso · caderno de marca");
+  lines.push("");
+  lines.push("MARCA");
+  lines.push("O que faz: " + (state.m0.faz||"—"));
+  lines.push("Para quem: " + (state.m0.para||"—"));
+  lines.push("Diferencial: " + (state.m0.dif||"—"));
+  lines.push("Serviços/produtos: " + (state.m0.servicos||"—"));
+  lines.push("Sensações: " + (state.m0.sensacoes.join(", ")||"—"));
+  lines.push("Identidade visual: " + (state.m0.visual||"—"));
+  lines.push("");
+  lines.push("PERFIL DA EMPRESA NO GOOGLE");
+  lines.push("Prompt personalizável:");
+  lines.push(buildPromptM1());
+  lines.push("");
+  lines.push("REDES SOCIAIS ESCOLHIDAS");
+  lines.push(redes.length ? redes.join(" · ") : "—");
+  lines.push("");
+  lines.push("PLANEJAMENTO SEMANAL");
+  DIAS.forEach(function(dia){
+    var d = state.m4.cal[dia];
+    lines.push(dia + " — story: " + (d.story.trim()||"—") + " · post: " + (d.post.trim()||"—"));
+  });
+  lines.push("");
+  lines.push("Prompt pra planejar a semana:");
+  lines.push(buildPromptM4());
+  lines.push("");
+  lines.push("CHECKLIST — PASSO A PASSO");
+  var actions = pendingActions();
+  if(actions.length){
+    actions.forEach(function(a){ lines.push("[ ] " + a); });
+  }else{
+    lines.push("Tudo em dia. O que resta agora é manter o ritmo do marco 4.");
+  }
+  return lines.join("\n");
+}
+function genGuidePdf(){
+  var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+  if(!jsPDFCtor) return null;
+  var doc = new jsPDFCtor({unit:"pt", format:"a4"});
+  var pageW = doc.internal.pageSize.getWidth();
+  var pageH = doc.internal.pageSize.getHeight();
+  var margin = 48;
+  var maxW = pageW - margin*2;
+  var lineH = 14;
+  var y = margin;
+
+  function ensureSpace(h){ if(y + h > pageH - margin){ doc.addPage(); y = margin; } }
+  function addCover(){
+    doc.setFont("helvetica","bold"); doc.setFontSize(22); doc.setTextColor(61,42,30);
+    doc.text("Marketing essencial", margin, y); y += 28;
+    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(120,100,80);
+    var lines = doc.splitTextToSize("um guia interativo do estúdio avesso · caderno de marca de " + (nome()||"você"), maxW);
+    lines.forEach(function(l){ doc.text(l, margin, y); y += 15; });
+    y += 18;
+  }
+  function addKicker(text){
+    y += 10; ensureSpace(16);
+    doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(168,118,60);
+    doc.text(text.toUpperCase(), margin, y); y += 14;
+  }
+  function addH2(text){
+    ensureSpace(24);
+    doc.setFont("helvetica","bold"); doc.setFontSize(15); doc.setTextColor(61,42,30);
+    doc.text(text, margin, y); y += 8;
+    doc.setDrawColor(168,118,60); doc.setLineWidth(1);
+    doc.line(margin, y, margin+maxW, y); y += 16;
+  }
+  function addP(text, italic){
+    doc.setFont("helvetica", italic ? "italic" : "normal"); doc.setFontSize(italic?11:10.5); doc.setTextColor(40,25,15);
+    var lines = doc.splitTextToSize(text, maxW);
+    lines.forEach(function(l){ ensureSpace(lineH); doc.text(l, margin, y); y += lineH; });
+    y += 6;
+  }
+  function addBullet(title, sub){
+    if(!title) return;
+    var boxSize=8, indent=boxSize+9;
+    doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.setTextColor(40,25,15);
+    var lines = doc.splitTextToSize(title, maxW-indent);
+    lines.forEach(function(l,i){
+      ensureSpace(lineH);
+      if(i===0){ doc.setDrawColor(168,118,60); doc.setLineWidth(1); doc.rect(margin, y-boxSize+1, boxSize, boxSize); }
+      doc.text(l, margin+indent, y); y += lineH;
+    });
+    if(sub){
+      doc.setFont("helvetica","italic"); doc.setFontSize(9.5); doc.setTextColor(110,90,70);
+      var subLines = doc.splitTextToSize(sub, maxW-indent);
+      subLines.forEach(function(l){ ensureSpace(13); doc.text(l, margin+indent, y); y+=13; });
+    }
+    y += 4;
+  }
+  function addMono(text){
+    doc.setFont("courier","normal"); doc.setFontSize(9.5); doc.setTextColor(40,25,15);
+    var lines = doc.splitTextToSize(text, maxW);
+    ensureSpace(10);
+    lines.forEach(function(l){ ensureSpace(13); doc.text(l, margin, y); y += 13; });
+    y += 8;
+  }
+
+  addCover();
+
+  document.querySelectorAll("main > section").forEach(function(section){
+    if(section.id === "s-hero" || section.id === "s-fim") return;
+    var kicker = section.querySelector(".section-num");
+    var h2 = section.querySelector("h2");
+    if(kicker) addKicker(kicker.textContent);
+    if(h2) addH2(h2.textContent);
+
+    section.querySelectorAll(".prose p, .rede-limit-note").forEach(function(p){
+      addP(p.textContent.trim());
+    });
+    section.querySelectorAll(".pullquote p").forEach(function(p){
+      addP(p.textContent.trim(), true);
+    });
+    section.querySelectorAll(".check-item").forEach(function(item){
+      var t = item.querySelector(".d");
+      var how = item.querySelector(".how-body");
+      addBullet(t ? t.textContent.trim() : "", how ? "Como fazer: " + how.textContent.trim() : null);
+    });
+    section.querySelectorAll(".rede-card").forEach(function(card){
+      var name = card.querySelector(".rede-name");
+      var desc = card.querySelector(".rede-desc");
+      addBullet(name ? name.textContent.trim() : "", desc ? desc.textContent.trim() : null);
+    });
+    section.querySelectorAll(".prompt-body").forEach(function(pb){
+      var t = pb.textContent.trim();
+      if(t) addMono(t);
+    });
+  });
+
+  return doc.output("blob");
+}
+function genDossiePdf(){
+  var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+  if(!jsPDFCtor) return null;
+  var doc = new jsPDFCtor({unit:"pt", format:"a4"});
+  var pageW = doc.internal.pageSize.getWidth();
+  var pageH = doc.internal.pageSize.getHeight();
+  var margin = 48;
+  var maxW = pageW - margin*2;
+  var lineH = 15;
+  var y = margin;
+
+  function ensureSpace(h){
+    if(y + h > pageH - margin){ doc.addPage(); y = margin; }
+  }
+  function addTitle(text){
+    ensureSpace(28);
+    doc.setFont("helvetica","bold"); doc.setFontSize(18); doc.setTextColor(61,42,30);
+    doc.text(text, margin, y); y += 26;
+  }
+  function addSubtitle(text){
+    ensureSpace(18);
+    doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(120,100,80);
+    doc.text(text, margin, y); y += 24;
+  }
+  function addHeading(text){
+    y += 6; ensureSpace(24);
+    doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(61,42,30);
+    doc.text(text.toUpperCase(), margin, y); y += 6;
+    doc.setDrawColor(168,118,60); doc.setLineWidth(1);
+    doc.line(margin, y, margin+maxW, y); y += 14;
+  }
+  function addLabelValue(label, value){
+    doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(90,70,50);
+    var labelText = label + ": ";
+    var labelW = doc.getTextWidth(labelText);
+    doc.setFont("helvetica","normal"); doc.setTextColor(40,25,15);
+    var lines = doc.splitTextToSize(value || "—", maxW - labelW);
+    lines.forEach(function(l, i){
+      ensureSpace(lineH);
+      if(i===0){ doc.setFont("helvetica","bold"); doc.setTextColor(90,70,50); doc.text(labelText, margin, y); doc.setFont("helvetica","normal"); doc.setTextColor(40,25,15); doc.text(l, margin+labelW, y); }
+      else{ doc.text(l, margin, y); }
+      y += lineH;
+    });
+    y += 3;
+  }
+  function addParagraph(text){
+    doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(40,25,15);
+    var lines = doc.splitTextToSize(text || "—", maxW);
+    lines.forEach(function(l){ ensureSpace(lineH); doc.text(l, margin, y); y += lineH; });
+    y += 3;
+  }
+  function addChecklistLine(text){
+    doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(40,25,15);
+    var boxSize = 9, textIndent = boxSize + 9;
+    var lines = doc.splitTextToSize(text, maxW - textIndent);
+    lines.forEach(function(l, i){
+      ensureSpace(lineH);
+      if(i===0){
+        doc.setDrawColor(168,118,60); doc.setLineWidth(1.1);
+        doc.rect(margin, y - boxSize + 1.5, boxSize, boxSize);
+      }
+      doc.text(l, margin + textIndent, y);
+      y += lineH;
+    });
+    y += 3;
+  }
+
+  addTitle("Dossiê de marca — " + nome().toUpperCase());
+  addSubtitle("estúdio avesso · caderno de marca");
+
+  addHeading("Marca");
+  addLabelValue("O que faz", state.m0.faz);
+  addLabelValue("Para quem", state.m0.para);
+  addLabelValue("Diferencial", state.m0.dif);
+  addLabelValue("Serviços/produtos", state.m0.servicos);
+  addLabelValue("Sensações", state.m0.sensacoes.join(", "));
+  addLabelValue("Identidade visual", state.m0.visual);
+
+  addHeading("Perfil da empresa no Google — prompt personalizável");
+  addParagraph(buildPromptM1());
+
+  addHeading("Redes sociais escolhidas");
+  var redes = selectedRedes();
+  addParagraph(redes.length ? redes.join(" · ") : "—");
+
+  addHeading("Planejamento semanal");
+  DIAS.forEach(function(dia){
+    var d = state.m4.cal[dia];
+    addParagraph(dia + " — story: " + (d.story.trim()||"—") + " · post: " + (d.post.trim()||"—"));
+  });
+
+  addHeading("Prompt pra planejar a semana");
+  addParagraph(buildPromptM4());
+
+  addHeading("Checklist — passo a passo");
+  var actions = pendingActions();
+  if(actions.length){
+    actions.forEach(function(a){ addChecklistLine(a); });
+  }else{
+    addParagraph("Tudo em dia. O que resta agora é manter o ritmo do marco 4.");
+  }
+
+  return doc.output("blob");
+}
+document.getElementById("dl-dossie").addEventListener("click", async function(){
+  var blob = genDossiePdf();
+  if(!blob){ offerDownload("dossie-de-marca.md", genDossieText()); return; }
+  offerDownload("dossie-de-marca.pdf", blob);
+});
+document.getElementById("dl-guide").addEventListener("click", function(){
+  var blob = genGuidePdf();
+  if(!blob){ toast("Não consegui gerar o guia neste ambiente."); return; }
+  offerDownload("guia-marketing-essencial.pdf", blob);
+});
+
+refreshStamps();
+
+})();
+</script>
+
+<!-- ---------- avesso: gate de acesso (não faz parte do guia em si) ---------- -->
+<div id="avessogate-overlay" style="position:fixed;inset:0;z-index:99999;background:#3D2A1E;color:#F4ECDD;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Archivo',Arial,sans-serif;">
+  <div style="max-width:380px;width:100%;text-align:center;">
+    <p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin:0 0 14px;">acesso ao guia</p>
+    <p style="font-size:15px;margin:0 0 22px;line-height:1.55;">digite o código de acesso que apareceu na tela depois do pagamento pix.</p>
+    <input id="avessogate-input" type="text" placeholder="seu código de acesso" autocomplete="off"
+      style="width:100%;box-sizing:border-box;padding:14px 16px;border-radius:10px;border:1px solid rgba(244,236,221,.3);background:rgba(244,236,221,.08);color:#F4ECDD;font-size:15px;margin-bottom:12px;">
+    <button id="avessogate-btn" type="button"
+      style="width:100%;padding:14px 16px;border-radius:999px;border:none;background:#E8CE9A;color:#3D2A1E;font-weight:600;font-size:15px;cursor:pointer;font-family:inherit;">
+      acessar o guia
+    </button>
+    <p id="avessogate-msg" style="font-size:12.5px;margin:14px 0 0;min-height:16px;opacity:.85;"></p>
+    <p style="font-size:12px;margin:24px 0 0;opacity:.6;">comprou e perdeu o código? <a href="https://wa.me/5548999936071" style="color:#E8CE9A;">fala com a gente no whatsapp</a>.</p>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY = 'avesso_guia_access_code';
+  var overlay = document.getElementById('avessogate-overlay');
+  var input = document.getElementById('avessogate-input');
+  var btn = document.getElementById('avessogate-btn');
+  var msg = document.getElementById('avessogate-msg');
+
+  function unlock(){
+    if(overlay) overlay.style.display = 'none';
+    document.documentElement.style.overflow = '';
+  }
+
+  function verify(code, opts){
+    opts = opts || {};
+    code = (code || '').trim();
+    if(!code){
+      if(!opts.silent) msg.textContent = 'digite o código.';
+      return;
+    }
+    if(!opts.silent){ msg.textContent = 'verificando…'; btn.disabled = true; }
+    fetch('/api/verify-code?code=' + encodeURIComponent(code))
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(data.valid){
+          try{ localStorage.setItem(KEY, code); }catch(e){}
+          unlock();
+        } else if(!opts.silent){
+          msg.textContent = 'código inválido. confere se digitou certinho, ou fala com a gente no whatsapp.';
+        }
+      })
+      .catch(function(){
+        if(!opts.silent) msg.textContent = 'não consegui verificar agora. confere sua internet e tenta de novo.';
+      })
+      .finally(function(){ if(!opts.silent) btn.disabled = false; });
+  }
+
+  btn.addEventListener('click', function(){ verify(input.value); });
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') verify(input.value); });
+
+  document.documentElement.style.overflow = 'hidden';
+
+  // destrava sozinho se o código vier na url (?code=...) ou já tiver sido
+  // validado antes neste navegador — sem precisar digitar de novo.
+  var urlCode = new URLSearchParams(window.location.search).get('code');
+  var savedCode;
+  try{ savedCode = localStorage.getItem(KEY); }catch(e){}
+
+  if(urlCode){
+    verify(urlCode, {silent:true});
+  } else if(savedCode){
+    verify(savedCode, {silent:true});
+  }
+})();
+</script>

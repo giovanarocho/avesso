@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>painel — estúdio avesso</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#F3EADA;
+    --cream:#E8CE9A;
+    --coffee:#3D2A1E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--sand);color:var(--coffee);
+    font-family:'Work Sans',sans-serif;
+  }
+  h1,h2{font-family:'Fraunces',serif;font-weight:400;}
+  .wrap{max-width:880px;margin:0 auto;padding:48px 24px 80px;}
+
+  /* ---------- gate de login ---------- */
+  #gate{
+    position:fixed;inset:0;background:var(--coffee);color:var(--sand);
+    display:flex;align-items:center;justify-content:center;padding:24px;z-index:10;
+  }
+  #gate .box{max-width:340px;width:100%;text-align:center;}
+  #gate p.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin:0 0 14px;}
+  #gate input{
+    width:100%;box-sizing:border-box;padding:14px 16px;border-radius:10px;
+    border:1px solid rgba(244,236,221,.3);background:rgba(244,236,221,.08);
+    color:var(--sand);font-size:15px;margin-bottom:12px;font-family:inherit;
+  }
+  #gate button{
+    width:100%;padding:14px 16px;border-radius:999px;border:none;
+    background:var(--cream);color:var(--coffee);font-weight:600;font-size:15px;
+    cursor:pointer;font-family:inherit;
+  }
+  #gate-msg{font-size:12.5px;margin-top:14px;min-height:16px;opacity:.85;}
+
+  /* ---------- painel em si ---------- */
+  #app{display:none;}
+  header.top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  header.top .brand{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;}
+  header.top button{
+    background:none;border:none;text-decoration:underline;font-size:12.5px;
+    color:var(--coffee);opacity:.7;cursor:pointer;font-family:inherit;
+  }
+  h1{font-size:clamp(24px,3.6vw,30px);margin:6px 0 40px;}
+  section{margin-bottom:56px;}
+  section h2{font-size:19px;margin-bottom:18px;}
+
+  .card{
+    background:#fff;border:1px solid rgba(61,42,30,.14);border-radius:16px;padding:24px;
+  }
+  .field-row{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:18px;}
+  @media(min-width:640px){.field-row{grid-template-columns:1fr 1fr;}}
+  .field label{display:block;font-size:12.5px;opacity:.7;margin-bottom:6px;}
+  .field input, .field textarea{
+    width:100%;box-sizing:border-box;padding:11px 13px;border-radius:8px;
+    border:1px solid rgba(61,42,30,.2);font-size:14.5px;font-family:inherit;color:var(--coffee);
+  }
+  .field textarea{min-height:60px;resize:vertical;}
+  .save-btn{
+    background:var(--coffee);color:var(--sand);border:none;border-radius:999px;
+    padding:12px 26px;font-size:14px;cursor:pointer;font-family:inherit;
+  }
+  .save-btn:disabled{opacity:.5;cursor:default;}
+  #precos-msg{font-size:13px;margin-top:14px;min-height:16px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{
+    text-align:left;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
+    opacity:.6;padding:0 10px 10px;font-weight:500;
+  }
+  tbody td{padding:10px;border-top:1px solid rgba(61,42,30,.1);vertical-align:top;}
+  tbody tr:hover{background:rgba(61,42,30,.03);}
+  .tag{
+    display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;
+    background:rgba(61,42,30,.08);
+  }
+  .tag.ok{background:rgba(76,140,90,.15);color:#2f6b3f;}
+  .tag.pending{background:rgba(150,120,40,.15);color:#8a6a1f;}
+  .empty-msg, .error-msg{font-size:14px;opacity:.75;padding:20px 0;}
+  .error-msg{color:#a33;}
+  .table-scroll{overflow-x:auto;}
+</style>
+</head>
+<body>
+
+  <div id="gate">
+    <div class="box">
+      <p class="eyebrow">painel avesso</p>
+      <input id="gate-password" type="password" placeholder="senha" autocomplete="off">
+      <button id="gate-btn" type="button">entrar</button>
+      <p id="gate-msg"></p>
+    </div>
+  </div>
+
+  <div id="app">
+    <div class="wrap">
+      <header class="top">
+        <span class="brand">estúdio avesso</span>
+        <button id="logout-btn" type="button">sair</button>
+      </header>
+      <h1>painel</h1>
+
+      <section>
+        <h2>preços</h2>
+        <div class="card">
+          <div class="field-row">
+            <div class="field">
+              <label for="f-guia">guia (R$)</label>
+              <input id="f-guia" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+              <label for="f-base">base pronta (R$)</label>
+              <input id="f-base" type="number" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-manutencao">manutenção — R$/mês</label>
+              <input id="f-manutencao" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+              <label for="f-vagas">texto de vagas (base pronta + manutenção)</label>
+              <textarea id="f-vagas"></textarea>
+            </div>
+          </div>
+          <button class="save-btn" id="save-precos-btn" type="button">salvar preços</button>
+          <p id="precos-msg"></p>
+        </div>
+      </section>
+
+      <section>
+        <h2>vendas</h2>
+        <div id="vendas-area"><p class="empty-msg">carregando…</p></div>
+      </section>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var TOKEN_KEY = 'avesso_admin_token';
+
+  var gate = document.getElementById('gate');
+  var app = document.getElementById('app');
+  var gatePassword = document.getElementById('gate-password');
+  var gateBtn = document.getElementById('gate-btn');
+  var gateMsg = document.getElementById('gate-msg');
+
+  function getToken(){ try{ return localStorage.getItem(TOKEN_KEY); }catch(e){ return null; } }
+  function setToken(t){ try{ localStorage.setItem(TOKEN_KEY, t); }catch(e){} }
+  function clearToken(){ try{ localStorage.removeItem(TOKEN_KEY); }catch(e){} }
+
+  function showApp(){
+    gate.style.display = 'none';
+    app.style.display = 'block';
+    loadPrecos();
+    loadVendas();
+  }
+  function showGate(msg){
+    app.style.display = 'none';
+    gate.style.display = 'flex';
+    gateMsg.textContent = msg || '';
+  }
+
+  function login(password){
+    gateMsg.textContent = 'entrando…';
+    gateBtn.disabled = true;
+    fetch('/api/admin-login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ password: password })
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        gateBtn.disabled = false;
+        if(!res.ok){
+          gateMsg.textContent = res.data && res.data.error === 'ADMIN_PASSWORD não configurado no servidor'
+            ? 'o painel ainda não foi configurado (falta ADMIN_PASSWORD na vercel).'
+            : 'senha incorreta.';
+          return;
+        }
+        setToken(res.data.token);
+        showApp();
+      }).catch(function(){
+        gateBtn.disabled = false;
+        gateMsg.textContent = 'não consegui conectar. tenta de novo.';
+      });
+  }
+
+  gateBtn.addEventListener('click', function(){ login(gatePassword.value); });
+  gatePassword.addEventListener('keydown', function(e){ if(e.key === 'Enter') login(gatePassword.value); });
+
+  document.getElementById('logout-btn').addEventListener('click', function(){
+    clearToken();
+    gatePassword.value = '';
+    showGate('');
+  });
+
+  // chamada autenticada genérica — se o token expirou (401), volta pro login sozinho.
+  function authFetch(url, opts){
+    opts = opts || {};
+    opts.headers = opts.headers || {};
+    opts.headers['Authorization'] = 'Bearer ' + getToken();
+    return fetch(url, opts).then(function(r){
+      if(r.status === 401){
+        clearToken();
+        showGate('sua sessão expirou. entra de novo.');
+        throw new Error('unauthorized');
+      }
+      return r;
+    });
+  }
+
+  function fmtMoney(n){
+    return 'R$ ' + Number(n).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  // ---------- preços ----------
+  function loadPrecos(){
+    fetch('/api/config').then(function(r){ return r.json(); }).then(function(cfg){
+      document.getElementById('f-guia').value = cfg.guiaPrice;
+      document.getElementById('f-base').value = cfg.basePrice;
+      document.getElementById('f-manutencao').value = cfg.manutencaoPrice;
+      document.getElementById('f-vagas').value = cfg.manutencaoVagas;
+    }).catch(function(){});
+  }
+
+  document.getElementById('save-precos-btn').addEventListener('click', function(){
+    var btn = this;
+    var msg = document.getElementById('precos-msg');
+    btn.disabled = true;
+    msg.textContent = 'salvando…';
+    authFetch('/api/admin-update-config', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        guiaPrice: document.getElementById('f-guia').value,
+        basePrice: document.getElementById('f-base').value,
+        manutencaoPrice: document.getElementById('f-manutencao').value,
+        manutencaoVagas: document.getElementById('f-vagas').value
+      })
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){
+          msg.textContent = res.data && res.data.error === 'banco de dados (supabase) não configurado no servidor'
+            ? 'o supabase ainda não está configurado — sem ele, não dá pra editar os preços por aqui. os valores das variáveis de ambiente continuam valendo.'
+            : 'não consegui salvar. tenta de novo.';
+          return;
+        }
+        msg.textContent = 'salvo! já vale pro site (sem precisar de redeploy).';
+        setTimeout(function(){ msg.textContent = ''; }, 4000);
+      }).catch(function(e){
+        btn.disabled = false;
+        if(e.message !== 'unauthorized') msg.textContent = 'não consegui salvar. tenta de novo.';
+      });
+  });
+
+  // ---------- vendas ----------
+  function statusTag(status){
+    if(status === 'approved') return '<span class="tag ok">aprovado</span>';
+    if(status === 'pending') return '<span class="tag pending">pendente</span>';
+    return '<span class="tag">' + (status || '—') + '</span>';
+  }
+
+  function loadVendas(){
+    var area = document.getElementById('vendas-area');
+    authFetch('/api/admin-sales').then(function(r){ return r.json(); }).then(function(data){
+      if(data.dbConfigured === false){
+        area.innerHTML = '<p class="empty-msg">o supabase ainda não está configurado — assim que estiver, as vendas aparecem aqui automaticamente.</p>';
+        return;
+      }
+      var rows = data.pagamentos || [];
+      if(rows.length === 0){
+        area.innerHTML = '<p class="empty-msg">nenhuma venda registrada ainda.</p>';
+        return;
+      }
+      var html = '<div class="table-scroll"><table><thead><tr>' +
+        '<th>data</th><th>e-mail</th><th>valor</th><th>status</th><th>e-mail enviado</th><th>guia acessado</th>' +
+        '</tr></thead><tbody>';
+      rows.forEach(function(row){
+        var data_fmt = row.created_at ? new Date(row.created_at).toLocaleString('pt-BR') : '—';
+        var acessado = row.guia_acessado_em ? new Date(row.guia_acessado_em).toLocaleDateString('pt-BR') : '—';
+        html += '<tr>' +
+          '<td>' + data_fmt + '</td>' +
+          '<td>' + (row.email || '—') + '</td>' +
+          '<td>' + fmtMoney(row.amount || 0) + '</td>' +
+          '<td>' + statusTag(row.status) + '</td>' +
+          '<td>' + (row.code_sent ? 'sim' : 'não') + '</td>' +
+          '<td>' + acessado + '</td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      area.innerHTML = html;
+    }).catch(function(e){
+      if(e.message !== 'unauthorized'){
+        area.innerHTML = '<p class="error-msg">não consegui carregar as vendas agora.</p>';
+      }
+    });
+  }
+
+  // se já tiver token salvo, tenta entrar direto (authFetch cai pro login sozinho se tiver expirado)
+  if(getToken()){
+    showApp();
+  }
+})();
+</script>
+</body>
+</html>
