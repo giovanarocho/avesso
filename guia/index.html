@@ -572,18 +572,20 @@ function toast(msg){
   toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 2400);
 }
 
-/* ---------------------------------- downloads capability ---------------------------------- */
-var downloadsNS = null;
-(function initCaps(){
-  if(window.claude && typeof window.claude.use === "function"){
-    window.claude.use("downloads").then(function(ns){ downloadsNS = ns; }).catch(function(){ downloadsNS = null; });
-  }
-})();
+/* ---------------------------------- downloads ---------------------------------- */
 async function offerDownload(filename, data){
-  if(downloadsNS){
-    try{ await downloadsNS.save({filename:filename, data:data}); toast("Arquivo salvo: " + filename); return; }
-    catch(err){ if(err && err.code === "declined") return; }
-  }
+  try{
+    var blob = (data instanceof Blob) ? data : new Blob([data], {type:"text/plain;charset=utf-8"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename; a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    toast("Download iniciado: " + filename);
+    return;
+  }catch(e){}
   if(typeof data === "string"){
     try{ await navigator.clipboard.writeText(data); toast("Download indisponível aqui — texto copiado."); return; }
     catch(e){}
