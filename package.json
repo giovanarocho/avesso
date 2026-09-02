@@ -2,5 +2,6 @@
   "name": "avesso-site",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "página de venda da avesso, com checkout pix automático do guia via mercado pago"
 }

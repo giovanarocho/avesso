@@ -451,6 +451,16 @@
   }
   @keyframes spin{to{transform:rotate(360deg);}}
   .cp-success{font-size:15px;margin-bottom:8px;}
+  .cp-code-box{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:#fff;border:1px solid rgba(61,42,30,.2);border-radius:10px;
+    padding:12px 14px;margin-bottom:16px;
+  }
+  .cp-code-box span{font-family:monospace;font-size:13px;word-break:break-all;text-align:left;}
+  .cp-copy-code{
+    flex-shrink:0;background:var(--coffee);color:var(--sand);border:none;
+    border-radius:999px;padding:7px 14px;font-size:12px;cursor:pointer;
+  }
 
   @media (max-width:520px){
     section{padding:clamp(56px,14vw,80px) 0;}
@@ -759,7 +769,11 @@
 
       <div id="cp-step-sucesso" style="display:none;">
         <p class="cp-success">pagamento confirmado 🎉</p>
-        <p class="cp-sub">seu acesso ao guia está liberado.</p>
+        <p class="cp-sub">seu acesso ao guia está liberado. guarde o código abaixo — é ele que libera o guia, caso você feche essa tela ou acesse de outro aparelho.</p>
+        <div class="cp-code-box">
+          <span id="cp-code-valor"></span>
+          <button class="cp-copy-code" id="cp-copiar-codigo" type="button">copiar</button>
+        </div>
         <a class="btn btn-primary" id="cp-link-guia" href="#" target="_blank" rel="noopener">abrir o guia</a>
       </div>
 
@@ -928,6 +942,16 @@
         }).catch(function(){});
       });
 
+      document.getElementById('cp-copiar-codigo').addEventListener('click', function(){
+        var code = document.getElementById('cp-code-valor').textContent;
+        if(!code) return;
+        var btn = document.getElementById('cp-copiar-codigo');
+        navigator.clipboard.writeText(code).then(function(){
+          btn.textContent = 'copiado!';
+          setTimeout(function(){ btn.textContent = 'copiar'; }, 2000);
+        }).catch(function(){});
+      });
+
       function startPolling(paymentId){
         var attempts = 0;
         var maxAttempts = 200; // ~10 minutos, checando a cada 3s
@@ -947,6 +971,7 @@
                 stepPix.style.display = 'none';
                 stepSucesso.style.display = 'block';
                 document.getElementById('cp-link-guia').setAttribute('href', data.link);
+                document.getElementById('cp-code-valor').textContent = data.code || '';
               } else if(data.status === 'rejected' || data.status === 'cancelled'){
                 clearInterval(pollTimer);
                 pollTimer = null;
