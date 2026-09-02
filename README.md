@@ -4,7 +4,8 @@ Isso é um projetinho completo pra publicar na Vercel (grátis). Ele tem:
 
 - `index.html` — a página de venda nova (hero limpa, guia em destaque, depois os outros dois formatos).
 - `guia/index.html` — o guia em si (o caderno interativo), protegido por um código de acesso.
-- `api/` — 5 funções que rodam no servidor da Vercel (não no seu navegador) e conversam com o Mercado Pago pra gerar o pix, confirmar o pagamento e liberar o código de acesso do guia.
+- `painel/index.html` — o painel administrativo (`/painel`), protegido por senha: edita os preços sem precisar de código nem redeploy, e mostra a lista de vendas.
+- `api/` — as funções que rodam no servidor da Vercel (não no seu navegador): geram o pix, confirmam o pagamento, liberam o código de acesso do guia, e (se configurado) mandam e-mail, gravam no banco e atendem o painel.
 
 Sem isso, qualquer pessoa com o link do guia acessava sem pagar. Com isso, o guia fica atrás de um código de acesso — e esse código só é gerado depois que o Mercado Pago confirma o pagamento, no servidor. Não tem como "enganar" clicando em algum botão sem pagar de verdade.
 
@@ -70,8 +71,9 @@ Sem fazer isso, o site funciona normalmente — o código de acesso continua apa
 **banco de dados (supabase):**
 
 1. Crie uma conta grátis em https://supabase.com e crie um novo projeto (escolha uma senha de banco qualquer, você não vai precisar dela).
-2. Dentro do projeto, vá em **SQL Editor** → **New query**, cole o conteúdo do arquivo `supabase_schema.sql` (vem junto nesta pasta) e clique em **Run**. Isso cria a tabela `pagamentos`.
-3. Vá em **Project Settings > API** e copie dois valores: a **Project URL** e a chave **service_role** (não é a `anon`/pública — é a outra, marcada como secreta).
+2. Dentro do projeto, vá em **SQL Editor** → **New query**, cole o conteúdo do arquivo `supabase_schema.sql` (vem junto nesta pasta) e clique em **Run**. Isso cria as tabelas `pagamentos` (registro das vendas) e `config` (os preços editáveis pelo painel).
+3. Pra pegar a chave: vá em **Settings → API Keys**, clique na aba **"Legacy anon, service_role API keys"** (não na aba "Publishable and secret API keys", que é outro sistema mais novo) e copie a chave **service_role** — clique em **Reveal** primeiro pra ela aparecer inteira. Não é a `anon`/pública, é a marcada como secreta.
+4. Pra pegar a URL: vá em **Settings → General** e copie o **Project ID** — a Project URL é `https://<esse-project-id>.supabase.co`.
 
 **e-mail (resend):**
 
@@ -93,6 +95,17 @@ Volte em **Settings > Environment Variables** e adicione mais estas:
 
 Redeploy de novo depois de salvar. A partir daí, toda compra aprovada: manda o e-mail com o código automaticamente, e grava uma linha na tabela `pagamentos` do supabase (dá pra ver essa tabela a qualquer momento em **Table Editor**, dentro do próprio supabase — sem precisar de mim pra consultar).
 
+### 5c. (opcional, mas recomendado) ative o painel administrativo (`/painel`)
+
+Isso depende do supabase já estar configurado (passo 5b) — é de lá que o painel lê e grava os preços e as vendas.
+
+1. Escolha uma senha forte (não tem limite de tentativas de login, então evite algo óbvio).
+2. Na Vercel, adicione a variável `ADMIN_PASSWORD` com essa senha.
+3. Redeploy.
+4. Acesse `https://oestudioavesso.com.br/painel` (ou o link `.vercel.app`, se o domínio ainda não estiver ativo), digite a senha, e pronto: dá pra mudar os preços na hora (sem precisar mexer em variável de ambiente nem redeploy) e ver a lista de vendas.
+
+Esse endereço não aparece em nenhum lugar do site — só quem souber o link chega nele — mas do mesmo jeito, sem a senha certa ninguém entra.
+
 ### 6. teste com um pagamento pequeno de verdade
 
 Recomendo gerar um pix de teste pagando com um valor baixo (pode temporariamente colocar `GUIA_PRICE=1` pra testar com R$1) antes de deixar no ar com o preço final. Depois volte o valor e clique em redeploy.
@@ -109,6 +122,7 @@ Em **Settings > Domains** na Vercel, você pode apontar um domínio seu (tipo `a
 4. Quando o Mercado Pago confirma o pagamento, `/api/check-status` responde com o código de acesso e o link `/guia?code=...` — só nesse momento eles aparecem na tela.
 5. A pessoa clica em "abrir o guia": a página `/guia` lê o código da url, confirma com `/api/verify-code` (que também conversa direto com o Mercado Pago) e libera o conteúdo. O código fica salvo no navegador dela, então da próxima vez o guia libera sozinho.
 6. Se você configurou o supabase e o resend (passo 5b): assim que `/api/check-status` vê o pagamento aprovado, ele manda o e-mail com o código (uma única vez por pagamento) e atualiza a linha da venda no banco. O `/api/webhook` faz a mesma coisa como reforço — útil se a pessoa pagar pelo app do banco e fechar a aba do site antes da confirmação aparecer na tela. Sem essas duas variáveis configuradas, esse passo simplesmente não acontece e o resto continua igual.
+7. Os preços que aparecem no site e o valor cobrado de verdade no pix vêm sempre do mesmo lugar: primeiro do banco (se você já editou pelo `/painel`), e só como reserva da variável de ambiente — então o painel e o site nunca ficam com preços diferentes entre si.
 
 ### (opcional) configurar o webhook no Mercado Pago
 
@@ -116,10 +130,11 @@ Isso deixa o envio de e-mail mais confiável (não depende da aba do site ficar 
 
 ## se quiser trocar algo depois
 
-- **preço de qualquer um dos três serviços**: mude a variável de ambiente na Vercel e clique em redeploy. Não precisa mexer em código.
-- **texto de vagas da manutenção**: mesma coisa, variável `MANUTENCAO_VAGAS`.
+- **preço de qualquer um dos três serviços**: se o painel `/painel` estiver ativo (passo 5c), edite direto por lá — vale na hora, sem redeploy. Sem o painel configurado, muda a variável de ambiente na Vercel e clica em redeploy.
+- **texto de vagas da manutenção**: mesma coisa — pelo painel (campo "texto de vagas"), ou pela variável `MANUTENCAO_VAGAS`.
 - **onde o guia está hospedado**: só mexe em `GUIA_LINK` se um dia tirar o guia daqui e hospedar em outro lugar. Do jeito que está, não precisa tocar nisso.
 - **conteúdo do guia**: edite o `guia/index.html`.
 - **textos, cores, seções da página de venda**: aí sim precisa editar o `index.html` (ou me pedir pra ajustar e te mandar o arquivo atualizado).
 - **texto do e-mail do código**: no arquivo `lib/services.js`, dentro da função `sendCodeEmail` (ou me pede pra ajustar).
-- **ver todas as vendas**: supabase.com > seu projeto > Table Editor > tabela `pagamentos`.
+- **ver todas as vendas**: pelo `/painel` (mais prático) ou direto em supabase.com > seu projeto > Table Editor > tabela `pagamentos`.
+- **trocar a senha do painel**: muda `ADMIN_PASSWORD` na Vercel e redeploy. Quem já estava logado continua entrando por até 24h (o tempo que uma sessão dura) — se quiser derrubar todo mundo na hora, defina também `ADMIN_SECRET` com um valor novo.
