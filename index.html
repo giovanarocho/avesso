@@ -121,6 +121,26 @@
     .marquee-track{animation:none;}
   }
 
+  /* ---------- mobile-only fixes ---------- */
+  @media(max-width:859px){
+    .proposta .signature-line{font-size:15px;margin-top:20px;}
+    .proposta-ctas{flex-wrap:nowrap;gap:10px;}
+    .proposta-ctas .btn{flex:1 1 0;text-align:center;padding:13px 10px;font-size:12.5px;white-space:nowrap;}
+    .proposta-photo{display:none;}
+  }
+  @media(max-width:899px){
+    .guia-grid{display:flex;flex-direction:column;}
+    .guia-grid > div:first-child{display:contents;}
+    .guia-grid .eyebrow{order:1;}
+    .guia-grid h2{order:2;}
+    .guia-grid .lead{order:3;}
+    .guia-grid .guia-gallery{order:4;}
+    .guia-grid .guia-price{order:5;}
+    .guia-grid .guia-includes{order:6;}
+    .guia-grid .guia-cta{order:7;}
+    .guia-grid .guia-fineprint{order:8;}
+  }
+
   /* ---------- hero ---------- */
   .hero{
     position:relative;
@@ -642,7 +662,7 @@
     <div class="marquee-track">
       <span>guia marketing essencial</span>
       <span>·</span>
-      <span>R$ 39,90 · acesso na hora, via pix</span>
+      <span><span class="js-price-guia">R$ 39,90</span> · acesso na hora, via pix</span>
       <span>·</span>
       <span>comece sozinha, no seu ritmo</span>
       <span>·</span>
@@ -650,7 +670,7 @@
       <span>·</span>
       <span>guia marketing essencial</span>
       <span>·</span>
-      <span>R$ 39,90 · acesso na hora, via pix</span>
+      <span><span class="js-price-guia">R$ 39,90</span> · acesso na hora, via pix</span>
       <span>·</span>
       <span>comece sozinha, no seu ritmo</span>
       <span>·</span>
@@ -783,7 +803,7 @@
 
   <a class="guide-float" href="#guia">
     <span class="guide-float-sub">não pode investir tanto agora?</span>
-    <span class="guide-float-main">comece pelo guia — R$ 39,90</span>
+    <span class="guide-float-main">comece pelo guia — <span class="js-price-guia">R$ 39,90</span></span>
   </a>
 
   <a class="whatsapp-float" href="https://wa.me/5548999936071" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
@@ -791,6 +811,35 @@
   </a>
 
   <script>
+    // no mobile, alguns navegadores não rodam a animação css do "trem" corretamente —
+    // faz o mesmo efeito via JS nesses casos, só até a largura onde o layout é mobile.
+    (function(){
+      var mq = window.matchMedia('(max-width:859px)');
+      document.querySelectorAll('.marquee-track').forEach(function(track){
+        var raf = null;
+        var pos = 0;
+        function step(){
+          pos -= 0.6;
+          var half = track.scrollWidth / 2 || 1;
+          if(-pos >= half) pos = 0;
+          track.style.transform = 'translateX(' + pos + 'px)';
+          raf = requestAnimationFrame(step);
+        }
+        function apply(){
+          if(mq.matches){
+            track.style.animation = 'none';
+            if(!raf){ raf = requestAnimationFrame(step); }
+          } else {
+            if(raf){ cancelAnimationFrame(raf); raf = null; }
+            track.style.animation = '';
+            track.style.transform = '';
+          }
+        }
+        apply();
+        if(mq.addEventListener){ mq.addEventListener('change', apply); } else { mq.addListener(apply); }
+      });
+    })();
+
     // stagger reveal delay based on position among siblings, for a less "tudo ao mesmo tempo" feel
     var revealEls = document.querySelectorAll('.reveal:not(.in)');
     revealEls.forEach(function(el){
