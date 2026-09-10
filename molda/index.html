@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>molda — gere seu conteúdo para lançamento | estúdio avesso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#F3EADA;
+    --cream:#E8CE9A;
+    --coffee:#3D2A1E;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Work Sans',sans-serif;font-weight:400;line-height:1.7;
+    -webkit-font-smoothing:antialiased;background:var(--sand);color:var(--coffee);
+  }
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.15;letter-spacing:-0.01em;}
+  a{color:inherit;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 28px;}
+  section{padding:clamp(56px,9vw,96px) 0;}
+
+  .top-nav{padding:22px 0;}
+  .top-nav .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .top-nav a.back{font-size:13px;text-decoration:none;opacity:.7;}
+  .top-nav a.back:hover{opacity:1;}
+  .brand-tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;}
+
+  .hero{padding-top:8px;}
+  .hero .eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:14px;display:block;}
+  .hero h1{font-size:clamp(32px,6vw,48px);}
+  .hero .lede{margin-top:16px;font-size:16px;max-width:52ch;opacity:.85;}
+
+  .price-box{margin-top:28px;}
+  .price-box .fp{font-family:'Fraunces',serif;font-size:28px;}
+  .price-box small{font-family:'Work Sans',sans-serif;font-size:13px;opacity:.7;}
+
+  .btn{
+    display:inline-block;font-family:'Work Sans',sans-serif;font-size:14px;font-weight:500;
+    letter-spacing:0.02em;padding:16px 34px;border-radius:999px;text-decoration:none;
+    border:none;cursor:pointer;transition:opacity .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .btn:hover{opacity:.92;transform:translateY(-2px);}
+  .btn-gold{background:var(--cream);color:var(--coffee);box-shadow:0 8px 22px rgba(232,206,154,.45);}
+  .btn-gold:hover{box-shadow:0 12px 28px rgba(232,206,154,.6);}
+  .btn-primary{background:var(--coffee);color:var(--sand);box-shadow:0 8px 22px rgba(61,42,30,.22);}
+
+  .cta{margin-top:26px;}
+  .fineprint{font-size:12.5px;opacity:.7;margin-top:14px;max-width:400px;}
+
+  .features{border-top:1px solid rgba(61,42,30,.14);}
+  .features h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:28px;max-width:460px;}
+  .feat-list{display:flex;flex-direction:column;gap:0;}
+  .feat-item{display:flex;gap:14px;padding:16px 2px;border-top:1px solid rgba(61,42,30,.12);}
+  .feat-item:first-child{border-top:none;}
+  .feat-item .ico{font-family:'Fraunces',serif;font-size:15px;opacity:.5;flex-shrink:0;width:22px;}
+  .feat-item p{margin:0;font-size:14.5px;opacity:.88;}
+
+  .como{border-top:1px solid rgba(61,42,30,.14);}
+  .como h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:24px;max-width:460px;}
+  .passo{display:flex;gap:16px;padding:14px 2px;}
+  .passo .n{font-family:'Fraunces',serif;font-size:20px;opacity:.4;flex-shrink:0;width:26px;}
+  .passo p{margin:0;font-size:14.5px;opacity:.88;padding-top:2px;}
+
+  footer{text-align:center;padding:40px 20px 60px;font-size:12px;opacity:.6;}
+
+  /* ---------- checkout modal (mesmo padrão visual do checkout do guia) ---------- */
+  .checkout-overlay{
+    display:none;position:fixed;inset:0;background:rgba(20,13,9,.72);
+    z-index:999;align-items:center;justify-content:center;padding:20px;
+  }
+  .checkout-overlay.open{display:flex;}
+  .checkout-panel{
+    background:var(--sand);color:var(--coffee);
+    max-width:420px;width:100%;max-height:90vh;overflow-y:auto;
+    border-radius:20px;padding:32px 28px;text-align:center;
+    box-shadow:0 24px 60px rgba(20,13,9,.35);
+  }
+  .checkout-panel h3{font-family:'Fraunces',serif;font-size:20px;font-weight:400;margin-bottom:8px;}
+  .checkout-panel .cp-sub{font-size:13px;opacity:.75;margin-bottom:24px;}
+  .checkout-panel input[type="email"]{
+    width:100%;padding:13px 16px;border:1px solid rgba(61,42,30,.25);
+    border-radius:10px;font-family:'Work Sans',sans-serif;font-size:15px;
+    margin-bottom:14px;background:#fff;color:var(--coffee);
+  }
+  .checkout-panel .btn{width:100%;text-align:center;}
+  .checkout-panel .cp-msg{font-size:12.5px;margin-top:14px;opacity:.85;min-height:16px;}
+  .checkout-panel .qr-box{margin:18px 0;}
+  .checkout-panel .qr-box img{width:200px;height:200px;margin:0 auto 14px;display:block;border-radius:12px;}
+  .checkout-panel .pix-code{
+    font-family:monospace;font-size:11px;word-break:break-all;
+    background:#fff;border:1px solid rgba(61,42,30,.15);border-radius:10px;
+    padding:12px;max-height:70px;overflow-y:auto;margin-bottom:12px;text-align:left;
+  }
+  .checkout-panel .cp-close{
+    display:inline-block;margin-top:16px;font-size:12px;
+    text-decoration:underline;opacity:.7;background:none;border:none;cursor:pointer;color:var(--coffee);
+  }
+  .cp-spinner{
+    width:22px;height:22px;border-radius:50%;
+    border:2px solid rgba(61,42,30,.2);border-top-color:var(--cream);
+    margin:10px auto;animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .cp-success{font-size:15px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+  <div class="top-nav">
+    <div class="wrap">
+      <a class="back" href="/">← voltar pro site</a>
+      <span class="brand-tag">estúdio avesso</span>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">ferramenta do avesso</span>
+      <h1>molda — gere seu conteúdo para lançamento</h1>
+      <p class="lede">crie conteúdo pro seu lançamento em minutos: escolha o formato, escreva o conteúdo de cada página e o molda gera as imagens já na sua identidade — cores, tipografia e símbolo do jeito que você definir.</p>
+
+      <div class="price-box">
+        <span class="fp"><span class="js-price-molda">R$ 29,90</span></span>
+        <small> · pagamento único via pix, acesso liberado na hora</small>
+      </div>
+
+      <div class="cta">
+        <button class="btn btn-gold" id="btn-abrir-checkout">quero o molda — pagar com pix</button>
+      </div>
+      <p class="fineprint">pagamento via pix, confirmado automaticamente. depois de pagar você cria sua senha e já acessa o molda direto no site, sempre que quiser.</p>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="wrap">
+      <h2>o que o molda faz por você</h2>
+      <div class="feat-list">
+        <div class="feat-item"><span class="ico">—</span><p>escolha o formato: story (9:16), feed (4:5), post quadrado (1:1) ou uma proporção sua.</p></div>
+        <div class="feat-item"><span class="ico">—</span><p>defina sua identidade uma vez — cores, símbolo e tipografia — e salve como perfil pra reaproveitar sempre.</p></div>
+        <div class="feat-item"><span class="ico">—</span><p>escreva título, subtítulo e texto de cada página do carrossel — até 20 páginas por vez.</p></div>
+        <div class="feat-item"><span class="ico">—</span><p>adicione elementos visuais extras (textura, pattern, imagem de fundo) e escolha em quais páginas eles aparecem.</p></div>
+        <div class="feat-item"><span class="ico">—</span><p>gere e baixe as imagens prontas pra publicar — sem precisar abrir nenhum outro programa de design.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="como">
+    <div class="wrap">
+      <h2>como funciona</h2>
+      <div class="passo"><span class="n">1</span><p>você paga o pix aqui nesta página.</p></div>
+      <div class="passo"><span class="n">2</span><p>assim que o pagamento confirma, você cria sua senha de acesso.</p></div>
+      <div class="passo"><span class="n">3</span><p>a partir daí, o molda fica sempre disponível pra você aqui no site — e-mail e senha, sem precisar de código nem link avulso.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">estúdio avesso — marketing de conteúdo</div>
+  </footer>
+
+  <!-- checkout do molda -->
+  <div class="checkout-overlay" id="checkout-overlay">
+    <div class="checkout-panel">
+
+      <div id="cp-step-email">
+        <h3>molda</h3>
+        <p class="cp-sub"><span class="js-price-molda">R$ 29,90</span> · pagamento único via pix</p>
+        <input type="email" id="cp-email" placeholder="seu e-mail">
+        <button class="btn btn-primary" id="cp-gerar-pix">gerar pix</button>
+        <p class="cp-msg" id="cp-email-msg"></p>
+      </div>
+
+      <div id="cp-step-pix" style="display:none;">
+        <h3>escaneie ou copie o código</h3>
+        <p class="cp-sub">assim que o pagamento confirmar, você vai direto pra criar sua senha.</p>
+        <div class="qr-box">
+          <img id="cp-qr-img" src="" alt="qr code pix">
+          <div class="pix-code" id="cp-pix-code"></div>
+          <button class="btn btn-primary" id="cp-copiar">copiar código pix</button>
+        </div>
+        <div class="cp-spinner" id="cp-spinner"></div>
+        <p class="cp-msg" id="cp-status-msg">aguardando confirmação do pagamento…</p>
+      </div>
+
+      <div id="cp-step-sucesso" style="display:none;">
+        <p class="cp-success">pagamento confirmado 🎉</p>
+        <p class="cp-sub">falta só criar sua senha pra começar a usar o molda.</p>
+        <a class="btn btn-primary" id="cp-link-molda" href="#">criar minha senha</a>
+      </div>
+
+      <button class="cp-close" id="cp-close">fechar</button>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      fetch('/api/config').then(function(r){ return r.json(); }).then(function(cfg){
+        if(cfg.moldaPrice){
+          var txt = 'R$ ' + Number(cfg.moldaPrice).toFixed(2).replace('.', ',');
+          document.querySelectorAll('.js-price-molda').forEach(function(el){ el.textContent = txt; });
+        }
+      }).catch(function(){});
+
+      var overlay = document.getElementById('checkout-overlay');
+      var stepEmail = document.getElementById('cp-step-email');
+      var stepPix = document.getElementById('cp-step-pix');
+      var stepSucesso = document.getElementById('cp-step-sucesso');
+      var pollTimer = null;
+
+      function resetCheckout(){
+        stepEmail.style.display = 'block';
+        stepPix.style.display = 'none';
+        stepSucesso.style.display = 'none';
+        document.getElementById('cp-email-msg').textContent = '';
+        document.getElementById('cp-email').value = '';
+        if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+      }
+
+      function openCheckout(){
+        resetCheckout();
+        overlay.classList.add('open');
+      }
+      function closeCheckout(){
+        overlay.classList.remove('open');
+        if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+      }
+
+      document.getElementById('btn-abrir-checkout').addEventListener('click', openCheckout);
+      document.getElementById('cp-close').addEventListener('click', closeCheckout);
+      overlay.addEventListener('click', function(e){ if(e.target === overlay) closeCheckout(); });
+
+      document.getElementById('cp-gerar-pix').addEventListener('click', function(){
+        var email = document.getElementById('cp-email').value.trim();
+        var msgEl = document.getElementById('cp-email-msg');
+        if(!email || email.indexOf('@') === -1){
+          msgEl.textContent = 'digite um e-mail válido.';
+          return;
+        }
+        msgEl.textContent = 'gerando pix…';
+
+        fetch('/api/molda-create-payment', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email: email})
+        }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+        .then(function(res){
+          if(!res.ok){
+            msgEl.textContent = 'não consegui gerar o pix agora. tenta de novo em instantes.';
+            return;
+          }
+          var data = res.data;
+          if(data.qr_code_base64){
+            document.getElementById('cp-qr-img').src = 'data:image/png;base64,' + data.qr_code_base64;
+          }
+          document.getElementById('cp-pix-code').textContent = data.qr_code || '';
+
+          stepEmail.style.display = 'none';
+          stepPix.style.display = 'block';
+
+          startPolling(data.payment_id);
+        }).catch(function(){
+          msgEl.textContent = 'não consegui conectar. verifica sua internet e tenta de novo.';
+        });
+      });
+
+      document.getElementById('cp-copiar').addEventListener('click', function(){
+        var code = document.getElementById('cp-pix-code').textContent;
+        if(!code) return;
+        navigator.clipboard.writeText(code).then(function(){
+          document.getElementById('cp-copiar').textContent = 'copiado!';
+          setTimeout(function(){ document.getElementById('cp-copiar').textContent = 'copiar código pix'; }, 2000);
+        }).catch(function(){});
+      });
+
+      function startPolling(paymentId){
+        var attempts = 0;
+        var maxAttempts = 200; // ~10 minutos, checando a cada 3s
+        pollTimer = setInterval(function(){
+          attempts++;
+          if(attempts > maxAttempts){
+            clearInterval(pollTimer);
+            document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a avesso.';
+            return;
+          }
+          fetch('/api/molda-check-status?payment_id=' + encodeURIComponent(paymentId))
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+              if(data.approved && data.setupLink){
+                clearInterval(pollTimer);
+                pollTimer = null;
+                stepPix.style.display = 'none';
+                stepSucesso.style.display = 'block';
+                document.getElementById('cp-link-molda').setAttribute('href', data.setupLink);
+              } else if(data.status === 'rejected' || data.status === 'cancelled'){
+                clearInterval(pollTimer);
+                pollTimer = null;
+                document.getElementById('cp-status-msg').textContent = 'esse pix não foi confirmado. feche e tente gerar um novo.';
+              }
+            }).catch(function(){});
+        }, 3000);
+      }
+    })();
+  </script>
+
+</body>
+</html>

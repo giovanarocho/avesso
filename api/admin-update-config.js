@@ -40,8 +40,9 @@ export default async function handler(req, res) {
     fields.manutencao_price = parseFloat(body.manutencaoPrice);
   }
   if (body.manutencaoVagas !== undefined) fields.manutencao_vagas = String(body.manutencaoVagas);
+  if (body.moldaPrice !== undefined && body.moldaPrice !== '') fields.molda_price = parseFloat(body.moldaPrice);
 
-  for (const key of ['guia_price', 'base_price', 'manutencao_price']) {
+  for (const key of ['guia_price', 'base_price', 'manutencao_price', 'molda_price']) {
     if (key in fields && (isNaN(fields[key]) || fields[key] < 0)) {
       res.status(400).json({ error: 'preço inválido' });
       return;

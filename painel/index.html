@@ -127,6 +127,12 @@
               <input id="f-manutencao" type="number" step="0.01" min="0">
             </div>
             <div class="field">
+              <label for="f-molda">molda (R$)</label>
+              <input id="f-molda" type="number" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
               <label for="f-vagas">texto de vagas (base pronta + manutenção)</label>
               <textarea id="f-vagas"></textarea>
             </div>
@@ -227,6 +233,7 @@
       document.getElementById('f-guia').value = cfg.guiaPrice;
       document.getElementById('f-base').value = cfg.basePrice;
       document.getElementById('f-manutencao').value = cfg.manutencaoPrice;
+      document.getElementById('f-molda').value = cfg.moldaPrice;
       document.getElementById('f-vagas').value = cfg.manutencaoVagas;
     }).catch(function(){});
   }
@@ -243,6 +250,7 @@
         guiaPrice: document.getElementById('f-guia').value,
         basePrice: document.getElementById('f-base').value,
         manutencaoPrice: document.getElementById('f-manutencao').value,
+        moldaPrice: document.getElementById('f-molda').value,
         manutencaoVagas: document.getElementById('f-vagas').value
       })
     }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })

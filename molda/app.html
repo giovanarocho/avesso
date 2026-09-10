@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Molda – gere seu conteúdo para lançamento</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --paper:#F4ECDD;
+  --brown:#3D2A1E;
+  --ink:#28190F;
+  --line:#4A362A;
+  --muted:#9C8264;
+  --good:#5C7A5A;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Mono',monospace;display:flex;justify-content:center;}
+.wrap{width:100%;max-width:1560px;margin:0 auto;padding:32px 20px 70px;}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:24px;margin:0 0 4px;color:var(--brown);text-align:center;}
+.subtitle{text-align:center;font-size:12px;color:var(--muted);margin:0 0 24px;}
+.layout{display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:start;justify-content:center;max-width:1480px;margin:0 auto;}
+@media (max-width:980px){.layout{grid-template-columns:1fr;} .panel-left{position:static !important;}}
+
+.panel-left{background:#fff;border:1px solid #e4d8c2;border-radius:8px;padding:18px;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;}
+.section{border-top:1px solid #eee1cc;margin-top:18px;padding-top:16px;}
+.section:first-child{border-top:none;margin-top:0;padding-top:0;}
+.section-title{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--brown);margin:0 0 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.section-title small{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;}
+
+label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;font-weight:600;}
+textarea{width:100%;min-height:110px;border:1.4px solid #d9caab;border-radius:4px;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.55;resize:vertical;background:#fffdf8;color:var(--ink);}
+input[type=text],input.txt,select,input[type=number]{width:100%;border:1.4px solid #d9caab;border-radius:4px;padding:9px 10px;font-family:'IBM Plex Mono',monospace;font-size:13px;background:#fffdf8;color:var(--ink);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:0;}
+.field{margin-top:12px;}
+.instructions{background:#fbf5e8;border:1px solid #eee1cc;border-radius:5px;padding:10px 12px;font-size:11.5px;color:var(--muted);line-height:1.6;margin-bottom:10px;}
+.instructions code{background:#efe4cc;padding:1px 5px;border-radius:3px;color:var(--ink);}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:2px;
+  border:1.4px solid var(--brown);background:var(--brown);color:var(--paper);
+  font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;
+  cursor:pointer;width:100%;margin-top:10px;transition:transform .12s ease;}
+.btn:hover{transform:translateY(-1px);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn.ghost{background:transparent;color:var(--brown);}
+.btn.small{width:auto;padding:7px 12px;font-size:10.5px;margin-top:0;}
+.btn.danger{border-color:#a33;color:#a33;background:transparent;}
+
+.hint{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.6;}
+.hint code{background:#efe4cc;padding:1px 5px;border-radius:3px;}
+
+/* perfil */
+.profile-row{display:flex;gap:8px;align-items:stretch;}
+.profile-row select{flex:1;}
+.save-palette-row{display:flex;gap:6px;margin-top:10px;}
+.save-palette-row input{flex:1;}
+
+/* formato */
+.aspect-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.aspect-card{border:1.4px solid #d9caab;border-radius:5px;padding:10px;background:#fffdf8;cursor:pointer;text-align:left;
+  font-family:'IBM Plex Mono',monospace;display:flex;flex-direction:column;gap:2px;}
+.aspect-card strong{font-family:'Fraunces',serif;font-size:13px;color:var(--brown);}
+.aspect-card span{font-size:11px;color:var(--muted);}
+.aspect-card.active{border-color:var(--brown);background:#f3ead4;}
+.aspect-custom-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.aspect-custom-row span{color:var(--muted);}
+
+/* tipografia */
+.typo-row{margin-top:14px;}
+.typo-row:first-child{margin-top:0;}
+.range-row{display:flex;align-items:center;gap:8px;}
+.range-row input[type=range]{flex:1;}
+.range-row span{font-size:11px;color:var(--muted);width:40px;text-align:right;}
+
+/* cores do perfil (até 5, sem nome, atreladas ao perfil selecionado) */
+.swatch-bank{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center;}
+.chip{width:40px;height:28px;border-radius:6px;border:1.5px solid rgba(0,0,0,.2);cursor:pointer;padding:0;flex-shrink:0;transition:transform .1s ease, box-shadow .1s ease;position:relative;}
+.chip:hover{transform:scale(1.06);}
+.chip.picked{box-shadow:0 0 0 3px var(--brown);}
+.chip-wrap{position:relative;}
+.chip-remove{position:absolute;top:-6px;right:-6px;width:15px;height:15px;border-radius:50%;background:#a33;color:#fff;border:none;
+  font-size:10px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+.swatch-add{display:flex;align-items:center;gap:6px;}
+.swatch-empty{font-size:11px;color:var(--muted);font-style:italic;}
+
+.hex-swatch{border:1.4px solid #d9caab;background:#fff;flex-shrink:0;border-radius:6px;width:34px;height:34px;}
+.hex-input{font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.03em;}
+.hex-input.invalid{border-color:#a33;color:#a33;}
+.swatch-add .hex-input{width:92px;flex-shrink:0;text-align:center;}
+
+.role-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+.role-field{text-align:center;}
+.role-swatch{width:100%;height:40px;border-radius:6px;border:1.4px solid #d9caab;cursor:pointer;}
+.role-field label{margin-top:5px;margin-bottom:0;}
+.pick-status{display:none;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding:7px 10px;
+  background:var(--brown);color:var(--paper);border-radius:4px;font-size:11px;}
+body.color-armed .pick-status{display:flex;}
+.pick-status button{background:none;border:none;color:var(--paper);text-decoration:underline;cursor:pointer;font-size:11px;padding:0;}
+.pick-swatch{width:14px;height:14px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-2px;border:1px solid rgba(255,255,255,.5);}
+body.color-armed .role-swatch{box-shadow:0 0 0 3px var(--good);}
+
+/* elemento visual */
+.file-row{display:flex;align-items:center;gap:8px;}
+.file-row .btn{width:auto;margin-top:0;}
+.logo-preview{width:40px;height:40px;border:1px solid #e4d8c2;border-radius:4px;background:#eee;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;font-size:9px;color:var(--muted);text-align:center;}
+.logo-preview img{max-width:80%;max-height:80%;}
+input[type=file]{width:100%;font-size:11px;padding:6px 0;}
+
+/* páginas do texto */
+.page-item{border:1.4px solid #eee1cc;border-radius:6px;padding:10px;margin-top:10px;background:#fffdf8;}
+.page-item:first-child{margin-top:0;}
+.page-item .field{margin-top:8px;}
+.page-item .field:first-child{margin-top:0;}
+.page-item textarea{min-height:90px;}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.page-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+
+/* elementos extras */
+.extra-item{border:1.4px solid #eee1cc;border-radius:6px;padding:10px;margin-top:10px;background:#fffdf8;}
+.extra-item:first-child{margin-top:0;}
+.extra-item .field{margin-top:8px;}
+.extra-header{display:flex;justify-content:space-between;align-items:center;}
+.extra-header .extra-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+
+.extra-preview{position:relative;width:100%;aspect-ratio:1080/1350;overflow:hidden;border-radius:5px;background:#333;margin-top:8px;}
+.extra-drag{position:absolute;transform:translate(-50%,-50%);touch-action:none;cursor:grab;}
+.extra-drag img{display:block;width:100%;height:auto;pointer-events:none;}
+.extra-resize-handle{position:absolute;right:-8px;bottom:-8px;width:16px;height:16px;background:#fff;border:2px solid var(--brown);border-radius:50%;cursor:nwse-resize;touch-action:none;}
+.extra-preview-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px;text-align:center;padding:10px;}
+.extra-pagelist{margin-top:8px;}
+
+/* prévia */
+.panel-right{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,250px));gap:18px;justify-content:center;}
+.slide-card{background:#fff;border:1px solid #e4d8c2;border-radius:6px;padding:10px;text-align:center;}
+.slide-card canvas{width:100%;height:auto;border-radius:3px;display:block;background:var(--brown);}
+.slide-card .slide-label{font-size:11px;color:var(--muted);margin:8px 0 6px;letter-spacing:.05em;text-transform:uppercase;}
+.slide-card .btn{padding:8px 10px;font-size:11px;margin-top:0;}
+.empty{color:var(--muted);font-size:13px;padding:40px 10px;text-align:center;grid-column:1/-1;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,10px);background:var(--brown);color:var(--paper);
+  padding:12px 20px;border-radius:4px;font-size:13px;font-family:'IBM Plex Mono',monospace;
+  opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;z-index:100;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+</style></head>
+<body>
+
+
+<div class="wrap">
+  <h1>molda</h1>
+  <p class="subtitle">gere seu conteúdo para lançamento</p>
+  <div class="layout">
+    <div class="panel-left">
+
+      <div class="section">
+        <div class="section-title">perfil</div>
+        <div class="profile-row">
+          <select id="profile-select"></select>
+        </div>
+        <div class="save-palette-row">
+          <input type="text" id="profile-name" class="txt" placeholder="nome do perfil (ex: cliente x)">
+          <button class="btn small" id="btn-profile-save">salvar</button>
+        </div>
+        <div class="save-palette-row">
+          <button class="btn ghost small" id="btn-profile-delete" style="width:100%;">apagar perfil selecionado</button>
+        </div>
+        <div class="hint">Cada perfil guarda formato, marca, tipografia, símbolo, texto, cores e elementos extras. Fica salvo só neste navegador/aparelho — não sincroniza entre dispositivos.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">formato</div>
+        <div class="aspect-grid" id="aspect-grid"></div>
+        <div class="aspect-custom-row" id="aspect-custom-row" hidden>
+          <input type="text" id="aspect-custom-w" placeholder="largura (ex: 16)">
+          <span>:</span>
+          <input type="text" id="aspect-custom-h" placeholder="altura (ex: 9)">
+        </div>
+        <div class="hint">A proporção escolhida fica salva neste perfil — só muda se você trocar.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">identidade</div>
+        <div class="row2">
+          <div>
+            <label>Marca</label>
+            <input type="text" id="handle" class="txt" placeholder="@seuusuario">
+          </div>
+          <div>
+            <label>Texto fixado</label>
+            <input type="text" id="taglabel" class="txt" placeholder="seu nicho ou frase fixa">
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">tipografia</div>
+        <div id="typo-list"></div>
+        <div class="hint">Cada página tem um campo de título, um de subtítulo e um de texto — a hierarquia de tamanho entre eles já vem pronta. Os controles acima só aumentam ou diminuem cada um, sem mudar onde o texto fica.</div>
+      </div>
+
+      <div class="field">
+        <label>Símbolo da marca (PNG sem fundo)</label>
+        <div class="file-row">
+          <div class="logo-preview" id="logo-preview">sem símbolo</div>
+          <input type="file" id="logo-upload" accept="image/png">
+        </div>
+        <button class="btn ghost" id="btn-logo-reset" style="margin-top:8px;">remover símbolo</button>
+      </div>
+
+      <div class="section">
+        <div class="section-title">texto <small>até 20 páginas</small></div>
+        <div class="instructions">
+          Cada página vira um slide do carrossel — preencha título, subtítulo e texto (todos opcionais).<br>
+          Use <code>**palavra**</code> pra deixar em negrito (cor de destaque).
+        </div>
+        <div id="pages-list"></div>
+        <button class="btn ghost" id="btn-page-add">+ nova página</button>
+      </div>
+
+      <div class="section">
+        <div class="section-title">cores do perfil <small>até 5</small></div>
+        <div class="swatch-bank" id="swatch-bank"></div>
+        <div class="swatch-add">
+          <div class="hex-swatch" id="swatch-new-preview" style="background:#888888;"></div>
+          <input type="text" id="swatch-new-color" class="hex-input" value="#888888" placeholder="#RRGGBB" maxlength="7" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn ghost small" id="btn-swatch-add">+ adicionar cor</button>
+        </div>
+
+        <div class="role-row">
+          <div class="role-field">
+            <div class="role-swatch" id="role-bg" data-role="bg" draggable="true"></div>
+            <label>Fundo</label>
+          </div>
+          <div class="role-field">
+            <div class="role-swatch" id="role-text" data-role="text" draggable="true"></div>
+            <label>Texto</label>
+          </div>
+          <div class="role-field">
+            <div class="role-swatch" id="role-accent" data-role="accent" draggable="true"></div>
+            <label>Destaque</label>
+          </div>
+        </div>
+
+        <div class="pick-status" id="pick-status">
+          <span><span class="pick-swatch" id="pick-swatch"></span>cor selecionada — toque em "fundo", "texto" ou "destaque" pra aplicar</span>
+          <button id="btn-pick-cancel">cancelar</button>
+        </div>
+        <div class="hint">Toque numa das suas cores salvas acima pra selecionar, depois toque no retângulo de fundo/texto/destaque que quer mudar. Também dá pra arrastar, no desktop.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">elementos extras <small>até 3</small></div>
+        <div id="extras-list"></div>
+        <button class="btn ghost" id="btn-extra-add">+ adicionar elemento visual</button>
+        <div class="hint">Inserir imagem de fundo, textura, pattern ou outro elemento visual.</div>
+      </div>
+
+      <div class="section">
+        <button class="btn" id="btn-gen">Gerar conteúdo</button>
+        <button class="btn ghost" id="btn-zip" disabled>Baixar tudo (uma por uma)</button>
+        <button class="btn ghost small" id="btn-profile-save-2" style="width:100%;margin-top:14px;">salvar perfil</button>
+        <div class="hint">
+          Cada página vira um slide, no formato escolhido acima. O tamanho da fonte se ajusta sozinho dentro da hierarquia.<br>
+          "Baixar tudo" salva cada slide em sequência, com uma pausa curta entre eles.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-right" id="grid">
+      <div class="empty">Escreva o texto ao lado e clique em "gerar carrossel".</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   constantes de desenho
+   ========================================================================= */
+var BASE_W = 1080;
+var W = 1080, H = 1350;
+var BG = "#1A1A1A";
+var TEXT_COLOR = "#FFFFFF";
+var ACCENT_COLOR = "#FFFFFF";
+var LABEL_COLOR = "rgba(255,255,255,0.55)";
+
+var MARGIN_X_FRAC = 128/1080;
+var CONTENT_TOP_FRAC = 175/1350;
+var CONTENT_BOTTOM_FRAC = 1140/1350;
+var LABEL_Y_FRAC = 106/1350;
+var LOGO_BAND_TOP_FRAC = 1190/1350;
+var LOGO_BAND_H_FRAC = 79/1350;
+var LOGO_MAX_W_FRAC = 118/1080;
+var LOGO_MAX_H_FRAC = 130/1350;
+
+var MARGIN_X = W*MARGIN_X_FRAC, CONTENT_TOP = H*CONTENT_TOP_FRAC, CONTENT_BOTTOM = H*CONTENT_BOTTOM_FRAC;
+var MAX_TEXT_WIDTH = W - MARGIN_X*2;
+
+function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+
+/* =========================================================================
+   armazenamento local (sem banco de dados — tudo em localStorage)
+   ========================================================================= */
+var LS_PROFILES = "avesso_gerador_perfis_v2";
+
+function loadJSON(key, fallback){
+  try{
+    var raw = localStorage.getItem(key);
+    if(!raw) return fallback;
+    return JSON.parse(raw);
+  }catch(e){ return fallback; }
+}
+function saveJSON(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+
+var profilesStore = loadJSON(LS_PROFILES, {profiles:{}, lastUsed:null});
+
+/* =========================================================================
+   toast
+   ========================================================================= */
+var toastEl = document.getElementById("toast");
+var toastTimer;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 2800);
+}
+
+/* =========================================================================
+   formato / proporção
+   ========================================================================= */
+var ASPECT_PRESETS = [
+  {id:"story", name:"Story", w:9, h:16},
+  {id:"feed", name:"Feed", w:4, h:5},
+  {id:"quadrado", name:"Post quadrado", w:1, h:1}
+];
+var currentAspect = {mode:"feed", w:4, h:5};
+
+function renderAspectGrid(){
+  var el = document.getElementById("aspect-grid");
+  el.innerHTML = "";
+  ASPECT_PRESETS.forEach(function(p){
+    var card = document.createElement("button");
+    card.type = "button";
+    card.className = "aspect-card" + (currentAspect.mode === p.id ? " active" : "");
+    var strong = document.createElement("strong"); strong.textContent = p.name;
+    var span = document.createElement("span"); span.textContent = p.w + ":" + p.h;
+    card.appendChild(strong); card.appendChild(span);
+    card.addEventListener("click", function(){
+      currentAspect = {mode:p.id, w:p.w, h:p.h};
+      renderAspectGrid();
+      document.getElementById("aspect-custom-row").hidden = true;
+    });
+    el.appendChild(card);
+  });
+  var customCard = document.createElement("button");
+  customCard.type = "button";
+  customCard.className = "aspect-card" + (currentAspect.mode === "custom" ? " active" : "");
+  var cStrong = document.createElement("strong"); cStrong.textContent = "Outro";
+  var cSpan = document.createElement("span"); cSpan.textContent = "personalizado";
+  customCard.appendChild(cStrong); customCard.appendChild(cSpan);
+  customCard.addEventListener("click", function(){
+    currentAspect = {mode:"custom", w: currentAspect.w || 16, h: currentAspect.h || 9};
+    renderAspectGrid();
+    document.getElementById("aspect-custom-row").hidden = false;
+    document.getElementById("aspect-custom-w").value = currentAspect.w;
+    document.getElementById("aspect-custom-h").value = currentAspect.h;
+  });
+  el.appendChild(customCard);
+  document.getElementById("aspect-custom-row").hidden = currentAspect.mode !== "custom";
+}
+renderAspectGrid();
+
+function updateCustomAspect(){
+  var w = parseFloat(document.getElementById("aspect-custom-w").value);
+  var h = parseFloat(document.getElementById("aspect-custom-h").value);
+  if(w > 0 && h > 0){ currentAspect.w = w; currentAspect.h = h; }
+}
+document.getElementById("aspect-custom-w").addEventListener("input", updateCustomAspect);
+document.getElementById("aspect-custom-h").addEventListener("input", updateCustomAspect);
+
+function computeCanvasSize(){
+  var w = currentAspect.w || 4, h = currentAspect.h || 5;
+  return {W: BASE_W, H: Math.max(200, Math.round(BASE_W * h / w))};
+}
+
+/* =========================================================================
+   tipografia — título / subtítulo / texto
+   ========================================================================= */
+var TYPE_LABELS = {titulo:"Título", subtitulo:"Subtítulo", texto:"Texto"};
+var TYPE_MULT = {titulo:1.3, subtitulo:1.12, texto:1.0};
+var typography = {titulo:1, subtitulo:1, texto:1};
+
+function renderTypography(){
+  var list = document.getElementById("typo-list");
+  list.innerHTML = "";
+  Object.keys(TYPE_LABELS).forEach(function(key){
+    var row = document.createElement("div"); row.className = "typo-row";
+    var label = document.createElement("label"); label.textContent = TYPE_LABELS[key];
+    row.appendChild(label);
+    var rangeRow = document.createElement("div"); rangeRow.className = "range-row";
+    var range = document.createElement("input");
+    range.type = "range"; range.min = "0.6"; range.max = "1.8"; range.step = "0.05"; range.value = typography[key];
+    var val = document.createElement("span"); val.textContent = Math.round(typography[key]*100) + "%";
+    range.addEventListener("input", function(){
+      typography[key] = parseFloat(range.value);
+      val.textContent = Math.round(typography[key]*100) + "%";
+    });
+    rangeRow.appendChild(range); rangeRow.appendChild(val);
+    row.appendChild(rangeRow);
+    var resetBtn = document.createElement("button");
+    resetBtn.type = "button"; resetBtn.className = "btn ghost small"; resetBtn.style.marginTop = "6px";
+    resetBtn.textContent = "alterar tamanho padrão";
+    resetBtn.addEventListener("click", function(){
+      typography[key] = 1; range.value = "1"; val.textContent = "100%";
+      toast(TYPE_LABELS[key] + " voltou ao tamanho padrão.");
+    });
+    row.appendChild(resetBtn);
+    list.appendChild(row);
+  });
+}
+renderTypography();
+
+/* =========================================================================
+   cores — hex + swatches do perfil + papéis (fundo/texto/destaque)
+   ========================================================================= */
+function hexToRgba(hex, alpha){
+  var h = hex.replace("#","");
+  if(h.length === 3) h = h.split("").map(function(c){return c+c;}).join("");
+  var r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+}
+
+function normalizeHex(raw){
+  if(!raw) return null;
+  var s = raw.trim();
+  if(s.charAt(0) !== "#") s = "#" + s;
+  if(/^#[0-9a-fA-F]{3}$/.test(s)){
+    s = "#" + s.slice(1).split("").map(function(c){ return c+c; }).join("");
+  }
+  if(/^#[0-9a-fA-F]{6}$/.test(s)) return s.toUpperCase();
+  return null;
+}
+
+function readColorInputs(){
+  LABEL_COLOR = hexToRgba(TEXT_COLOR, 0.55);
+}
+
+function updateRoleSwatches(){
+  document.getElementById("role-bg").style.background = BG;
+  document.getElementById("role-text").style.background = TEXT_COLOR;
+  document.getElementById("role-accent").style.background = ACCENT_COLOR;
+}
+
+function setRole(role, hex){
+  var norm = normalizeHex(hex);
+  if(!norm) return;
+  if(role === "bg") BG = norm;
+  else if(role === "text") TEXT_COLOR = norm;
+  else if(role === "accent") ACCENT_COLOR = norm;
+  updateRoleSwatches();
+  if(role === "bg"){
+    document.querySelectorAll(".extra-preview").forEach(function(p){ p.style.background = norm; });
+  }
+}
+updateRoleSwatches();
+
+/* campo de hex pra adicionar cor à paleta do perfil */
+function wireHexField(inputId, swatchId){
+  var input = document.getElementById(inputId);
+  var swatch = swatchId ? document.getElementById(swatchId) : null;
+  function sync(){
+    var norm = normalizeHex(input.value);
+    if(norm){
+      input.classList.remove("invalid");
+      if(swatch) swatch.style.background = norm;
+    } else if(input.value.trim() !== ""){
+      input.classList.add("invalid");
+    } else {
+      input.classList.remove("invalid");
+    }
+  }
+  input.addEventListener("input", sync);
+  input.addEventListener("blur", function(){
+    var norm = normalizeHex(input.value);
+    if(norm) input.value = norm;
+  });
+  input.addEventListener("paste", function(){
+    setTimeout(function(){
+      var norm = normalizeHex(input.value);
+      if(norm){ input.value = norm; }
+      sync();
+    }, 0);
+  });
+  sync();
+}
+wireHexField("swatch-new-color", "swatch-new-preview");
+
+/* click-pick / click-apply (funciona em toque e em clique; arrastar funciona a mais no desktop) */
+var pickedHex = null;
+function armPick(hex, sourceChipEl){
+  document.querySelectorAll(".chip.picked").forEach(function(c){ c.classList.remove("picked"); });
+  if(pickedHex === hex && document.body.classList.contains("color-armed")){
+    disarmPick();
+    return;
+  }
+  pickedHex = hex;
+  if(sourceChipEl) sourceChipEl.classList.add("picked");
+  document.getElementById("pick-swatch").style.background = hex;
+  document.body.classList.add("color-armed");
+}
+function disarmPick(){
+  pickedHex = null;
+  document.body.classList.remove("color-armed");
+  document.querySelectorAll(".chip.picked").forEach(function(c){ c.classList.remove("picked"); });
+}
+document.getElementById("btn-pick-cancel").addEventListener("click", disarmPick);
+
+document.querySelectorAll(".role-swatch").forEach(function(el){
+  var role = el.getAttribute("data-role");
+  el.addEventListener("click", function(){
+    if(!pickedHex) return;
+    setRole(role, pickedHex);
+    toast("cor aplicada.");
+    disarmPick();
+  });
+  el.addEventListener("dragover", function(e){ e.preventDefault(); });
+  el.addEventListener("drop", function(e){
+    e.preventDefault();
+    var hex = e.dataTransfer.getData("text/plain");
+    if(normalizeHex(hex)){
+      setRole(role, hex);
+      toast("cor aplicada.");
+    }
+  });
+  el.addEventListener("dragstart", function(e){
+    var hex = role === "bg" ? BG : role === "text" ? TEXT_COLOR : ACCENT_COLOR;
+    e.dataTransfer.setData("text/plain", hex);
+  });
+});
+
+/* =========================================================================
+   cores do perfil — até 5, sem nome, atreladas ao perfil selecionado
+   ========================================================================= */
+var currentSwatches = [];
+
+function makeChip(hex){
+  var chip = document.createElement("button");
+  chip.type = "button";
+  chip.className = "chip";
+  chip.style.background = hex;
+  chip.title = hex;
+  chip.draggable = true;
+  chip.addEventListener("click", function(){ armPick(hex, chip); });
+  chip.addEventListener("dragstart", function(e){
+    e.dataTransfer.setData("text/plain", hex);
+  });
+  return chip;
+}
+
+function renderSwatchBank(){
+  var el = document.getElementById("swatch-bank");
+  el.innerHTML = "";
+  if(currentSwatches.length === 0){
+    var empty = document.createElement("span");
+    empty.className = "swatch-empty";
+    empty.textContent = "nenhuma cor salva ainda pra este perfil.";
+    el.appendChild(empty);
+  }
+  currentSwatches.forEach(function(hex, idx){
+    var wrap = document.createElement("div");
+    wrap.className = "chip-wrap";
+    wrap.appendChild(makeChip(hex));
+    var rm = document.createElement("button");
+    rm.className = "chip-remove";
+    rm.type = "button";
+    rm.textContent = "×";
+    rm.title = "remover cor";
+    rm.addEventListener("click", function(){
+      currentSwatches.splice(idx, 1);
+      renderSwatchBank();
+    });
+    wrap.appendChild(rm);
+    el.appendChild(wrap);
+  });
+  document.getElementById("btn-swatch-add").disabled = currentSwatches.length >= 5;
+}
+renderSwatchBank();
+
+document.getElementById("btn-swatch-add").addEventListener("click", function(){
+  if(currentSwatches.length >= 5){ toast("máximo de 5 cores por perfil."); return; }
+  var hex = normalizeHex(document.getElementById("swatch-new-color").value);
+  if(!hex){ toast("digite um código hex válido (ex: #3D2A1E)."); return; }
+  currentSwatches.push(hex);
+  renderSwatchBank();
+});
+
+/* =========================================================================
+   logo / símbolo da marca
+   ========================================================================= */
+var customLogoImg = null;
+var customLogoReady = null;
+var customLogoDataUrl = null;
+
+function activeLogo(){
+  return customLogoImg ? {img: customLogoImg, ready: customLogoReady} : null;
+}
+
+function setCustomLogoFromDataUrl(dataUrl){
+  var img = new Image();
+  customLogoReady = new Promise(function(res){ img.onload = res; });
+  img.src = dataUrl;
+  customLogoImg = img;
+  customLogoDataUrl = dataUrl;
+  customLogoReady.then(function(){
+    var prev = document.getElementById("logo-preview");
+    prev.innerHTML = "";
+    var thumb = document.createElement("img");
+    thumb.src = dataUrl;
+    prev.appendChild(thumb);
+  });
+}
+
+document.getElementById("logo-upload").addEventListener("change", function(e){
+  var file = e.target.files && e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){ setCustomLogoFromDataUrl(reader.result); };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById("btn-logo-reset").addEventListener("click", function(){
+  customLogoImg = null;
+  customLogoReady = null;
+  customLogoDataUrl = null;
+  document.getElementById("logo-upload").value = "";
+  document.getElementById("logo-preview").innerHTML = "sem símbolo";
+  toast("símbolo removido.");
+});
+
+/* =========================================================================
+   páginas de texto — até 20, adicionadas uma a uma
+   cada página tem 3 campos separados: título, subtítulo, texto
+   ========================================================================= */
+var pages = [{id: uid(), titulo: "", subtitulo: "", texto: ""}];
+
+function renderPages(){
+  var list = document.getElementById("pages-list");
+  list.innerHTML = "";
+  pages.forEach(function(page, idx){
+    var card = document.createElement("div");
+    card.className = "page-item";
+    var header = document.createElement("div");
+    header.className = "page-header";
+    var label = document.createElement("span");
+    label.className = "page-label";
+    label.textContent = "página " + (idx+1);
+    header.appendChild(label);
+    if(pages.length > 1){
+      var rm = document.createElement("button");
+      rm.className = "btn danger small"; rm.type = "button"; rm.textContent = "remover";
+      rm.addEventListener("click", function(){
+        pages = pages.filter(function(p){ return p.id !== page.id; });
+        renderPages();
+      });
+      header.appendChild(rm);
+    }
+    card.appendChild(header);
+
+    [["titulo","Título","ex: o problema que ninguém fala"],
+     ["subtitulo","Subtítulo","ex: uma linha de apoio ao título"],
+     ["texto","Texto","o corpo do slide..."]].forEach(function(spec){
+      var key = spec[0];
+      var field = document.createElement("div");
+      field.className = "field";
+      var flabel = document.createElement("label"); flabel.textContent = spec[1];
+      field.appendChild(flabel);
+      var ta = document.createElement("textarea");
+      ta.value = page[key];
+      ta.placeholder = spec[2];
+      if(key !== "texto") ta.style.minHeight = "44px";
+      ta.addEventListener("input", function(){ page[key] = ta.value; });
+      field.appendChild(ta);
+      card.appendChild(field);
+    });
+
+    list.appendChild(card);
+  });
+  document.getElementById("btn-page-add").disabled = pages.length >= 20;
+}
+renderPages();
+
+function addPage(){
+  if(pages.length >= 20){ toast("máximo de 20 páginas."); return; }
+  pages.push({id: uid(), titulo: "", subtitulo: "", texto: ""});
+  renderPages();
+}
+document.getElementById("btn-page-add").addEventListener("click", addPage);
+
+/* =========================================================================
+   elementos extras — até 3, arrastáveis e redimensionáveis
+   ========================================================================= */
+var extras = []; // {id, opacidade, x, y, w, imgDataUrl, imgObj, imgReady, pageTarget, pageList}
+
+function addExtra(){
+  if(extras.length >= 3){ toast("máximo de 3 elementos visuais."); return; }
+  extras.push({
+    id: uid(), opacidade: 0.4, x: 0.5, y: 0.5, w: 0.5,
+    imgDataUrl: null, imgObj: null, imgReady: null,
+    pageTarget: "todas", pageList: ""
+  });
+  renderExtras();
+}
+
+function setExtraImage(extra, dataUrl){
+  extra.imgDataUrl = dataUrl;
+  var img = new Image();
+  extra.imgReady = new Promise(function(res){ img.onload = res; });
+  img.src = dataUrl;
+  extra.imgObj = img;
+}
+
+function extraAppliesToPage(extra, pageNumber1){
+  if(extra.pageTarget === "todas") return true;
+  if(extra.pageTarget === "intercalado") return (pageNumber1 % 2 === 1);
+  if(extra.pageTarget === "outro"){
+    var nums = (extra.pageList || "").split(",").map(function(s){ return parseInt(s.trim(), 10); }).filter(function(n){ return !isNaN(n); });
+    return nums.indexOf(pageNumber1) !== -1;
+  }
+  return false;
+}
+
+function renderExtras(){
+  var list = document.getElementById("extras-list");
+  list.innerHTML = "";
+  extras.forEach(function(extra, idx){
+    var card = document.createElement("div");
+    card.className = "extra-item";
+
+    var header = document.createElement("div");
+    header.className = "extra-header";
+    var label = document.createElement("span");
+    label.className = "extra-label";
+    label.textContent = "elemento " + (idx+1);
+    header.appendChild(label);
+    var rmBtn = document.createElement("button");
+    rmBtn.className = "btn danger small"; rmBtn.type = "button"; rmBtn.textContent = "remover";
+    rmBtn.addEventListener("click", function(){ extras = extras.filter(function(x){ return x.id !== extra.id; }); renderExtras(); });
+    header.appendChild(rmBtn);
+    card.appendChild(header);
+
+    var fileField = document.createElement("div");
+    fileField.className = "field";
+    var fileLabel = document.createElement("label"); fileLabel.textContent = "inserir imagem de fundo, textura, pattern ou outro elemento visual";
+    fileField.appendChild(fileLabel);
+    var fileInput = document.createElement("input");
+    fileInput.type = "file"; fileInput.accept = "image/png,image/jpeg,image/webp";
+    fileInput.addEventListener("change", function(e){
+      var f = e.target.files && e.target.files[0];
+      if(!f) return;
+      var reader = new FileReader();
+      reader.onload = function(){ setExtraImage(extra, reader.result); renderExtras(); };
+      reader.readAsDataURL(f);
+    });
+    fileField.appendChild(fileInput);
+    card.appendChild(fileField);
+
+    var preview = document.createElement("div");
+    preview.className = "extra-preview";
+    preview.style.background = BG;
+    var previewImg = null;
+    if(extra.imgDataUrl){
+      var wrapper = document.createElement("div");
+      wrapper.className = "extra-drag";
+      wrapper.style.left = (extra.x*100) + "%";
+      wrapper.style.top = (extra.y*100) + "%";
+      wrapper.style.width = (extra.w*100) + "%";
+      previewImg = document.createElement("img");
+      previewImg.src = extra.imgDataUrl;
+      previewImg.draggable = false;
+      previewImg.style.opacity = extra.opacidade;
+      wrapper.appendChild(previewImg);
+      var handle = document.createElement("div");
+      handle.className = "extra-resize-handle";
+      wrapper.appendChild(handle);
+      preview.appendChild(wrapper);
+      wireDrag(wrapper, preview, extra);
+    } else {
+      var emptyMsg = document.createElement("div");
+      emptyMsg.className = "extra-preview-empty";
+      emptyMsg.textContent = "envie uma imagem pra arrastar, redimensionar e posicionar aqui";
+      preview.appendChild(emptyMsg);
+    }
+    card.appendChild(preview);
+
+    var opField = document.createElement("div");
+    opField.className = "field";
+    var opLabel = document.createElement("label"); opLabel.textContent = "opacidade";
+    opField.appendChild(opLabel);
+    var opRow = document.createElement("div"); opRow.className = "range-row";
+    var opRange = document.createElement("input");
+    opRange.type = "range"; opRange.min = "0.05"; opRange.max = "1"; opRange.step = "0.01"; opRange.value = extra.opacidade;
+    var opVal = document.createElement("span"); opVal.textContent = Math.round(extra.opacidade*100)+"%";
+    opRange.addEventListener("input", function(){
+      extra.opacidade = parseFloat(opRange.value);
+      opVal.textContent = Math.round(extra.opacidade*100)+"%";
+      if(previewImg) previewImg.style.opacity = extra.opacidade;
+    });
+    opRow.appendChild(opRange); opRow.appendChild(opVal);
+    opField.appendChild(opRow);
+    card.appendChild(opField);
+
+    var pageField = document.createElement("div");
+    pageField.className = "field";
+    var pageLabel = document.createElement("label"); pageLabel.textContent = "em quais páginas usar";
+    pageField.appendChild(pageLabel);
+    var pageSelect = document.createElement("select");
+    [["todas","todas"],["intercalado","intercalado (uma sim, uma não)"],["outro","outro"]].forEach(function(pair){
+      var opt = document.createElement("option");
+      opt.value = pair[0]; opt.textContent = pair[1];
+      if(pair[0] === extra.pageTarget) opt.selected = true;
+      pageSelect.appendChild(opt);
+    });
+    pageField.appendChild(pageSelect);
+    var pageListInput = document.createElement("input");
+    pageListInput.type = "text"; pageListInput.className = "extra-pagelist";
+    pageListInput.placeholder = "ex: 1,3,5";
+    pageListInput.value = extra.pageList || "";
+    pageListInput.hidden = extra.pageTarget !== "outro";
+    pageListInput.addEventListener("input", function(){ extra.pageList = pageListInput.value; });
+    pageSelect.addEventListener("change", function(){
+      extra.pageTarget = pageSelect.value;
+      pageListInput.hidden = extra.pageTarget !== "outro";
+    });
+    pageField.appendChild(pageListInput);
+    card.appendChild(pageField);
+
+    list.appendChild(card);
+  });
+  document.getElementById("btn-extra-add").disabled = extras.length >= 3;
+}
+
+document.getElementById("btn-extra-add").addEventListener("click", addExtra);
+
+function wireDrag(wrapperEl, previewEl, extra){
+  var dragging = false, resizing = false;
+  var startX, startY, startExtraX, startExtraY, startW, previewRect;
+
+  wrapperEl.addEventListener("pointerdown", function(e){
+    if(e.target.classList.contains("extra-resize-handle")) return;
+    dragging = true;
+    try{ wrapperEl.setPointerCapture(e.pointerId); }catch(err){}
+    startX = e.clientX; startY = e.clientY;
+    startExtraX = extra.x; startExtraY = extra.y;
+    previewRect = previewEl.getBoundingClientRect();
+    e.preventDefault();
+  });
+  wrapperEl.addEventListener("pointermove", function(e){
+    if(!dragging) return;
+    var dx = (e.clientX - startX) / previewRect.width;
+    var dy = (e.clientY - startY) / previewRect.height;
+    extra.x = Math.min(1, Math.max(0, startExtraX + dx));
+    extra.y = Math.min(1, Math.max(0, startExtraY + dy));
+    wrapperEl.style.left = (extra.x*100) + "%";
+    wrapperEl.style.top = (extra.y*100) + "%";
+  });
+  wrapperEl.addEventListener("pointerup", function(){ dragging = false; });
+  wrapperEl.addEventListener("pointercancel", function(){ dragging = false; });
+
+  var handle = wrapperEl.querySelector(".extra-resize-handle");
+  if(handle){
+    handle.addEventListener("pointerdown", function(e){
+      e.stopPropagation();
+      resizing = true;
+      try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+      startX = e.clientX; startW = extra.w;
+      previewRect = previewEl.getBoundingClientRect();
+      e.preventDefault();
+    });
+    handle.addEventListener("pointermove", function(e){
+      if(!resizing) return;
+      var dx = (e.clientX - startX) / previewRect.width;
+      extra.w = Math.min(2.5, Math.max(0.04, startW + dx));
+      wrapperEl.style.width = (extra.w*100) + "%";
+    });
+    handle.addEventListener("pointerup", function(){ resizing = false; });
+    handle.addEventListener("pointercancel", function(){ resizing = false; });
+  }
+}
+
+/* =========================================================================
+   perfis — salvar/carregar tudo, sem banco de dados (localStorage)
+   ========================================================================= */
+function currentSnapshot(){
+  readColorInputs();
+  return {
+    aspect: currentAspect,
+    handle: document.getElementById("handle").value,
+    taglabel: document.getElementById("taglabel").value,
+    typography: {titulo: typography.titulo, subtitulo: typography.subtitulo, texto: typography.texto},
+    colors: {bg: BG, text: TEXT_COLOR, accent: ACCENT_COLOR},
+    swatches: currentSwatches.slice(),
+    logoDataUrl: customLogoDataUrl,
+    pages: pages.map(function(p){ return {titulo:p.titulo, subtitulo:p.subtitulo, texto:p.texto}; }),
+    extras: extras.map(function(e){
+      return {opacidade:e.opacidade, x:e.x, y:e.y, w:e.w, imgDataUrl:e.imgDataUrl, pageTarget:e.pageTarget, pageList:e.pageList};
+    })
+  };
+}
+
+function applySnapshot(snap){
+  currentAspect = snap.aspect || {mode:"feed", w:4, h:5};
+  renderAspectGrid();
+  document.getElementById("aspect-custom-row").hidden = currentAspect.mode !== "custom";
+  if(currentAspect.mode === "custom"){
+    document.getElementById("aspect-custom-w").value = currentAspect.w;
+    document.getElementById("aspect-custom-h").value = currentAspect.h;
+  }
+  document.getElementById("handle").value = snap.handle || "";
+  document.getElementById("taglabel").value = snap.taglabel || "";
+  typography = Object.assign({titulo:1, subtitulo:1, texto:1}, snap.typography || {});
+  renderTypography();
+  if(snap.colors){
+    setRole("bg", snap.colors.bg);
+    setRole("text", snap.colors.text);
+    setRole("accent", snap.colors.accent);
+  }
+  currentSwatches = (snap.swatches || []).slice();
+  renderSwatchBank();
+  if(snap.logoDataUrl){ setCustomLogoFromDataUrl(snap.logoDataUrl); }
+  else {
+    customLogoImg = null; customLogoReady = null; customLogoDataUrl = null;
+    document.getElementById("logo-upload").value = "";
+    document.getElementById("logo-preview").innerHTML = "sem símbolo";
+  }
+  pages = (snap.pages && snap.pages.length ? snap.pages : [{titulo:"",subtitulo:"",texto:""}]).map(function(p){
+    return {id: uid(), titulo: p.titulo || "", subtitulo: p.subtitulo || "", texto: p.texto || ""};
+  });
+  renderPages();
+  extras = (snap.extras || []).map(function(e){
+    var extra = Object.assign({id: uid(), imgObj:null, imgReady:null, pageTarget:"todas", pageList:""}, e);
+    if(extra.imgDataUrl) setExtraImage(extra, extra.imgDataUrl);
+    return extra;
+  });
+  renderExtras();
+}
+
+function resetAllFields(){
+  currentAspect = {mode:"feed", w:4, h:5};
+  renderAspectGrid();
+  document.getElementById("aspect-custom-row").hidden = true;
+  document.getElementById("handle").value = "";
+  document.getElementById("taglabel").value = "";
+  typography = {titulo:1, subtitulo:1, texto:1};
+  renderTypography();
+  setRole("bg", "#1A1A1A"); setRole("text", "#FFFFFF"); setRole("accent", "#FFFFFF");
+  currentSwatches = [];
+  renderSwatchBank();
+  customLogoImg = null; customLogoReady = null; customLogoDataUrl = null;
+  document.getElementById("logo-upload").value = "";
+  document.getElementById("logo-preview").innerHTML = "sem símbolo";
+  pages = [{id: uid(), titulo: "", subtitulo: "", texto: ""}];
+  renderPages();
+  extras = [];
+  renderExtras();
+}
+
+function renderProfileSelect(){
+  var sel = document.getElementById("profile-select");
+  sel.innerHTML = "";
+  var blank = document.createElement("option");
+  blank.value = ""; blank.textContent = "selecione seu perfil";
+  sel.appendChild(blank);
+  Object.keys(profilesStore.profiles).forEach(function(name){
+    var opt = document.createElement("option");
+    opt.value = name; opt.textContent = name;
+    if(name === profilesStore.lastUsed) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+renderProfileSelect();
+
+document.getElementById("profile-select").addEventListener("change", function(){
+  var name = this.value;
+  if(!name){
+    resetAllFields();
+    profilesStore.lastUsed = null;
+    saveJSON(LS_PROFILES, profilesStore);
+    return;
+  }
+  var snap = profilesStore.profiles[name];
+  if(snap){
+    applySnapshot(snap);
+    profilesStore.lastUsed = name;
+    saveJSON(LS_PROFILES, profilesStore);
+    document.getElementById("profile-name").value = name;
+    toast("perfil \"" + name + "\" carregado.");
+  }
+});
+
+function saveProfile(){
+  var name = document.getElementById("profile-name").value.trim();
+  if(!name){ toast("dá um nome pro perfil antes de salvar."); return; }
+  profilesStore.profiles[name] = currentSnapshot();
+  profilesStore.lastUsed = name;
+  saveJSON(LS_PROFILES, profilesStore);
+  renderProfileSelect();
+  document.getElementById("profile-select").value = name;
+  toast("perfil \"" + name + "\" salvo neste navegador.");
+}
+document.getElementById("btn-profile-save").addEventListener("click", saveProfile);
+document.getElementById("btn-profile-save-2").addEventListener("click", saveProfile);
+
+document.getElementById("btn-profile-delete").addEventListener("click", function(){
+  var sel = document.getElementById("profile-select");
+  var name = sel.value;
+  if(!name){ toast("selecione um perfil pra apagar."); return; }
+  delete profilesStore.profiles[name];
+  if(profilesStore.lastUsed === name) profilesStore.lastUsed = null;
+  saveJSON(LS_PROFILES, profilesStore);
+  renderProfileSelect();
+  resetAllFields();
+  toast("perfil \"" + name + "\" apagado.");
+});
+
+/* carrega o último perfil usado ao abrir a página, se existir */
+(function initOnLoad(){
+  if(profilesStore.lastUsed && profilesStore.profiles[profilesStore.lastUsed]){
+    applySnapshot(profilesStore.profiles[profilesStore.lastUsed]);
+    document.getElementById("profile-name").value = profilesStore.lastUsed;
+  } else {
+    resetAllFields();
+  }
+})();
+
+/* =========================================================================
+   downloads
+   ========================================================================= */
+var downloadsNS = null;
+(function initDownloads(){
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("downloads").then(function(ns){ downloadsNS = ns; }).catch(function(){ downloadsNS = null; });
+  }
+})();
+function wait(ms){ return new Promise(function(res){ setTimeout(res, ms); }); }
+
+async function offerDownload(filename, data){
+  if(downloadsNS){
+    var delayMs = 1000;
+    for(var attempt = 0; attempt <= 5; attempt++){
+      try{
+        await downloadsNS.save({filename:filename, data:data});
+        toast("Salvo: " + filename);
+        return {ok:true};
+      }catch(err){
+        var code = err && err.code;
+        if(code === "declined") return {ok:false, code:code};
+        if(code === "rate_limited" && attempt < 5){
+          toast("Muitos downloads seguidos — aguardando um instante pra continuar...");
+          await wait(delayMs);
+          delayMs = Math.min(delayMs * 1.6, 5000);
+          continue;
+        }
+        if(code === "too_large"){
+          toast("Esse arquivo passou de 16MB — dividindo em partes menores...");
+          return {ok:false, code:"too_large"};
+        }
+        toast("Não consegui salvar (" + (code || "erro desconhecido") + "): " + filename);
+        return {ok:false, code:code};
+      }
+    }
+  }
+  // fallback universal: link de download nativo do navegador
+  try{
+    var blob = (data instanceof Blob) ? data : new Blob([data]);
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename; a.style.display = "none";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    toast("Download iniciado: " + filename);
+    return {ok:true};
+  }catch(e){
+    toast("Não consegui salvar o arquivo neste ambiente.");
+    return {ok:false, code:"unavailable"};
+  }
+}
+
+var downloadBusy = false;
+async function guardedDownload(filename, data){
+  if(downloadBusy){ toast("Espera o download atual terminar antes de pedir outro."); return {ok:false, code:"busy"}; }
+  downloadBusy = true;
+  try{ return await offerDownload(filename, data); }
+  finally{ downloadBusy = false; }
+}
+
+/* =========================================================================
+   fontes
+   ========================================================================= */
+function fontsReady(){
+  return Promise.all([
+    document.fonts.load('500 80px "Fraunces"'),
+    document.fonts.load('600 80px "Fraunces"'),
+    document.fonts.load('italic 500 40px "Fraunces"'),
+    document.fonts.load('600 15px "IBM Plex Mono"'),
+    document.fonts.load('500 15px "IBM Plex Mono"')
+  ]).then(function(){ return document.fonts.ready; });
+}
+
+/* =========================================================================
+   parsing do texto — hierarquia (título / subtítulo / texto) + negrito
+   cada página já vem separada em 3 campos, sem precisar de marcação
+   ========================================================================= */
+function tokenizeParagraph(line){
+  var tokens = [];
+  var parts = line.split(/(\*\*[^*]+\*\*)/g);
+  parts.forEach(function(part){
+    if(!part) return;
+    var bold = false;
+    if(/^\*\*[^*]+\*\*$/.test(part)){ bold = true; part = part.slice(2,-2); }
+    part.split(/(\s+)/).forEach(function(w){
+      if(w === "") return;
+      tokens.push({text:w, bold:bold});
+    });
+  });
+  return tokens;
+}
+
+function measureToken(ctx, tok, fontSize){
+  ctx.font = (tok.bold ? "600 " : "400 ") + fontSize + "px 'Fraunces', serif";
+  return ctx.measureText(tok.text).width;
+}
+
+function wrapParagraph(ctx, paragraph, fontSize, maxWidth){
+  var tokens = tokenizeParagraph(paragraph);
+  var lines = [];
+  var current = [];
+  var currentWidth = 0;
+  tokens.forEach(function(tok){
+    var w = measureToken(ctx, tok, fontSize);
+    if(/^\s+$/.test(tok.text)){
+      if(current.length){ current.push(tok); currentWidth += w; }
+      return;
+    }
+    if(currentWidth + w > maxWidth && current.length){
+      while(current.length && /^\s+$/.test(current[current.length-1].text)) current.pop();
+      lines.push(current);
+      current = [tok];
+      currentWidth = w;
+    } else {
+      current.push(tok);
+      currentWidth += w;
+    }
+  });
+  if(current.length){
+    while(current.length && /^\s+$/.test(current[current.length-1].text)) current.pop();
+    lines.push(current);
+  }
+  if(lines.length === 0) lines.push([]);
+  return lines;
+}
+
+function buildLayout(ctx, page, baseSize, typo){
+  var allLines = [];
+  var totalHeight = 0;
+  var hasEmitted = false;
+  var fields = [["titulo", page.titulo], ["subtitulo", page.subtitulo], ["texto", page.texto]];
+  fields.forEach(function(pair){
+    var type = pair[0];
+    var raw = (pair[1] || "").trim();
+    if(!raw) return;
+    var fontSize = baseSize * TYPE_MULT[type] * (typo[type] || 1);
+    var lineHeight = fontSize * 1.22;
+    var paragraphGap = lineHeight * 0.55;
+    var paragraphs = raw.split(/\n\s*\n/);
+    paragraphs.forEach(function(p){
+      var forced = p.split("\n");
+      forced.forEach(function(fl, fli){
+        var wrapped = wrapParagraph(ctx, fl, fontSize, MAX_TEXT_WIDTH);
+        wrapped.forEach(function(line, li){
+          var gapBefore = (li===0 && fli===0 && hasEmitted) ? paragraphGap : 0;
+          allLines.push({tokens:line, fontSize:fontSize, lineHeight:lineHeight, gapBefore:gapBefore});
+          totalHeight += lineHeight + gapBefore;
+          hasEmitted = true;
+        });
+      });
+    });
+  });
+  return {lines: allLines, totalHeight: totalHeight};
+}
+
+function fitFontSize(ctx, page, typo){
+  var scale = W / BASE_W;
+  var size = 84 * scale;
+  var minSize = 34 * scale;
+  var maxHeight = CONTENT_BOTTOM - CONTENT_TOP;
+  var layout;
+  while(size >= minSize){
+    layout = buildLayout(ctx, page, size, typo);
+    if(layout.totalHeight <= maxHeight) break;
+    size -= 2;
+  }
+  return {size: size, layout: layout};
+}
+
+function drawSpacedLabel(ctx, text, x, y, spacing){
+  ctx.font = "600 15px 'IBM Plex Mono', monospace";
+  ctx.fillStyle = LABEL_COLOR;
+  ctx.textBaseline = "alphabetic";
+  var cx = x;
+  for(var i=0;i<text.length;i++){
+    var ch = text[i];
+    ctx.fillText(ch, cx, y);
+    cx += ctx.measureText(ch).width + spacing;
+  }
+}
+
+/* =========================================================================
+   desenho dos elementos extras (sempre atrás do texto)
+   ========================================================================= */
+async function drawPositionedExtra(ctx, extra){
+  if(!extra.imgObj) return;
+  await extra.imgReady;
+  ctx.save();
+  ctx.globalAlpha = extra.opacidade;
+  var ratio = extra.imgObj.naturalHeight / extra.imgObj.naturalWidth;
+  var w = extra.w * W;
+  var h = w * ratio;
+  ctx.drawImage(extra.imgObj, extra.x*W - w/2, extra.y*H - h/2, w, h);
+  ctx.restore();
+}
+
+/* =========================================================================
+   render de um slide
+   ========================================================================= */
+async function renderSlide(canvas, page, handle, taglabel, pageIndex0){
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext("2d");
+  ctx.fillStyle = BG;
+  ctx.fillRect(0,0,W,H);
+
+  for(var ei=0; ei<extras.length; ei++){
+    if(extraAppliesToPage(extras[ei], pageIndex0+1)) await drawPositionedExtra(ctx, extras[ei]);
+  }
+
+  drawSpacedLabel(ctx, (handle + " | " + taglabel).toLowerCase(), MARGIN_X, H*LABEL_Y_FRAC, 2.6*(W/BASE_W));
+
+  var logo = activeLogo();
+  if(logo){
+    await logo.ready;
+    var naturalRatio = (logo.img.naturalHeight / logo.img.naturalWidth) || 0.707;
+    var logoW = W*LOGO_MAX_W_FRAC, logoH = logoW * naturalRatio;
+    var logoMaxH = H*LOGO_MAX_H_FRAC;
+    if(logoH > logoMaxH){ logoH = logoMaxH; logoW = logoH / naturalRatio; }
+    var bandTop = H*LOGO_BAND_TOP_FRAC, bandH = H*LOGO_BAND_H_FRAC;
+    ctx.drawImage(logo.img, (W-logoW)/2, bandTop + (bandH-logoH)/2, logoW, logoH);
+  }
+
+  var hasText = (page.titulo && page.titulo.trim()) || (page.subtitulo && page.subtitulo.trim()) || (page.texto && page.texto.trim());
+  if(!hasText) return;
+
+  var fit = fitFontSize(ctx, page, typography);
+  var layout = fit.layout;
+  var startY = CONTENT_TOP + Math.max(0, (CONTENT_BOTTOM - CONTENT_TOP - layout.totalHeight) / 2);
+
+  ctx.textBaseline = "alphabetic";
+  var y = startY + (layout.lines[0] ? layout.lines[0].fontSize*0.85 : 0);
+  layout.lines.forEach(function(line){
+    y += line.gapBefore;
+    var x = MARGIN_X;
+    line.tokens.forEach(function(tok){
+      ctx.font = (tok.bold ? "600 " : "400 ") + line.fontSize + "px 'Fraunces', serif";
+      ctx.fillStyle = tok.bold ? ACCENT_COLOR : TEXT_COLOR;
+      ctx.fillText(tok.text, x, y);
+      x += ctx.measureText(tok.text).width;
+    });
+    y += line.lineHeight;
+  });
+}
+
+/* =========================================================================
+   gerar / baixar
+   ========================================================================= */
+var currentCanvases = [];
+
+async function generate(){
+  var handle = document.getElementById("handle").value || "";
+  var taglabel = document.getElementById("taglabel").value || "";
+  if(pages.length === 0 || pages.every(function(p){
+    return !(p.titulo && p.titulo.trim()) && !(p.subtitulo && p.subtitulo.trim()) && !(p.texto && p.texto.trim());
+  })){
+    toast("Escreva o texto de ao menos uma página antes de gerar.");
+    return;
+  }
+
+  readColorInputs();
+  var size = computeCanvasSize();
+  W = size.W; H = size.H;
+  MARGIN_X = W*MARGIN_X_FRAC; CONTENT_TOP = H*CONTENT_TOP_FRAC; CONTENT_BOTTOM = H*CONTENT_BOTTOM_FRAC;
+  MAX_TEXT_WIDTH = W - MARGIN_X*2;
+  await fontsReady();
+
+  var grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  currentCanvases = [];
+
+  for(var i=0;i<pages.length;i++){
+    var card = document.createElement("div");
+    card.className = "slide-card";
+    var canvas = document.createElement("canvas");
+    await renderSlide(canvas, pages[i], handle, taglabel, i);
+    var labelDiv = document.createElement("div");
+    labelDiv.className = "slide-label";
+    labelDiv.textContent = "Página " + (i+1) + " / " + pages.length;
+    var dlBtn = document.createElement("button");
+    dlBtn.className = "btn";
+    dlBtn.textContent = "Baixar PNG";
+    (function(canvas, idx){
+      dlBtn.addEventListener("click", function(){
+        canvas.toBlob(function(blob){
+          guardedDownload("molda-pagina-" + String(idx+1).padStart(2,"0") + ".png", blob);
+        }, "image/png");
+      });
+    })(canvas, i);
+    card.appendChild(canvas);
+    card.appendChild(labelDiv);
+    card.appendChild(dlBtn);
+    grid.appendChild(card);
+    currentCanvases.push(canvas);
+  }
+
+  document.getElementById("btn-zip").disabled = currentCanvases.length === 0;
+  toast(currentCanvases.length + " página(s) gerada(s).");
+}
+
+document.getElementById("btn-gen").addEventListener("click", function(){
+  generate().catch(function(e){ console.error(e); toast("Deu erro ao gerar — veja o console."); });
+});
+
+document.getElementById("btn-zip").addEventListener("click", async function(){
+  if(currentCanvases.length === 0) return;
+  if(downloadBusy){ toast("Espera o download atual terminar antes de pedir outro."); return; }
+
+  downloadBusy = true;
+  try{
+    for(var i=0;i<currentCanvases.length;i++){
+      var blob = await new Promise(function(res){ currentCanvases[i].toBlob(res, "image/png"); });
+      var result = await offerDownload("molda-pagina-" + String(i+1).padStart(2,"0") + ".png", blob);
+      if(!result || !result.ok){
+        if(result && result.code === "declined") break;
+      }
+      await wait(450);
+    }
+    toast("Downloads concluídos.");
+  } finally {
+    downloadBusy = false;
+  }
+});
+</script>
+
+<!-- ---------- avesso: gate de acesso ao molda (conta de verdade, e-mail + senha) ---------- -->
+<style>
+  #molda-gate-overlay{position:fixed;inset:0;z-index:99999;background:#3D2A1E;color:#F4ECDD;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'IBM Plex Mono',monospace;}
+  #molda-gate-overlay .gate-box{max-width:380px;width:100%;text-align:center;}
+  #molda-gate-overlay .gate-eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin:0 0 14px;}
+  #molda-gate-overlay .gate-lede{font-size:14px;margin:0 0 22px;line-height:1.55;opacity:.9;}
+  #molda-gate-overlay input{width:100%;box-sizing:border-box;padding:14px 16px;border-radius:10px;border:1px solid rgba(244,236,221,.3);background:rgba(244,236,221,.08);color:#F4ECDD;font-size:14px;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;}
+  #molda-gate-overlay button.gate-btn{width:100%;padding:14px 16px;border-radius:999px;border:none;background:#E8CE9A;color:#3D2A1E;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit;}
+  #molda-gate-overlay button.gate-btn:disabled{opacity:.5;cursor:not-allowed;}
+  #molda-gate-overlay .gate-msg{font-size:12px;margin:14px 0 0;min-height:16px;opacity:.85;}
+  #molda-gate-overlay .gate-switch{font-size:12px;margin:20px 0 0;opacity:.75;}
+  #molda-gate-overlay .gate-switch a{color:#E8CE9A;cursor:pointer;text-decoration:underline;}
+  #molda-gate-overlay .gate-step{display:none;}
+  #molda-gate-overlay .gate-step.active{display:block;}
+</style>
+<div id="molda-gate-overlay">
+  <div class="gate-box">
+
+    <div class="gate-step active" id="gate-step-login">
+      <p class="gate-eyebrow">acesso ao molda</p>
+      <p class="gate-lede">entre com o e-mail e a senha da sua conta.</p>
+      <input id="gate-login-email" type="email" placeholder="seu e-mail" autocomplete="username">
+      <input id="gate-login-password" type="password" placeholder="sua senha" autocomplete="current-password">
+      <button class="gate-btn" id="gate-login-btn" type="button">entrar</button>
+      <p class="gate-msg" id="gate-login-msg"></p>
+      <p class="gate-switch">esqueceu a senha? <a id="gate-goto-forgot">redefinir senha</a></p>
+      <p class="gate-switch">ainda não comprou? <a href="/molda">conhecer o molda</a></p>
+    </div>
+
+    <div class="gate-step" id="gate-step-setup">
+      <p class="gate-eyebrow">criar sua senha</p>
+      <p class="gate-lede">pagamento confirmado! escolha uma senha pra acessar o molda daqui pra frente.</p>
+      <input id="gate-setup-email" type="email" placeholder="seu e-mail" autocomplete="username">
+      <input id="gate-setup-password" type="password" placeholder="nova senha (mín. 8 caracteres)" autocomplete="new-password">
+      <input id="gate-setup-password2" type="password" placeholder="confirmar senha" autocomplete="new-password">
+      <button class="gate-btn" id="gate-setup-btn" type="button">criar senha e entrar</button>
+      <p class="gate-msg" id="gate-setup-msg"></p>
+    </div>
+
+    <div class="gate-step" id="gate-step-forgot">
+      <p class="gate-eyebrow">redefinir senha</p>
+      <p class="gate-lede">digite o e-mail da sua conta — se existir, mandamos um link pra escolher uma senha nova.</p>
+      <input id="gate-forgot-email" type="email" placeholder="seu e-mail" autocomplete="username">
+      <button class="gate-btn" id="gate-forgot-btn" type="button">mandar link</button>
+      <p class="gate-msg" id="gate-forgot-msg"></p>
+      <p class="gate-switch"><a id="gate-goto-login">voltar pro login</a></p>
+    </div>
+
+    <div class="gate-step" id="gate-step-reset">
+      <p class="gate-eyebrow">escolher nova senha</p>
+      <input id="gate-reset-password" type="password" placeholder="nova senha (mín. 8 caracteres)" autocomplete="new-password">
+      <input id="gate-reset-password2" type="password" placeholder="confirmar senha" autocomplete="new-password">
+      <button class="gate-btn" id="gate-reset-btn" type="button">salvar senha e entrar</button>
+      <p class="gate-msg" id="gate-reset-msg"></p>
+    </div>
+
+    <p style="font-size:12px;margin:24px 0 0;opacity:.6;">precisa de ajuda? <a href="https://wa.me/5548999936071" style="color:#E8CE9A;">fala com a gente no whatsapp</a>.</p>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY = 'avesso_molda_token';
+  var overlay = document.getElementById('molda-gate-overlay');
+
+  function showStep(id){
+    document.querySelectorAll('#molda-gate-overlay .gate-step').forEach(function(el){ el.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+
+  function unlock(token, email){
+    try{ if(token) localStorage.setItem(KEY, token); }catch(e){}
+    if(overlay) overlay.style.display = 'none';
+    document.documentElement.style.overflow = '';
+  }
+
+  function lock(){
+    if(overlay) overlay.style.display = 'flex';
+    document.documentElement.style.overflow = 'hidden';
+  }
+
+  // ---- login ----
+  document.getElementById('gate-login-btn').addEventListener('click', function(){
+    var email = document.getElementById('gate-login-email').value.trim();
+    var password = document.getElementById('gate-login-password').value;
+    var msg = document.getElementById('gate-login-msg');
+    var btn = document.getElementById('gate-login-btn');
+    if(!email || !password){ msg.textContent = 'preencha e-mail e senha.'; return; }
+    msg.textContent = 'entrando…'; btn.disabled = true;
+    fetch('/api/molda-login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email: email, password: password})
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){ msg.textContent = res.data.error || 'e-mail ou senha incorretos.'; return; }
+        unlock(res.data.token, res.data.email);
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+  document.getElementById('gate-login-password').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') document.getElementById('gate-login-btn').click();
+  });
+
+  document.getElementById('gate-goto-forgot').addEventListener('click', function(){ showStep('gate-step-forgot'); });
+  document.getElementById('gate-goto-login').addEventListener('click', function(){ showStep('gate-step-login'); });
+
+  // ---- criar senha (pós-pagamento) ----
+  document.getElementById('gate-setup-btn').addEventListener('click', function(){
+    var params = new URLSearchParams(window.location.search);
+    var paymentId = params.get('payment_id');
+    var email = document.getElementById('gate-setup-email').value.trim();
+    var p1 = document.getElementById('gate-setup-password').value;
+    var p2 = document.getElementById('gate-setup-password2').value;
+    var msg = document.getElementById('gate-setup-msg');
+    var btn = document.getElementById('gate-setup-btn');
+    if(!email || email.indexOf('@') === -1){ msg.textContent = 'digite um e-mail válido.'; return; }
+    if(p1.length < 8){ msg.textContent = 'a senha precisa ter pelo menos 8 caracteres.'; return; }
+    if(p1 !== p2){ msg.textContent = 'as senhas não são iguais.'; return; }
+    if(!paymentId){ msg.textContent = 'link incompleto — falta o pagamento. usa o link do e-mail de confirmação.'; return; }
+    msg.textContent = 'criando conta…'; btn.disabled = true;
+    fetch('/api/molda-set-password', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({payment_id: paymentId, email: email, password: p1})
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){ msg.textContent = res.data.error || 'não consegui criar sua conta.'; return; }
+        unlock(res.data.token, res.data.email);
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+
+  // ---- esqueci a senha ----
+  document.getElementById('gate-forgot-btn').addEventListener('click', function(){
+    var email = document.getElementById('gate-forgot-email').value.trim();
+    var msg = document.getElementById('gate-forgot-msg');
+    var btn = document.getElementById('gate-forgot-btn');
+    if(!email || email.indexOf('@') === -1){ msg.textContent = 'digite um e-mail válido.'; return; }
+    msg.textContent = 'enviando…'; btn.disabled = true;
+    fetch('/api/molda-request-reset', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email: email})
+    }).then(function(r){ return r.json(); })
+      .then(function(){
+        btn.disabled = false;
+        msg.textContent = 'se essa conta existir, mandamos um link pro e-mail. confere sua caixa de entrada.';
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+
+  // ---- redefinir senha (via link do e-mail) ----
+  document.getElementById('gate-reset-btn').addEventListener('click', function(){
+    var params = new URLSearchParams(window.location.search);
+    var token = params.get('token');
+    var p1 = document.getElementById('gate-reset-password').value;
+    var p2 = document.getElementById('gate-reset-password2').value;
+    var msg = document.getElementById('gate-reset-msg');
+    var btn = document.getElementById('gate-reset-btn');
+    if(p1.length < 8){ msg.textContent = 'a senha precisa ter pelo menos 8 caracteres.'; return; }
+    if(p1 !== p2){ msg.textContent = 'as senhas não são iguais.'; return; }
+    if(!token){ msg.textContent = 'link incompleto — peça um novo link de redefinição.'; return; }
+    msg.textContent = 'salvando…'; btn.disabled = true;
+    fetch('/api/molda-reset-password', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({token: token, password: p1})
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){ msg.textContent = res.data.error || 'não consegui redefinir a senha.'; return; }
+        unlock(res.data.token, res.data.email);
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+
+  // ---- decide o estado inicial do gate a partir da url e da sessão salva ----
+  document.documentElement.style.overflow = 'hidden';
+  var params = new URLSearchParams(window.location.search);
+
+  if(params.get('setup') === '1'){
+    showStep('gate-step-setup');
+    var setupEmail = params.get('email');
+    if(setupEmail) document.getElementById('gate-setup-email').value = setupEmail;
+    lock();
+  } else if(params.get('reset') === '1' && params.get('token')){
+    showStep('gate-step-reset');
+    lock();
+  } else {
+    showStep('gate-step-login');
+    var savedToken;
+    try{ savedToken = localStorage.getItem(KEY); }catch(e){}
+    if(savedToken){
+      fetch('/api/molda-session', { headers: { 'Authorization': 'Bearer ' + savedToken } })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data.valid){ unlock(savedToken, data.email); }
+          else { try{ localStorage.removeItem(KEY); }catch(e){} lock(); }
+        }).catch(function(){ lock(); });
+    } else {
+      lock();
+    }
+  }
+})();
+</script>
+</body>
+</html>

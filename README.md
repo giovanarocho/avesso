@@ -1,11 +1,18 @@
-# avesso — página de venda + checkout automático do guia
+# avesso — página de venda + checkout automático do guia e do molda
 
 Isso é um projetinho completo pra publicar na Vercel (grátis). Ele tem:
 
-- `index.html` — a página de venda nova (hero limpa, guia em destaque, depois os outros dois formatos).
+- `index.html` — a página de venda nova (hero limpa, guia em destaque, seção "ferramentas do avesso" com guia + molda, depois os outros dois formatos).
 - `guia/index.html` — o guia em si (o caderno interativo), protegido por um código de acesso.
-- `painel/index.html` — o painel administrativo (`/painel`), protegido por senha: edita os preços sem precisar de código nem redeploy, e mostra a lista de vendas.
-- `api/` — as funções que rodam no servidor da Vercel (não no seu navegador): geram o pix, confirmam o pagamento, liberam o código de acesso do guia, e (se configurado) mandam e-mail, gravam no banco e atendem o painel.
+- `molda/index.html` — a página de venda do molda, independente (pode ser divulgada direto, sem passar pela home).
+- `molda/app.html` — o molda em si (a ferramenta de gerar carrossel), atrás de um login de verdade (e-mail + senha).
+- `painel/index.html` — o painel administrativo (`/painel`), protegido por senha: edita os preços (guia, base pronta, manutenção e molda) sem precisar de código nem redeploy, e mostra a lista de vendas.
+- `api/` — as funções que rodam no servidor da Vercel (não no seu navegador): geram o pix, confirmam o pagamento, liberam o código de acesso do guia (ou a conta do molda), e (se configurado) mandam e-mail, gravam no banco e atendem o painel.
+
+O guia e o molda são dois produtos com formas de acesso diferentes, de propósito:
+
+- **guia** — sem conta. O "código de acesso" é o próprio id do pagamento pix, verificado ao vivo no Mercado Pago a cada uso.
+- **molda** — com conta de verdade (e-mail + senha), porque é uma ferramenta que a pessoa volta a usar sempre, em qualquer aparelho, sem depender de guardar um código.
 
 Sem isso, qualquer pessoa com o link do guia acessava sem pagar. Com isso, o guia fica atrás de um código de acesso — e esse código só é gerado depois que o Mercado Pago confirma o pagamento, no servidor. Não tem como "enganar" clicando em algum botão sem pagar de verdade.
 
@@ -61,6 +68,7 @@ No painel da Vercel: **seu projeto > Settings > Environment Variables**, adicion
 | `BASE_PRICE` | `6000` |
 | `MANUTENCAO_PRICE` | `1500` |
 | `MANUTENCAO_VAGAS` | `restam poucas vagas por vez, pra dar atenção de verdade a cada cliente.` |
+| `MOLDA_PRICE` | `29.90` |
 
 Depois de salvar, vá na aba **Deployments**, clique nos "..." do último deploy e escolha **Redeploy** (isso é tudo que você precisa fazer sempre que quiser mudar um preço depois — trocar o valor aqui e clicar em redeploy, sem mexer em nenhum código).
 
@@ -106,6 +114,17 @@ Isso depende do supabase já estar configurado (passo 5b) — é de lá que o pa
 
 Esse endereço não aparece em nenhum lugar do site — só quem souber o link chega nele — mas do mesmo jeito, sem a senha certa ninguém entra.
 
+### 5d. ative o molda (a ferramenta de gerar carrossel)
+
+O molda **precisa** do supabase configurado (passo 5b) — é lá que ficam as contas (e-mail + senha) de quem comprou. Sem isso, a página de venda do molda funciona, mas ninguém consegue criar conta depois de pagar.
+
+1. Se ainda não rodou o `supabase_schema.sql` (passo 5b), rode ele primeiro.
+2. Dentro do supabase, vá em **SQL Editor** → **New query**, cole o conteúdo do arquivo `supabase_migration_molda.sql` (vem junto nesta pasta) e clique em **Run**. Isso só adiciona coisas novas — não mexe em nada do guia nem apaga nada que já existe. Cria a tabela `molda_usuarios` (contas do molda) e um campo de preço a mais na tabela `config`.
+3. Na Vercel, adicione a variável `MOLDA_SESSION_SECRET` com uma senha longa qualquer (só ela usa, pra assinar as sessões de login do molda — não precisa guardar em lugar nenhum, só definir uma vez e esquecer). Pode gerar uma rodando `openssl rand -hex 32` no terminal, por exemplo.
+4. Redeploy.
+
+A partir daí, `/molda` fica no ar como página de venda, e depois de pagar a pessoa cria a senha em `/molda/app.html` e passa a acessar o molda direto pelo site, com e-mail e senha, em qualquer aparelho. O e-mail com o link de "criar sua senha" depende do resend estar configurado (passo 5b) — sem isso, o link de criar senha só aparece na própria tela depois do pix confirmar (igual acontece hoje com o código do guia).
+
 ### 6. teste com um pagamento pequeno de verdade
 
 Recomendo gerar um pix de teste pagando com um valor baixo (pode temporariamente colocar `GUIA_PRICE=1` pra testar com R$1) antes de deixar no ar com o preço final. Depois volte o valor e clique em redeploy.
@@ -124,6 +143,16 @@ Em **Settings > Domains** na Vercel, você pode apontar um domínio seu (tipo `a
 6. Se você configurou o supabase e o resend (passo 5b): assim que `/api/check-status` vê o pagamento aprovado, ele manda o e-mail com o código (uma única vez por pagamento) e atualiza a linha da venda no banco. O `/api/webhook` faz a mesma coisa como reforço — útil se a pessoa pagar pelo app do banco e fechar a aba do site antes da confirmação aparecer na tela. Sem essas duas variáveis configuradas, esse passo simplesmente não acontece e o resto continua igual.
 7. Os preços que aparecem no site e o valor cobrado de verdade no pix vêm sempre do mesmo lugar: primeiro do banco (se você já editou pelo `/painel`), e só como reserva da variável de ambiente — então o painel e o site nunca ficam com preços diferentes entre si.
 
+### o molda, por dentro
+
+O fluxo é parecido com o do guia até o pagamento confirmar — daí em diante, muda porque é conta de verdade:
+
+1. Na página `/molda`, a pessoa paga o pix (`/api/molda-create-payment` + `/api/molda-check-status`, iguais aos do guia, só que cobrando o `moldaPrice` e marcando o pagamento como produto `"molda"`).
+2. Assim que o Mercado Pago confirma, em vez de mostrar um código, a tela redireciona pra `/molda/app.html?setup=1&payment_id=...&email=...` — e, se o resend estiver configurado, manda esse mesmo link por e-mail.
+3. Em `/molda/app.html`, a tela de "criar sua senha" chama `/api/molda-set-password`, que confere de novo no Mercado Pago (nunca confia só no que veio da url) que aquele pagamento é aprovado, é do molda, e bate com o e-mail informado — só depois disso cria a conta em `molda_usuarios` (senha nunca fica salva em texto puro, só hash).
+4. Dali em diante, a pessoa entra sempre por e-mail + senha (`/api/molda-login`), e o `/molda/app.html` guarda um token de sessão (30 dias) no navegador dela — sem precisar logar toda vez. Se esquecer a senha, `/api/molda-request-reset` manda um link novo por e-mail, que expira em 30 minutos.
+5. A ferramenta em si (gerar as páginas do carrossel) é a mesma que já existia — tudo acontece no navegador da pessoa, nada é enviado pro servidor. O molda não depende do supabase pra isso, só o login em si.
+
 ### (opcional) configurar o webhook no Mercado Pago
 
 Isso deixa o envio de e-mail mais confiável (não depende da aba do site ficar aberta). No painel de desenvolvedor do Mercado Pago, na sua aplicação, procure por **Webhooks** / **Notificações** e cadastre a url `https://oestudioavesso.com.br/api/webhook` pro evento de pagamentos. Sem isso, tudo continua funcionando do mesmo jeito — só depende de a pessoa deixar a aba do site aberta até o pix confirmar (o que já é o padrão hoje).
@@ -136,5 +165,9 @@ Isso deixa o envio de e-mail mais confiável (não depende da aba do site ficar 
 - **conteúdo do guia**: edite o `guia/index.html`.
 - **textos, cores, seções da página de venda**: aí sim precisa editar o `index.html` (ou me pedir pra ajustar e te mandar o arquivo atualizado).
 - **texto do e-mail do código**: no arquivo `lib/services.js`, dentro da função `sendCodeEmail` (ou me pede pra ajustar).
+- **texto dos e-mails do molda** (boas-vindas / redefinir senha): também em `lib/services.js`, nas funções `sendMoldaBoasVindasEmail` e `sendMoldaResetEmail`.
 - **ver todas as vendas**: pelo `/painel` (mais prático) ou direto em supabase.com > seu projeto > Table Editor > tabela `pagamentos`.
+- **ver as contas do molda**: supabase.com > seu projeto > Table Editor > tabela `molda_usuarios`.
 - **trocar a senha do painel**: muda `ADMIN_PASSWORD` na Vercel e redeploy. Quem já estava logado continua entrando por até 24h (o tempo que uma sessão dura) — se quiser derrubar todo mundo na hora, defina também `ADMIN_SECRET` com um valor novo.
+- **derrubar todas as sessões do molda de uma vez** (ex: se desconfiar de algo): troca `MOLDA_SESSION_SECRET` na Vercel por um valor novo e redeploy — todo mundo precisa logar de novo, mas as contas e senhas continuam intactas.
+- **conteúdo/estilo da página de venda do molda**: edite `molda/index.html`. **a ferramenta em si**: `molda/app.html` (o corpo dela é o mesmo código do gerador de carrossel — mexa com calma).
