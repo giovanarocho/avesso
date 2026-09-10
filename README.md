@@ -94,7 +94,17 @@ Na Vercel, adicione:
 
 Redeploy.
 
-### 5d. painel administrativo (`/painel`) — recomendado
+### 5d. pagamento por cartão (crédito e débito) — opcional
+
+Sem isso, a aba "cartão" continua aparecendo nas páginas de venda, mas ao clicar mostra um aviso de que o pagamento por cartão está indisponível no momento (o pix continua funcionando normalmente). Com essa variável configurada, aparece uma aba "cartão" ao lado do pix no checkout — usa o **Payment Brick** do Mercado Pago, que roda dentro de um iframe deles: o número do cartão nunca passa pelo seu servidor, só um token depois de já tokenizado no navegador de quem compra.
+
+1. No mesmo painel de desenvolvedor do Mercado Pago onde você pegou o `MP_ACCESS_TOKEN` (passo 2), na aba **Credenciais de produção**, copie também a **Public Key** (é diferente do Access Token — essa é feita pra ficar exposta no navegador, não precisa esconder).
+2. Na Vercel, adicione `MP_PUBLIC_KEY` com essa chave.
+3. Redeploy.
+
+O parcelamento vem habilitado por padrão (até 12x) — quem parcela paga o juros do próprio cartão, você recebe o valor cheio à vista independente de quantas parcelas a pessoa escolher (é o comportamento padrão do Mercado Pago, a não ser que você ative "parcelamento sem juros" na conta dele, aí quem absorve o juro é você).
+
+### 5e. painel administrativo (`/painel`) — recomendado
 
 1. Escolha uma senha forte.
 2. Na Vercel, adicione `ADMIN_PASSWORD` com essa senha.

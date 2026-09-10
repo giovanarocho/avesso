@@ -119,19 +119,39 @@ input[type=file]{width:100%;font-size:11px;padding:6px 0;}
 .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .page-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
 
-/* elementos extras */
+/* elementos extras (elemento arrastável OU fundo automático) */
 .extra-item{border:1.4px solid #eee1cc;border-radius:6px;padding:10px;margin-top:10px;background:#fffdf8;}
 .extra-item:first-child{margin-top:0;}
 .extra-item .field{margin-top:8px;}
 .extra-header{display:flex;justify-content:space-between;align-items:center;}
 .extra-header .extra-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
 
+.extra-type-row{display:flex;gap:6px;margin-top:8px;}
+.extra-type-btn{flex:1;padding:8px;border-radius:5px;border:1.4px solid #d9caab;background:#fffdf8;color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;}
+.extra-type-btn.active{border-color:var(--brown);background:#f3ead4;font-weight:600;}
+.extra-type-hint{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5;}
+
 .extra-preview{position:relative;width:100%;aspect-ratio:1080/1350;overflow:hidden;border-radius:5px;background:#333;margin-top:8px;}
 .extra-drag{position:absolute;transform:translate(-50%,-50%);touch-action:none;cursor:grab;}
 .extra-drag img{display:block;width:100%;height:auto;pointer-events:none;}
 .extra-resize-handle{position:absolute;right:-8px;bottom:-8px;width:16px;height:16px;background:#fff;border:2px solid var(--brown);border-radius:50%;cursor:nwse-resize;touch-action:none;}
 .extra-preview-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px;text-align:center;padding:10px;}
+.extra-preview-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;}
 .extra-pagelist{margin-top:8px;}
+
+/* fonte (título/texto) */
+.font-upload-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.font-upload-row input[type=file]{flex:1;}
+.font-current{font-size:11px;color:var(--muted);margin-top:6px;}
+
+/* posição do texto por página (arrastável) */
+.textpos-preview{position:relative;width:100%;aspect-ratio:1080/1350;max-width:220px;overflow:hidden;border-radius:5px;background:#333;margin-top:8px;}
+.textpos-box{position:absolute;left:50%;top:50%;width:70%;height:26%;transform:translate(-50%,-50%);
+  border:1.5px dashed rgba(255,255,255,.85);background:rgba(255,255,255,.12);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;letter-spacing:.04em;
+  text-transform:uppercase;cursor:grab;touch-action:none;user-select:none;}
+.textpos-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 
 /* prévia */
 .panel-right{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,250px));gap:18px;justify-content:center;}
@@ -196,8 +216,24 @@ input[type=file]{width:100%;font-size:11px;padding:6px 0;}
 
       <div class="section">
         <div class="section-title">tipografia</div>
-        <div id="typo-list"></div>
-        <div class="hint">Cada página tem um campo de título, um de subtítulo e um de texto — a hierarquia de tamanho entre eles já vem pronta. Os controles acima só aumentam ou diminuem cada um, sem mudar onde o texto fica.</div>
+        <div class="field" style="margin-top:0;">
+          <label>Fonte do título</label>
+          <select id="font-select-titulo"></select>
+          <div class="font-upload-row">
+            <input type="file" id="font-upload-titulo" accept=".ttf,.otf,.woff,.woff2">
+          </div>
+          <div class="font-current" id="font-current-titulo"></div>
+        </div>
+        <div class="field">
+          <label>Fonte do texto</label>
+          <select id="font-select-texto"></select>
+          <div class="font-upload-row">
+            <input type="file" id="font-upload-texto" accept=".ttf,.otf,.woff,.woff2">
+          </div>
+          <div class="font-current" id="font-current-texto"></div>
+        </div>
+        <div id="typo-list" style="margin-top:14px;"></div>
+        <div class="hint">Cada página tem um campo de título e um de texto — a hierarquia de tamanho entre eles já vem pronta. Os controles acima só aumentam ou diminuem cada um, sem mudar onde o texto fica. Título e texto podem usar fontes diferentes.</div>
       </div>
 
       <div class="field">
@@ -212,8 +248,8 @@ input[type=file]{width:100%;font-size:11px;padding:6px 0;}
       <div class="section">
         <div class="section-title">texto <small>até 20 páginas</small></div>
         <div class="instructions">
-          Cada página vira um slide do carrossel — preencha título, subtítulo e texto (todos opcionais).<br>
-          Use <code>**palavra**</code> pra deixar em negrito (cor de destaque).
+          Cada página vira um slide do carrossel — preencha título e texto (ambos opcionais).<br>
+          Use <code>**palavra**</code> pra deixar em negrito (cor de destaque). Se o texto cobrir uma parte importante do fundo, arraste ele no quadrinho abaixo do campo de texto.
         </div>
         <div id="pages-list"></div>
         <button class="btn ghost" id="btn-page-add">+ nova página</button>
@@ -254,16 +290,16 @@ input[type=file]{width:100%;font-size:11px;padding:6px 0;}
         <div class="section-title">elementos extras <small>até 3</small></div>
         <div id="extras-list"></div>
         <button class="btn ghost" id="btn-extra-add">+ adicionar elemento visual</button>
-        <div class="hint">Inserir imagem de fundo, textura, pattern ou outro elemento visual.</div>
+        <div class="hint">"Elemento" você posiciona e redimensiona à mão. "Fundo" preenche a página inteira sozinho, sem precisar ajustar.</div>
       </div>
 
       <div class="section">
         <button class="btn" id="btn-gen">Gerar conteúdo</button>
-        <button class="btn ghost" id="btn-zip" disabled>Baixar tudo (uma por uma)</button>
+        <button class="btn ghost" id="btn-zip" disabled>Baixar tudo (.zip)</button>
         <button class="btn ghost small" id="btn-profile-save-2" style="width:100%;margin-top:14px;">salvar perfil</button>
         <div class="hint">
           Cada página vira um slide, no formato escolhido acima. O tamanho da fonte se ajusta sozinho dentro da hierarquia.<br>
-          "Baixar tudo" salva cada slide em sequência, com uma pausa curta entre eles.
+          "Baixar tudo" junta todas as páginas num único arquivo .zip, num download só.
         </div>
       </div>
     </div>
@@ -391,11 +427,127 @@ function computeCanvasSize(){
 }
 
 /* =========================================================================
-   tipografia — título / subtítulo / texto
+   tipografia — título / texto
    ========================================================================= */
-var TYPE_LABELS = {titulo:"Título", subtitulo:"Subtítulo", texto:"Texto"};
-var TYPE_MULT = {titulo:1.3, subtitulo:1.12, texto:1.0};
-var typography = {titulo:1, subtitulo:1, texto:1};
+var TYPE_LABELS = {titulo:"Título", texto:"Texto"};
+var TYPE_MULT = {titulo:1.3, texto:1.0};
+var typography = {titulo:1, texto:1};
+
+/* =========================================================================
+   fonte do título/texto — presets do google fonts + arquivo próprio
+   ========================================================================= */
+var FONT_PRESETS = [
+  {id:"fraunces", label:"Fraunces (serifada, elegante)", family:"'Fraunces', serif",
+    href:"https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&display=swap"},
+  {id:"playfair", label:"Playfair Display (serifada, editorial)", family:"'Playfair Display', serif",
+    href:"https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,600&display=swap"},
+  {id:"spacegrotesk", label:"Space Grotesk (sans, moderna)", family:"'Space Grotesk', sans-serif",
+    href:"https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"},
+  {id:"dmsans", label:"DM Sans (sans, limpa)", family:"'DM Sans', sans-serif",
+    href:"https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,500&display=swap"},
+  {id:"archivoblack", label:"Archivo Black (bem forte, pra impacto)", family:"'Archivo Black', sans-serif",
+    href:"https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"}
+];
+// título e texto têm fonte independente uma da outra
+var fontConfig = {
+  titulo: {selectedFontId: "fraunces", customFontDataUrl: null, customFontFamily: "MoldaFontePersonalizadaTitulo"},
+  texto: {selectedFontId: "fraunces", customFontDataUrl: null, customFontFamily: "MoldaFontePersonalizadaTexto"}
+};
+var loadedFontHrefs = {};
+
+function currentFontFamily(role){
+  var cfg = fontConfig[role] || fontConfig.titulo;
+  if(cfg.selectedFontId === "custom" && cfg.customFontDataUrl) return "'" + cfg.customFontFamily + "'";
+  var preset = FONT_PRESETS.filter(function(p){ return p.id === cfg.selectedFontId; })[0];
+  return preset ? preset.family : FONT_PRESETS[0].family;
+}
+
+function loadGoogleFontHref(href){
+  if(loadedFontHrefs[href]) return loadedFontHrefs[href];
+  var p = new Promise(function(resolve){
+    var link = document.createElement("link");
+    link.rel = "stylesheet"; link.href = href;
+    link.onload = function(){ resolve(); };
+    link.onerror = function(){ resolve(); };
+    document.head.appendChild(link);
+  });
+  loadedFontHrefs[href] = p;
+  return p;
+}
+
+function dataUrlToArrayBuffer(dataUrl){
+  var base64 = dataUrl.split(",")[1] || "";
+  var bin = atob(base64);
+  var bytes = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes.buffer;
+}
+
+var customFontLoadPromises = {titulo: null, texto: null};
+function ensureCustomFontLoaded(role){
+  var cfg = fontConfig[role];
+  if(!cfg.customFontDataUrl) return Promise.resolve();
+  if(customFontLoadPromises[role]) return customFontLoadPromises[role];
+  try{
+    var face = new FontFace(cfg.customFontFamily, dataUrlToArrayBuffer(cfg.customFontDataUrl));
+    customFontLoadPromises[role] = face.load().then(function(loaded){
+      document.fonts.add(loaded);
+    }).catch(function(){ toast("não consegui carregar esse arquivo de fonte."); });
+  }catch(e){
+    customFontLoadPromises[role] = Promise.resolve();
+  }
+  return customFontLoadPromises[role];
+}
+
+function renderFontSelect(role){
+  var cfg = fontConfig[role];
+  var sel = document.getElementById("font-select-" + role);
+  sel.innerHTML = "";
+  FONT_PRESETS.forEach(function(p){
+    var opt = document.createElement("option");
+    opt.value = p.id; opt.textContent = p.label;
+    if(p.id === cfg.selectedFontId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  if(cfg.customFontDataUrl){
+    var opt = document.createElement("option");
+    opt.value = "custom"; opt.textContent = "fonte enviada por você";
+    if(cfg.selectedFontId === "custom") opt.selected = true;
+    sel.appendChild(opt);
+  }
+  var curEl = document.getElementById("font-current-" + role);
+  curEl.textContent = cfg.customFontDataUrl
+    ? "arquivo carregado — fica salvo neste perfil."
+    : "escolha uma das opções acima ou envie o arquivo da sua fonte (.ttf, .otf, .woff, .woff2).";
+}
+function renderAllFontSelects(){ renderFontSelect("titulo"); renderFontSelect("texto"); }
+renderAllFontSelects();
+
+["titulo","texto"].forEach(function(role){
+  document.getElementById("font-select-" + role).addEventListener("change", function(){
+    var cfg = fontConfig[role];
+    cfg.selectedFontId = this.value;
+    if(cfg.selectedFontId !== "custom"){
+      var preset = FONT_PRESETS.filter(function(p){ return p.id === cfg.selectedFontId; })[0];
+      if(preset) loadGoogleFontHref(preset.href);
+    }
+  });
+
+  document.getElementById("font-upload-" + role).addEventListener("change", function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      var cfg = fontConfig[role];
+      cfg.customFontDataUrl = reader.result;
+      customFontLoadPromises[role] = null;
+      cfg.selectedFontId = "custom";
+      renderFontSelect(role);
+      ensureCustomFontLoaded(role).then(function(){ toast("fonte do " + (role === "titulo" ? "título" : "texto") + " carregada — já aplicada."); });
+    };
+    reader.readAsDataURL(file);
+  });
+});
 
 function renderTypography(){
   var list = document.getElementById("typo-list");
@@ -648,7 +800,7 @@ document.getElementById("btn-logo-reset").addEventListener("click", function(){
    páginas de texto — até 20, adicionadas uma a uma
    cada página tem 3 campos separados: título, subtítulo, texto
    ========================================================================= */
-var pages = [{id: uid(), titulo: "", subtitulo: "", texto: ""}];
+var pages = [{id: uid(), titulo: "", texto: "", textOffsetX: 0, textOffsetY: 0}];
 
 function renderPages(){
   var list = document.getElementById("pages-list");
@@ -674,7 +826,6 @@ function renderPages(){
     card.appendChild(header);
 
     [["titulo","Título","ex: o problema que ninguém fala"],
-     ["subtitulo","Subtítulo","ex: uma linha de apoio ao título"],
      ["texto","Texto","o corpo do slide..."]].forEach(function(spec){
       var key = spec[0];
       var field = document.createElement("div");
@@ -690,15 +841,69 @@ function renderPages(){
       card.appendChild(field);
     });
 
+    var posField = document.createElement("div");
+    posField.className = "field";
+    var posLabel = document.createElement("label"); posLabel.textContent = "posição do texto (arraste se cobrir o fundo)";
+    posField.appendChild(posLabel);
+    var posRow = document.createElement("div"); posRow.className = "textpos-row";
+    var posPreview = document.createElement("div"); posPreview.className = "textpos-preview"; posPreview.style.background = BG;
+    (extras || []).filter(function(x){ return x.imgDataUrl && extraAppliesToPage(x, idx+1, pages.length); })
+      .forEach(function(x){
+        var img = document.createElement("img");
+        img.src = x.imgDataUrl; img.className = "extra-preview-cover"; img.style.opacity = x.opacidade;
+        posPreview.appendChild(img);
+      });
+    var posBox = document.createElement("div");
+    posBox.className = "textpos-box"; posBox.textContent = "texto";
+    posBox.style.left = (50 + page.textOffsetX*100) + "%";
+    posBox.style.top = (50 + page.textOffsetY*100) + "%";
+    posPreview.appendChild(posBox);
+    wireTextDrag(posBox, posPreview, page);
+    posRow.appendChild(posPreview);
+    var resetBtn = document.createElement("button");
+    resetBtn.type = "button"; resetBtn.className = "btn ghost small";
+    resetBtn.textContent = "centralizar de novo";
+    resetBtn.addEventListener("click", function(){
+      page.textOffsetX = 0; page.textOffsetY = 0;
+      posBox.style.left = "50%"; posBox.style.top = "50%";
+    });
+    posRow.appendChild(resetBtn);
+    posField.appendChild(posRow);
+    card.appendChild(posField);
+
     list.appendChild(card);
   });
   document.getElementById("btn-page-add").disabled = pages.length >= 20;
 }
 renderPages();
 
+function wireTextDrag(boxEl, previewEl, page){
+  var dragging = false;
+  var startX, startY, startOffX, startOffY, rect;
+  boxEl.addEventListener("pointerdown", function(e){
+    dragging = true;
+    try{ boxEl.setPointerCapture(e.pointerId); }catch(err){}
+    startX = e.clientX; startY = e.clientY;
+    startOffX = page.textOffsetX || 0; startOffY = page.textOffsetY || 0;
+    rect = previewEl.getBoundingClientRect();
+    e.preventDefault();
+  });
+  boxEl.addEventListener("pointermove", function(e){
+    if(!dragging) return;
+    var dx = (e.clientX - startX) / rect.width;
+    var dy = (e.clientY - startY) / rect.height;
+    page.textOffsetX = Math.min(0.3, Math.max(-0.3, startOffX + dx));
+    page.textOffsetY = Math.min(0.35, Math.max(-0.35, startOffY + dy));
+    boxEl.style.left = (50 + page.textOffsetX*100) + "%";
+    boxEl.style.top = (50 + page.textOffsetY*100) + "%";
+  });
+  boxEl.addEventListener("pointerup", function(){ dragging = false; });
+  boxEl.addEventListener("pointercancel", function(){ dragging = false; });
+}
+
 function addPage(){
   if(pages.length >= 20){ toast("máximo de 20 páginas."); return; }
-  pages.push({id: uid(), titulo: "", subtitulo: "", texto: ""});
+  pages.push({id: uid(), titulo: "", texto: "", textOffsetX: 0, textOffsetY: 0});
   renderPages();
 }
 document.getElementById("btn-page-add").addEventListener("click", addPage);
@@ -711,7 +916,7 @@ var extras = []; // {id, opacidade, x, y, w, imgDataUrl, imgObj, imgReady, pageT
 function addExtra(){
   if(extras.length >= 3){ toast("máximo de 3 elementos visuais."); return; }
   extras.push({
-    id: uid(), opacidade: 0.4, x: 0.5, y: 0.5, w: 0.5,
+    id: uid(), tipo: "elemento", opacidade: 0.4, x: 0.5, y: 0.5, w: 0.5,
     imgDataUrl: null, imgObj: null, imgReady: null,
     pageTarget: "todas", pageList: ""
   });
@@ -726,9 +931,11 @@ function setExtraImage(extra, dataUrl){
   extra.imgObj = img;
 }
 
-function extraAppliesToPage(extra, pageNumber1){
+function extraAppliesToPage(extra, pageNumber1, totalPages){
   if(extra.pageTarget === "todas") return true;
   if(extra.pageTarget === "intercalado") return (pageNumber1 % 2 === 1);
+  if(extra.pageTarget === "capa") return pageNumber1 === 1;
+  if(extra.pageTarget === "ultima") return pageNumber1 === totalPages;
   if(extra.pageTarget === "outro"){
     var nums = (extra.pageList || "").split(",").map(function(s){ return parseInt(s.trim(), 10); }).filter(function(n){ return !isNaN(n); });
     return nums.indexOf(pageNumber1) !== -1;
@@ -755,9 +962,27 @@ function renderExtras(){
     header.appendChild(rmBtn);
     card.appendChild(header);
 
+    var typeRow = document.createElement("div");
+    typeRow.className = "extra-type-row";
+    [["elemento","elemento (arrasto/redimensiono)"],["fundo","fundo (preenche sozinho)"]].forEach(function(pair){
+      var tBtn = document.createElement("button");
+      tBtn.type = "button"; tBtn.className = "extra-type-btn" + (extra.tipo === pair[0] ? " active" : "");
+      tBtn.textContent = pair[1];
+      tBtn.addEventListener("click", function(){ extra.tipo = pair[0]; renderExtras(); });
+      typeRow.appendChild(tBtn);
+    });
+    card.appendChild(typeRow);
+    var typeHint = document.createElement("div");
+    typeHint.className = "extra-type-hint";
+    typeHint.textContent = extra.tipo === "fundo"
+      ? "a imagem preenche a página inteira no formato escolhido, sem precisar ajustar posição ou tamanho."
+      : "arraste pra posicionar e puxe o cantinho pra redimensionar.";
+    card.appendChild(typeHint);
+
     var fileField = document.createElement("div");
     fileField.className = "field";
-    var fileLabel = document.createElement("label"); fileLabel.textContent = "inserir imagem de fundo, textura, pattern ou outro elemento visual";
+    var fileLabel = document.createElement("label");
+    fileLabel.textContent = extra.tipo === "fundo" ? "imagem de fundo" : "inserir imagem, textura, pattern ou outro elemento visual";
     fileField.appendChild(fileLabel);
     var fileInput = document.createElement("input");
     fileInput.type = "file"; fileInput.accept = "image/png,image/jpeg,image/webp";
@@ -775,7 +1000,14 @@ function renderExtras(){
     preview.className = "extra-preview";
     preview.style.background = BG;
     var previewImg = null;
-    if(extra.imgDataUrl){
+    if(extra.imgDataUrl && extra.tipo === "fundo"){
+      var coverImg = document.createElement("img");
+      coverImg.src = extra.imgDataUrl;
+      coverImg.className = "extra-preview-cover";
+      coverImg.style.opacity = extra.opacidade;
+      previewImg = coverImg;
+      preview.appendChild(coverImg);
+    } else if(extra.imgDataUrl){
       var wrapper = document.createElement("div");
       wrapper.className = "extra-drag";
       wrapper.style.left = (extra.x*100) + "%";
@@ -794,7 +1026,9 @@ function renderExtras(){
     } else {
       var emptyMsg = document.createElement("div");
       emptyMsg.className = "extra-preview-empty";
-      emptyMsg.textContent = "envie uma imagem pra arrastar, redimensionar e posicionar aqui";
+      emptyMsg.textContent = extra.tipo === "fundo"
+        ? "envie uma imagem — ela preenche a página inteira sozinha"
+        : "envie uma imagem pra arrastar, redimensionar e posicionar aqui";
       preview.appendChild(emptyMsg);
     }
     card.appendChild(preview);
@@ -821,7 +1055,7 @@ function renderExtras(){
     var pageLabel = document.createElement("label"); pageLabel.textContent = "em quais páginas usar";
     pageField.appendChild(pageLabel);
     var pageSelect = document.createElement("select");
-    [["todas","todas"],["intercalado","intercalado (uma sim, uma não)"],["outro","outro"]].forEach(function(pair){
+    [["todas","todas"],["capa","só na capa (primeira página)"],["ultima","só na última página"],["intercalado","intercalado (uma sim, uma não)"],["outro","outro"]].forEach(function(pair){
       var opt = document.createElement("option");
       opt.value = pair[0]; opt.textContent = pair[1];
       if(pair[0] === extra.pageTarget) opt.selected = true;
@@ -903,13 +1137,17 @@ function currentSnapshot(){
     aspect: currentAspect,
     handle: document.getElementById("handle").value,
     taglabel: document.getElementById("taglabel").value,
-    typography: {titulo: typography.titulo, subtitulo: typography.subtitulo, texto: typography.texto},
+    typography: {titulo: typography.titulo, texto: typography.texto},
+    fonte: {
+      titulo: {selectedFontId: fontConfig.titulo.selectedFontId, customFontDataUrl: fontConfig.titulo.customFontDataUrl},
+      texto: {selectedFontId: fontConfig.texto.selectedFontId, customFontDataUrl: fontConfig.texto.customFontDataUrl}
+    },
     colors: {bg: BG, text: TEXT_COLOR, accent: ACCENT_COLOR},
     swatches: currentSwatches.slice(),
     logoDataUrl: customLogoDataUrl,
-    pages: pages.map(function(p){ return {titulo:p.titulo, subtitulo:p.subtitulo, texto:p.texto}; }),
+    pages: pages.map(function(p){ return {titulo:p.titulo, texto:p.texto, textOffsetX:p.textOffsetX||0, textOffsetY:p.textOffsetY||0}; }),
     extras: extras.map(function(e){
-      return {opacidade:e.opacidade, x:e.x, y:e.y, w:e.w, imgDataUrl:e.imgDataUrl, pageTarget:e.pageTarget, pageList:e.pageList};
+      return {tipo:e.tipo||"elemento", opacidade:e.opacidade, x:e.x, y:e.y, w:e.w, imgDataUrl:e.imgDataUrl, pageTarget:e.pageTarget, pageList:e.pageList};
     })
   };
 }
@@ -924,8 +1162,25 @@ function applySnapshot(snap){
   }
   document.getElementById("handle").value = snap.handle || "";
   document.getElementById("taglabel").value = snap.taglabel || "";
-  typography = Object.assign({titulo:1, subtitulo:1, texto:1}, snap.typography || {});
+  typography = Object.assign({titulo:1, texto:1}, snap.typography || {});
   renderTypography();
+  var fonteSnap = snap.fonte || {};
+  // perfis salvos antes desta mudança tinham uma fonte só, compartilhada
+  // (snap.fonte.selectedFontId) — aplica ela nos dois papéis ao carregar.
+  var legacyFonte = fonteSnap.selectedFontId ? fonteSnap : null;
+  ["titulo","texto"].forEach(function(role){
+    var roleFonte = legacyFonte || fonteSnap[role] || {};
+    fontConfig[role].selectedFontId = roleFonte.selectedFontId || "fraunces";
+    fontConfig[role].customFontDataUrl = roleFonte.customFontDataUrl || null;
+    customFontLoadPromises[role] = null;
+    renderFontSelect(role);
+    if(fontConfig[role].selectedFontId === "custom" && fontConfig[role].customFontDataUrl){
+      ensureCustomFontLoaded(role);
+    } else {
+      var preset = FONT_PRESETS.filter(function(p){ return p.id === fontConfig[role].selectedFontId; })[0];
+      if(preset) loadGoogleFontHref(preset.href);
+    }
+  });
   if(snap.colors){
     setRole("bg", snap.colors.bg);
     setRole("text", snap.colors.text);
@@ -939,16 +1194,21 @@ function applySnapshot(snap){
     document.getElementById("logo-upload").value = "";
     document.getElementById("logo-preview").innerHTML = "sem símbolo";
   }
-  pages = (snap.pages && snap.pages.length ? snap.pages : [{titulo:"",subtitulo:"",texto:""}]).map(function(p){
-    return {id: uid(), titulo: p.titulo || "", subtitulo: p.subtitulo || "", texto: p.texto || ""};
+  // perfis salvos antes da mudança de hierarquia ainda podem ter "subtítulo"
+  // separado — junta ele no início do texto pra não perder o que já tinha.
+  pages = (snap.pages && snap.pages.length ? snap.pages : [{titulo:"",texto:""}]).map(function(p){
+    var texto = p.texto || "";
+    if(p.subtitulo && p.subtitulo.trim()) texto = p.subtitulo.trim() + (texto ? "\n\n" + texto : "");
+    return {id: uid(), titulo: p.titulo || "", texto: texto, textOffsetX: p.textOffsetX || 0, textOffsetY: p.textOffsetY || 0};
   });
   renderPages();
   extras = (snap.extras || []).map(function(e){
-    var extra = Object.assign({id: uid(), imgObj:null, imgReady:null, pageTarget:"todas", pageList:""}, e);
+    var extra = Object.assign({id: uid(), tipo:"elemento", imgObj:null, imgReady:null, pageTarget:"todas", pageList:""}, e);
     if(extra.imgDataUrl) setExtraImage(extra, extra.imgDataUrl);
     return extra;
   });
   renderExtras();
+  renderPages();
 }
 
 function resetAllFields(){
@@ -957,18 +1217,24 @@ function resetAllFields(){
   document.getElementById("aspect-custom-row").hidden = true;
   document.getElementById("handle").value = "";
   document.getElementById("taglabel").value = "";
-  typography = {titulo:1, subtitulo:1, texto:1};
+  typography = {titulo:1, texto:1};
   renderTypography();
+  ["titulo","texto"].forEach(function(role){
+    fontConfig[role].selectedFontId = "fraunces";
+    fontConfig[role].customFontDataUrl = null;
+    customFontLoadPromises[role] = null;
+    renderFontSelect(role);
+  });
   setRole("bg", "#1A1A1A"); setRole("text", "#FFFFFF"); setRole("accent", "#FFFFFF");
   currentSwatches = [];
   renderSwatchBank();
   customLogoImg = null; customLogoReady = null; customLogoDataUrl = null;
   document.getElementById("logo-upload").value = "";
   document.getElementById("logo-preview").innerHTML = "sem símbolo";
-  pages = [{id: uid(), titulo: "", subtitulo: "", texto: ""}];
-  renderPages();
+  pages = [{id: uid(), titulo: "", texto: "", textOffsetX: 0, textOffsetY: 0}];
   extras = [];
   renderExtras();
+  renderPages();
 }
 
 function renderProfileSelect(){
@@ -1103,11 +1369,25 @@ async function guardedDownload(filename, data){
 /* =========================================================================
    fontes
    ========================================================================= */
+function loadRoleFont(role){
+  var cfg = fontConfig[role];
+  if(cfg.selectedFontId === "custom"){
+    return ensureCustomFontLoaded(role);
+  }
+  var preset = FONT_PRESETS.filter(function(p){ return p.id === cfg.selectedFontId; })[0];
+  var family = (preset ? preset.family : FONT_PRESETS[0].family).replace(/^'|'$/g, "").split(",")[0].replace(/^'|'$/g, "");
+  return Promise.all([
+    preset ? loadGoogleFontHref(preset.href) : Promise.resolve(),
+    document.fonts.load('400 80px "' + family + '"'),
+    document.fonts.load('500 80px "' + family + '"'),
+    document.fonts.load('600 80px "' + family + '"')
+  ]);
+}
+
 function fontsReady(){
   return Promise.all([
-    document.fonts.load('500 80px "Fraunces"'),
-    document.fonts.load('600 80px "Fraunces"'),
-    document.fonts.load('italic 500 40px "Fraunces"'),
+    loadRoleFont("titulo"),
+    loadRoleFont("texto"),
     document.fonts.load('600 15px "IBM Plex Mono"'),
     document.fonts.load('500 15px "IBM Plex Mono"')
   ]).then(function(){ return document.fonts.ready; });
@@ -1132,18 +1412,18 @@ function tokenizeParagraph(line){
   return tokens;
 }
 
-function measureToken(ctx, tok, fontSize){
-  ctx.font = (tok.bold ? "600 " : "400 ") + fontSize + "px 'Fraunces', serif";
+function measureToken(ctx, tok, fontSize, fontFamily){
+  ctx.font = (tok.bold ? "600 " : "400 ") + fontSize + "px " + fontFamily;
   return ctx.measureText(tok.text).width;
 }
 
-function wrapParagraph(ctx, paragraph, fontSize, maxWidth){
+function wrapParagraph(ctx, paragraph, fontSize, maxWidth, fontFamily){
   var tokens = tokenizeParagraph(paragraph);
   var lines = [];
   var current = [];
   var currentWidth = 0;
   tokens.forEach(function(tok){
-    var w = measureToken(ctx, tok, fontSize);
+    var w = measureToken(ctx, tok, fontSize, fontFamily);
     if(/^\s+$/.test(tok.text)){
       if(current.length){ current.push(tok); currentWidth += w; }
       return;
@@ -1170,7 +1450,7 @@ function buildLayout(ctx, page, baseSize, typo){
   var allLines = [];
   var totalHeight = 0;
   var hasEmitted = false;
-  var fields = [["titulo", page.titulo], ["subtitulo", page.subtitulo], ["texto", page.texto]];
+  var fields = [["titulo", page.titulo], ["texto", page.texto]];
   fields.forEach(function(pair){
     var type = pair[0];
     var raw = (pair[1] || "").trim();
@@ -1178,14 +1458,15 @@ function buildLayout(ctx, page, baseSize, typo){
     var fontSize = baseSize * TYPE_MULT[type] * (typo[type] || 1);
     var lineHeight = fontSize * 1.22;
     var paragraphGap = lineHeight * 0.55;
+    var fontFamily = currentFontFamily(type);
     var paragraphs = raw.split(/\n\s*\n/);
     paragraphs.forEach(function(p){
       var forced = p.split("\n");
       forced.forEach(function(fl, fli){
-        var wrapped = wrapParagraph(ctx, fl, fontSize, MAX_TEXT_WIDTH);
+        var wrapped = wrapParagraph(ctx, fl, fontSize, MAX_TEXT_WIDTH, fontFamily);
         wrapped.forEach(function(line, li){
           var gapBefore = (li===0 && fli===0 && hasEmitted) ? paragraphGap : 0;
-          allLines.push({tokens:line, fontSize:fontSize, lineHeight:lineHeight, gapBefore:gapBefore});
+          allLines.push({tokens:line, fontSize:fontSize, lineHeight:lineHeight, gapBefore:gapBefore, fontFamily:fontFamily});
           totalHeight += lineHeight + gapBefore;
           hasEmitted = true;
         });
@@ -1236,6 +1517,25 @@ async function drawPositionedExtra(ctx, extra){
   ctx.restore();
 }
 
+/* "fundo": preenche a página inteira sozinho (cover-fit), sem precisar
+   arrastar nem redimensionar — é a diferença pro elemento visual comum. */
+async function drawFullBackground(ctx, extra){
+  if(!extra.imgObj) return;
+  await extra.imgReady;
+  ctx.save();
+  ctx.globalAlpha = extra.opacidade;
+  var imgRatio = extra.imgObj.naturalWidth / extra.imgObj.naturalHeight;
+  var canvasRatio = W / H;
+  var dw, dh, dx, dy;
+  if(imgRatio > canvasRatio){
+    dh = H; dw = dh * imgRatio; dx = (W - dw) / 2; dy = 0;
+  } else {
+    dw = W; dh = dw / imgRatio; dx = 0; dy = (H - dh) / 2;
+  }
+  ctx.drawImage(extra.imgObj, dx, dy, dw, dh);
+  ctx.restore();
+}
+
 /* =========================================================================
    render de um slide
    ========================================================================= */
@@ -1245,8 +1545,13 @@ async function renderSlide(canvas, page, handle, taglabel, pageIndex0){
   ctx.fillStyle = BG;
   ctx.fillRect(0,0,W,H);
 
+  var totalPages = pages.length;
+  // fundos primeiro (ficam atrás de tudo), elementos soltos depois
+  for(var eb=0; eb<extras.length; eb++){
+    if(extras[eb].tipo === "fundo" && extraAppliesToPage(extras[eb], pageIndex0+1, totalPages)) await drawFullBackground(ctx, extras[eb]);
+  }
   for(var ei=0; ei<extras.length; ei++){
-    if(extraAppliesToPage(extras[ei], pageIndex0+1)) await drawPositionedExtra(ctx, extras[ei]);
+    if(extras[ei].tipo !== "fundo" && extraAppliesToPage(extras[ei], pageIndex0+1, totalPages)) await drawPositionedExtra(ctx, extras[ei]);
   }
 
   drawSpacedLabel(ctx, (handle + " | " + taglabel).toLowerCase(), MARGIN_X, H*LABEL_Y_FRAC, 2.6*(W/BASE_W));
@@ -1267,15 +1572,18 @@ async function renderSlide(canvas, page, handle, taglabel, pageIndex0){
 
   var fit = fitFontSize(ctx, page, typography);
   var layout = fit.layout;
-  var startY = CONTENT_TOP + Math.max(0, (CONTENT_BOTTOM - CONTENT_TOP - layout.totalHeight) / 2);
+  var offsetX = (page.textOffsetX || 0) * W;
+  var offsetY = (page.textOffsetY || 0) * H;
+  var startY = CONTENT_TOP + Math.max(0, (CONTENT_BOTTOM - CONTENT_TOP - layout.totalHeight) / 2) + offsetY;
+  var startX = MARGIN_X + offsetX;
 
   ctx.textBaseline = "alphabetic";
   var y = startY + (layout.lines[0] ? layout.lines[0].fontSize*0.85 : 0);
   layout.lines.forEach(function(line){
     y += line.gapBefore;
-    var x = MARGIN_X;
+    var x = startX;
     line.tokens.forEach(function(tok){
-      ctx.font = (tok.bold ? "600 " : "400 ") + line.fontSize + "px 'Fraunces', serif";
+      ctx.font = (tok.bold ? "600 " : "400 ") + line.fontSize + "px " + line.fontFamily;
       ctx.fillStyle = tok.bold ? ACCENT_COLOR : TEXT_COLOR;
       ctx.fillText(tok.text, x, y);
       x += ctx.measureText(tok.text).width;
@@ -1343,23 +1651,43 @@ document.getElementById("btn-gen").addEventListener("click", function(){
   generate().catch(function(e){ console.error(e); toast("Deu erro ao gerar — veja o console."); });
 });
 
+var jsZipPromise = null;
+function loadJSZip(){
+  if(window.JSZip) return Promise.resolve();
+  if(jsZipPromise) return jsZipPromise;
+  jsZipPromise = new Promise(function(resolve, reject){
+    var s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+    s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return jsZipPromise;
+}
+
 document.getElementById("btn-zip").addEventListener("click", async function(){
   if(currentCanvases.length === 0) return;
   if(downloadBusy){ toast("Espera o download atual terminar antes de pedir outro."); return; }
 
   downloadBusy = true;
+  var btn = this;
+  btn.disabled = true;
   try{
+    toast("preparando o zip com " + currentCanvases.length + " página(s)…");
+    await loadJSZip();
+    var zip = new window.JSZip();
     for(var i=0;i<currentCanvases.length;i++){
       var blob = await new Promise(function(res){ currentCanvases[i].toBlob(res, "image/png"); });
-      var result = await offerDownload("molda-pagina-" + String(i+1).padStart(2,"0") + ".png", blob);
-      if(!result || !result.ok){
-        if(result && result.code === "declined") break;
-      }
-      await wait(450);
+      zip.file("molda-pagina-" + String(i+1).padStart(2,"0") + ".png", blob);
     }
-    toast("Downloads concluídos.");
+    var zipBlob = await zip.generateAsync({type:"blob"});
+    var result = await offerDownload("molda-carrossel.zip", zipBlob);
+    if(result && result.ok) toast("zip baixado com " + currentCanvases.length + " página(s).");
+  } catch(e){
+    console.error(e);
+    toast("não consegui gerar o zip agora. tenta de novo em instantes.");
   } finally {
     downloadBusy = false;
+    btn.disabled = currentCanvases.length === 0;
   }
 });
 </script>

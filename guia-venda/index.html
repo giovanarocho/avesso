@@ -211,16 +211,21 @@
 
       <div id="cp-step-email">
         <h3>guia marketing essencial</h3>
-        <p class="cp-sub"><span class="js-price-guia">R$ 39,90</span> · pagamento único via pix</p>
+        <p class="cp-sub"><span class="js-price-guia">R$ 39,90</span> · pagamento único, pix ou cartão</p>
         <input type="email" id="cp-email" placeholder="seu e-mail">
+        <div class="cp-method-tabs">
+          <button type="button" class="cp-method-btn active" id="cp-method-pix">pix</button>
+          <button type="button" class="cp-method-btn" id="cp-method-cartao">cartão</button>
+        </div>
         <button class="btn btn-primary" id="cp-gerar-pix">gerar pix</button>
+        <div id="cp-card-brick" style="display:none;"></div>
         <p class="cp-msg" id="cp-email-msg"></p>
       </div>
 
       <div id="cp-step-pix" style="display:none;">
-        <h3>escaneie ou copie o código</h3>
-        <p class="cp-sub">assim que o pagamento confirmar, o link do guia aparece aqui automaticamente.</p>
-        <div class="qr-box">
+        <h3>confirmando seu pagamento</h3>
+        <p class="cp-sub">assim que confirmar, o link do guia aparece aqui automaticamente.</p>
+        <div class="qr-box" id="cp-qr-box">
           <img id="cp-qr-img" src="" alt="qr code pix">
           <div class="pix-code" id="cp-pix-code"></div>
           <button class="btn btn-primary" id="cp-copiar">copiar código pix</button>

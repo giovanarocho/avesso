@@ -154,6 +154,15 @@ footer{text-align:center;padding:40px 20px 60px;font-size:12px;opacity:.6;}
 }
 .checkout-panel .btn{width:100%;text-align:center;}
 .checkout-panel .cp-msg{font-size:12.5px;margin-top:14px;opacity:.85;min-height:16px;}
+
+.cp-method-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.cp-method-btn{
+  flex:1;padding:10px;border-radius:10px;border:1px solid rgba(61,42,30,.2);
+  background:transparent;color:var(--coffee);font-family:'Work Sans',sans-serif;
+  font-size:13.5px;font-weight:500;cursor:pointer;transition:background .15s ease,color .15s ease;
+}
+.cp-method-btn.active{background:var(--coffee);color:var(--sand);border-color:var(--coffee);}
+#cp-card-brick{margin-top:4px;min-height:40px;text-align:left;}
 .checkout-panel .qr-box{margin:18px 0;}
 .checkout-panel .qr-box img{width:200px;height:200px;margin:0 auto 14px;display:block;border-radius:12px;}
 .checkout-panel .pix-code{

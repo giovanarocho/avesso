@@ -22,7 +22,9 @@ async function actionCreate(req, res, body) {
     return;
   }
 
-  const email = String(body.email || '').trim().toLowerCase();
+  // no pix o e-mail vem direto do formulário (body.email); no cartão ele
+  // vem de dentro do formData que o Payment Brick devolve (body.payer.email).
+  const email = String(body.email || (body.payer && body.payer.email) || '').trim().toLowerCase();
   if (!email || email.indexOf('@') === -1) {
     res.status(400).json({ error: 'e-mail inválido' });
     return;
@@ -37,6 +39,42 @@ async function actionCreate(req, res, body) {
     ? crypto.randomUUID()
     : (Date.now() + '-' + Math.random());
 
+  // método vem do cliente só pra saber que payload montar — nunca decide o
+  // valor cobrado (isso é sempre o `amount` resolvido acima).
+  const metodo = body.method === 'cartao' ? 'cartao' : 'pix';
+
+  let paymentBody;
+  if (metodo === 'pix') {
+    paymentBody = {
+      transaction_amount: amount,
+      description: produto.mpDescription,
+      payment_method_id: 'pix',
+      payer: { email: email }
+    };
+  } else {
+    // cartão via Payment Brick: o número do cartão nunca passa pelo nosso
+    // servidor — o Brick tokeniza direto no navegador da pessoa (a chamada
+    // vai pro Mercado Pago via JS SDK deles), aqui só chega o token pronto.
+    const token = String(body.token || '');
+    const paymentMethodId = String(body.payment_method_id || '');
+    if (!token || !paymentMethodId) {
+      res.status(400).json({ error: 'dados do cartão incompletos' });
+      return;
+    }
+    paymentBody = {
+      transaction_amount: amount,
+      description: produto.mpDescription,
+      token: token,
+      installments: parseInt(body.installments, 10) || 1,
+      payment_method_id: paymentMethodId,
+      payer: {
+        email: email,
+        identification: (body.payer && body.payer.identification) || undefined
+      }
+    };
+    if (body.issuer_id) paymentBody.issuer_id = body.issuer_id;
+  }
+
   const mpRes = await fetch('https://api.mercadopago.com/v1/payments', {
     method: 'POST',
     headers: {
@@ -44,12 +82,7 @@ async function actionCreate(req, res, body) {
       'Content-Type': 'application/json',
       'X-Idempotency-Key': idempotencyKey
     },
-    body: JSON.stringify({
-      transaction_amount: amount,
-      description: produto.mpDescription,
-      payment_method_id: 'pix',
-      payer: { email: email }
-    })
+    body: JSON.stringify(paymentBody)
   });
 
   const data = await mpRes.json();
@@ -61,7 +94,7 @@ async function actionCreate(req, res, body) {
   const txData = data.point_of_interaction && data.point_of_interaction.transaction_data;
 
   // guarda o registro do pagamento marcado com o produto — é assim que o
-  // "status" sabe qual ferramenta liberar quando o pix confirmar.
+  // "status" sabe qual ferramenta liberar quando o pagamento confirmar.
   await dbUpsertPagamento({
     payment_id: String(data.id),
     email: email,
@@ -74,6 +107,7 @@ async function actionCreate(req, res, body) {
   res.status(200).json({
     payment_id: data.id,
     status: data.status,
+    status_detail: data.status_detail || null,
     qr_code: txData ? txData.qr_code : null,
     qr_code_base64: txData ? txData.qr_code_base64 : null,
     ticket_url: txData ? txData.ticket_url : null,

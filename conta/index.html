@@ -104,6 +104,14 @@
     padding:12px;max-height:64px;overflow-y:auto;margin-bottom:12px;text-align:left;
   }
   .cp-close{display:inline-block;margin-top:16px;font-size:12px;text-decoration:underline;opacity:.7;background:none;border:none;cursor:pointer;color:var(--coffee);}
+  .cp-method-tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .cp-method-btn{
+    flex:1;padding:10px;border-radius:10px;border:1px solid rgba(61,42,30,.2);
+    background:transparent;color:var(--coffee);font-family:'Work Sans',sans-serif;
+    font-size:13.5px;font-weight:500;cursor:pointer;transition:background .15s ease,color .15s ease;
+  }
+  .cp-method-btn.active{background:var(--coffee);color:var(--sand);border-color:var(--coffee);}
+  #cp-card-brick{margin-top:4px;min-height:40px;text-align:left;}
   .cp-spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(61,42,30,.2);border-top-color:var(--cream);margin:8px auto;animation:spin .8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .cp-msg{font-size:12.5px;margin-top:12px;opacity:.85;min-height:16px;}
@@ -185,13 +193,18 @@
       <div id="cp-step-email">
         <h3 id="cp-produto-nome">comprar</h3>
         <p class="cp-sub" id="cp-produto-preco"></p>
+        <div class="cp-method-tabs">
+          <button type="button" class="cp-method-btn active" id="cp-method-pix">pix</button>
+          <button type="button" class="cp-method-btn" id="cp-method-cartao">cartão</button>
+        </div>
         <button class="btn btn-primary" id="cp-gerar-pix" type="button">gerar pix</button>
+        <div id="cp-card-brick" style="display:none;"></div>
         <p class="cp-msg" id="cp-email-msg"></p>
       </div>
       <div id="cp-step-pix" style="display:none;">
-        <h3>escaneie ou copie o código</h3>
-        <p class="cp-sub">assim que o pagamento confirmar, a ferramenta libera aqui na hora.</p>
-        <div class="qr-box">
+        <h3>confirmando seu pagamento</h3>
+        <p class="cp-sub">assim que confirmar, a ferramenta libera aqui na hora.</p>
+        <div class="qr-box" id="cp-qr-box">
           <img id="cp-qr-img" src="" alt="qr code pix">
           <div class="pix-code" id="cp-pix-code"></div>
           <button class="btn btn-outline" id="cp-copiar" type="button">copiar código pix</button>
@@ -399,17 +412,36 @@
   var cpStepEmail = document.getElementById('cp-step-email');
   var cpStepPix = document.getElementById('cp-step-pix');
   var cpStepSucesso = document.getElementById('cp-step-sucesso');
+  var qrBox = document.getElementById('cp-qr-box');
+  var cardBrickEl = document.getElementById('cp-card-brick');
+  var btnPix = document.getElementById('cp-gerar-pix');
+  var tabPix = document.getElementById('cp-method-pix');
+  var tabCartao = document.getElementById('cp-method-cartao');
   var pollTimer = null;
   var currentSlug = null;
+  var currentPreco = null;
+  var brickInstance = null;
+  var mpConfigPromise = null;
+
+  function setMetodo(metodo){
+    tabPix.classList.toggle('active', metodo === 'pix');
+    tabCartao.classList.toggle('active', metodo === 'cartao');
+    btnPix.style.display = metodo === 'pix' ? 'block' : 'none';
+    cardBrickEl.style.display = metodo === 'cartao' ? 'block' : 'none';
+  }
 
   function openCheckout(slug, nome, preco){
     currentSlug = slug;
+    currentPreco = parseFloat(preco);
+    brickInstance = null;
     document.getElementById('cp-produto-nome').textContent = nome;
-    document.getElementById('cp-produto-preco').textContent = fmtMoney(preco) + ' · pagamento único via pix';
+    document.getElementById('cp-produto-preco').textContent = fmtMoney(preco) + ' · pix ou cartão';
     cpStepEmail.style.display = 'block';
     cpStepPix.style.display = 'none';
     cpStepSucesso.style.display = 'none';
     document.getElementById('cp-email-msg').textContent = '';
+    cardBrickEl.innerHTML = '';
+    setMetodo('pix');
     overlay.classList.add('open');
   }
   function closeCheckout(){
@@ -419,6 +451,12 @@
   document.getElementById('cp-close').addEventListener('click', closeCheckout);
   overlay.addEventListener('click', function(e){ if(e.target === overlay) closeCheckout(); });
 
+  tabPix.addEventListener('click', function(){ setMetodo('pix'); });
+  tabCartao.addEventListener('click', function(){
+    setMetodo('cartao');
+    loadCardBrick();
+  });
+
   document.getElementById('cp-gerar-pix').addEventListener('click', function(){
     var email = document.getElementById('account-email').textContent;
     var msgEl = document.getElementById('cp-email-msg');
@@ -426,18 +464,88 @@
 
     fetch('/api/payment?action=create&produto=' + encodeURIComponent(currentSlug), {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({email: email})
+      body: JSON.stringify({email: email, method: 'pix'})
     }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
       .then(function(res){
         if(!res.ok){ msgEl.textContent = 'não consegui gerar o pix agora. tenta de novo em instantes.'; return; }
         var data = res.data;
         if(data.qr_code_base64){ document.getElementById('cp-qr-img').src = 'data:image/png;base64,' + data.qr_code_base64; }
         document.getElementById('cp-pix-code').textContent = data.qr_code || '';
-        cpStepEmail.style.display = 'none';
-        cpStepPix.style.display = 'block';
+        irParaAguardando('pix');
         startPolling(data.payment_id);
       }).catch(function(){ msgEl.textContent = 'não consegui conectar. verifica sua internet e tenta de novo.'; });
   });
+
+  // ---- cartão (Payment Brick do Mercado Pago) — o número do cartão nunca
+  // passa pelo nosso servidor, só um token já tokenizado no navegador. ----
+  function getMpConfig(){
+    if(!mpConfigPromise) mpConfigPromise = fetch('/api/config').then(function(r){ return r.json(); });
+    return mpConfigPromise;
+  }
+  function loadSdk(){
+    if(window.MercadoPago) return Promise.resolve();
+    return new Promise(function(resolve, reject){
+      var s = document.createElement('script');
+      s.src = 'https://sdk.mercadopago.com/js/v2';
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  function loadCardBrick(){
+    if(brickInstance) return;
+    var email = document.getElementById('account-email').textContent;
+    cardBrickEl.innerHTML = '<p class="cp-msg">carregando pagamento por cartão…</p>';
+
+    Promise.all([getMpConfig(), loadSdk()]).then(function(results){
+      var cfg = results[0];
+      if(!cfg.mpPublicKey){
+        cardBrickEl.innerHTML = '<p class="cp-msg">pagamento por cartão indisponível no momento. tenta pelo pix.</p>';
+        return;
+      }
+      cardBrickEl.innerHTML = '';
+      var mp = new window.MercadoPago(cfg.mpPublicKey, { locale: 'pt-BR' });
+      brickInstance = mp.bricks().create('payment', 'cp-card-brick', {
+        initialization: { amount: currentPreco, payer: { email: email } },
+        customization: {
+          paymentMethods: { creditCard: 'all', debitCard: 'all', ticket: 'excluded', bankTransfer: 'excluded', maxInstallments: 12 }
+        },
+        callbacks: {
+          onSubmit: function(params){
+            var formData = params.formData || {};
+            return new Promise(function(resolve, reject){
+              var msgEl = document.getElementById('cp-email-msg');
+              fetch('/api/payment?action=create&produto=' + encodeURIComponent(currentSlug), {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(Object.assign({ method: 'cartao' }, formData))
+              }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+                .then(function(res){
+                  if(!res.ok){ if(msgEl) msgEl.textContent = 'não consegui processar esse cartão. confere os dados ou tenta outro.'; reject(); return; }
+                  resolve();
+                  if(res.data.status === 'rejected'){ if(msgEl) msgEl.textContent = 'o cartão foi recusado. tenta outro cartão ou paga pelo pix.'; return; }
+                  irParaAguardando('cartao');
+                  startPolling(res.data.payment_id);
+                }).catch(function(){ if(msgEl) msgEl.textContent = 'não consegui conectar. verifica sua internet e tenta de novo.'; reject(); });
+            });
+          },
+          onError: function(){
+            var msgEl = document.getElementById('cp-email-msg');
+            if(msgEl) msgEl.textContent = 'não consegui carregar o pagamento por cartão. tenta pelo pix.';
+          }
+        }
+      });
+    }).catch(function(){
+      cardBrickEl.innerHTML = '<p class="cp-msg">não consegui carregar o pagamento por cartão. tenta pelo pix.</p>';
+    });
+  }
+
+  function irParaAguardando(metodoUsado){
+    cpStepEmail.style.display = 'none';
+    cpStepPix.style.display = 'block';
+    qrBox.style.display = metodoUsado === 'pix' ? 'block' : 'none';
+    document.getElementById('cp-status-msg').textContent = metodoUsado === 'pix'
+      ? 'aguardando confirmação do pagamento…'
+      : 'confirmando o pagamento do cartão…';
+  }
 
   document.getElementById('cp-copiar').addEventListener('click', function(){
     var code = document.getElementById('cp-pix-code').textContent;
@@ -479,7 +587,7 @@
               .then(function(data){ produtosCache = data.produtos || []; renderProdutos(); }).catch(function(){});
           } else if(data.status === 'rejected' || data.status === 'cancelled'){
             clearInterval(pollTimer); pollTimer = null;
-            document.getElementById('cp-status-msg').textContent = 'esse pix não foi confirmado. feche e tente gerar um novo.';
+            document.getElementById('cp-status-msg').textContent = 'esse pagamento não foi confirmado. feche e tente de novo.';
           }
         }).catch(function(){});
     }, 3000);
