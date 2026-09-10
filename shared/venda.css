@@ -1,0 +1,151 @@
+/* ---------- padrão visual das páginas de venda das ferramentas ----------
+   usado por /molda e /guia-venda, pra ficarem com a mesma cara — e por
+   qualquer ferramenta nova: inclui esse arquivo com
+     <link rel="stylesheet" href="/shared/venda.css">
+   e monta a página com essas classes prontas, sem reinventar estilo.
+   pensado pra funcionar sozinha (link direto, sem passar pela home),
+   porque pode ser divulgada por afiliados sem nenhum contexto do site. */
+
+:root{ --sand:#F3EADA; --cream:#E8CE9A; --coffee:#3D2A1E; }
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Work Sans',sans-serif;font-weight:400;line-height:1.7;
+  -webkit-font-smoothing:antialiased;background:var(--sand);color:var(--coffee);
+}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.15;letter-spacing:-0.01em;}
+a{color:inherit;}
+img{max-width:100%;display:block;}
+.wrap{max-width:640px;margin:0 auto;padding:0 28px;}
+section{padding:clamp(56px,9vw,96px) 0;}
+section + section{border-top:1px solid rgba(61,42,30,.14);}
+
+.top-nav{padding:22px 0;}
+.top-nav .wrap{display:flex;align-items:center;justify-content:space-between;}
+.top-nav a.back{font-size:13px;text-decoration:none;opacity:.7;}
+.top-nav a.back:hover{opacity:1;}
+.brand-tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;}
+
+.hero{padding-top:8px;border-top:none;}
+.hero .eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:14px;display:block;}
+.hero h1{font-size:clamp(32px,6vw,48px);}
+.hero .lede{margin-top:16px;font-size:16px;max-width:52ch;opacity:.85;}
+.hero .positioning{
+  font-family:'Fraunces',serif;font-style:italic;font-size:clamp(16px,2.2vw,19px);
+  line-height:1.5;max-width:48ch;margin-top:18px;opacity:.95;
+}
+
+.price-box{margin-top:28px;}
+.price-box .fp{font-family:'Fraunces',serif;font-size:28px;}
+.price-box small{font-family:'Work Sans',sans-serif;font-size:13px;opacity:.7;}
+
+.btn{
+  display:inline-block;font-family:'Work Sans',sans-serif;font-size:14px;font-weight:500;
+  letter-spacing:0.02em;padding:16px 34px;border-radius:999px;text-decoration:none;
+  border:none;cursor:pointer;transition:opacity .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.btn:hover{opacity:.92;transform:translateY(-2px);}
+.btn-gold{background:var(--cream);color:var(--coffee);box-shadow:0 8px 22px rgba(232,206,154,.45);}
+.btn-gold:hover{box-shadow:0 12px 28px rgba(232,206,154,.6);}
+.btn-primary{background:var(--coffee);color:var(--sand);box-shadow:0 8px 22px rgba(61,42,30,.22);}
+
+.cta{margin-top:26px;}
+.fineprint{font-size:12.5px;opacity:.7;margin-top:14px;max-width:400px;}
+
+.trust-row{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:22px;}
+.trust-row span{font-size:12.5px;opacity:.75;display:flex;align-items:center;gap:6px;}
+.trust-row span::before{content:"✓";color:#5c7a52;font-weight:600;}
+
+.eyebrow-section{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:14px;display:block;}
+
+/* pra quem é / não é — ajuda quem chegou sem contexto nenhum do site a se
+   reconhecer (ou não) rapidinho, sem precisar ler tudo. */
+.publico{display:grid;grid-template-columns:1fr;gap:28px;}
+@media(min-width:560px){.publico{grid-template-columns:1fr 1fr;}}
+.publico h3{font-size:15px;font-weight:500;font-family:'Work Sans',sans-serif;margin-bottom:12px;}
+.publico ul{list-style:none;}
+.publico li{font-size:14px;opacity:.85;padding:7px 0 7px 24px;position:relative;}
+.publico .sim li::before{content:"✓";position:absolute;left:0;color:#5c7a52;font-weight:600;}
+.publico .nao li::before{content:"–";position:absolute;left:2px;opacity:.5;}
+
+.features h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:28px;max-width:460px;}
+.feat-list{display:flex;flex-direction:column;gap:0;}
+.feat-item{display:flex;gap:14px;padding:16px 2px;border-top:1px solid rgba(61,42,30,.12);}
+.feat-item:first-child{border-top:none;}
+.feat-item .ico{font-family:'Fraunces',serif;font-size:15px;opacity:.5;flex-shrink:0;width:22px;}
+.feat-item p{margin:0;font-size:14.5px;opacity:.88;}
+
+/* passo a passo numerado, mais robusto que o "como funciona" simples —
+   pra quando cada etapa entrega algo concreto que vale destacar. */
+.passos h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:12px;max-width:480px;}
+.passos .sub{font-size:14.5px;max-width:480px;opacity:.8;margin-bottom:36px;}
+.passo-list{display:flex;flex-direction:column;}
+.passo-item{display:grid;grid-template-columns:auto 1fr;gap:18px;padding:20px 2px;border-top:1px solid rgba(61,42,30,.14);}
+.passo-item:last-child{border-bottom:1px solid rgba(61,42,30,.14);}
+.passo-item .num{font-family:'Fraunces',serif;font-size:14px;opacity:.5;width:26px;padding-top:2px;}
+.passo-item .label{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;opacity:.55;display:block;margin-bottom:4px;}
+.passo-item h3{font-size:16.5px;font-weight:500;font-family:'Work Sans',sans-serif;margin-bottom:6px;}
+.passo-item p{font-size:14px;opacity:.82;margin:0;max-width:520px;}
+
+.como h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:24px;max-width:460px;}
+.passo{display:flex;gap:16px;padding:14px 2px;}
+.passo .n{font-family:'Fraunces',serif;font-size:20px;opacity:.4;flex-shrink:0;width:26px;}
+.passo p{margin:0;font-size:14.5px;opacity:.88;padding-top:2px;}
+
+/* perguntas rápidas — resolve objeção de quem chegou sem contexto e não
+   vai procurar em outro lugar. */
+.faq h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:24px;max-width:460px;}
+.faq-item{padding:16px 2px;border-top:1px solid rgba(61,42,30,.12);}
+.faq-item:first-child{border-top:none;}
+.faq-item h3{font-size:15px;font-weight:500;font-family:'Work Sans',sans-serif;margin-bottom:6px;}
+.faq-item p{font-size:14px;opacity:.82;margin:0;}
+
+.cta-final{text-align:center;}
+.cta-final h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:14px;}
+.cta-final .lede{font-size:15px;opacity:.8;max-width:46ch;margin:0 auto 28px;}
+
+footer{text-align:center;padding:40px 20px 60px;font-size:12px;opacity:.6;}
+
+/* ---------- checkout modal (o mesmo em qualquer ferramenta) ---------- */
+.checkout-overlay{
+  display:none;position:fixed;inset:0;background:rgba(20,13,9,.72);
+  z-index:999;align-items:center;justify-content:center;padding:20px;
+}
+.checkout-overlay.open{display:flex;}
+.checkout-panel{
+  background:var(--sand);color:var(--coffee);
+  max-width:420px;width:100%;max-height:90vh;overflow-y:auto;
+  border-radius:20px;padding:32px 28px;text-align:center;
+  box-shadow:0 24px 60px rgba(20,13,9,.35);
+}
+.checkout-panel h3{font-family:'Fraunces',serif;font-size:20px;font-weight:400;margin-bottom:8px;}
+.checkout-panel .cp-sub{font-size:13px;opacity:.75;margin-bottom:24px;}
+.checkout-panel input[type="email"]{
+  width:100%;padding:13px 16px;border:1px solid rgba(61,42,30,.25);
+  border-radius:10px;font-family:'Work Sans',sans-serif;font-size:15px;
+  margin-bottom:14px;background:#fff;color:var(--coffee);
+}
+.checkout-panel .btn{width:100%;text-align:center;}
+.checkout-panel .cp-msg{font-size:12.5px;margin-top:14px;opacity:.85;min-height:16px;}
+.checkout-panel .qr-box{margin:18px 0;}
+.checkout-panel .qr-box img{width:200px;height:200px;margin:0 auto 14px;display:block;border-radius:12px;}
+.checkout-panel .pix-code{
+  font-family:monospace;font-size:11px;word-break:break-all;
+  background:#fff;border:1px solid rgba(61,42,30,.15);border-radius:10px;
+  padding:12px;max-height:70px;overflow-y:auto;margin-bottom:12px;text-align:left;
+}
+.checkout-panel .cp-close{
+  display:inline-block;margin-top:16px;font-size:12px;
+  text-decoration:underline;opacity:.7;background:none;border:none;cursor:pointer;color:var(--coffee);
+}
+.cp-spinner{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid rgba(61,42,30,.2);border-top-color:var(--cream);
+  margin:10px auto;animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.cp-success{font-size:15px;margin-bottom:8px;}
+
+@media (max-width:520px){
+  section{padding:clamp(44px,12vw,72px) 0;}
+}

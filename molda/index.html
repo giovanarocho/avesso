@@ -4,125 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>molda — gere seu conteúdo para lançamento | estúdio avesso</title>
+<meta name="description" content="crie carrosséis e conteúdo pro seu lançamento em minutos, já na sua identidade visual — sem precisar de designer. R$ 29,90, acesso na hora.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --sand:#F3EADA;
-    --cream:#E8CE9A;
-    --coffee:#3D2A1E;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    font-family:'Work Sans',sans-serif;font-weight:400;line-height:1.7;
-    -webkit-font-smoothing:antialiased;background:var(--sand);color:var(--coffee);
-  }
-  h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.15;letter-spacing:-0.01em;}
-  a{color:inherit;}
-  .wrap{max-width:640px;margin:0 auto;padding:0 28px;}
-  section{padding:clamp(56px,9vw,96px) 0;}
-
-  .top-nav{padding:22px 0;}
-  .top-nav .wrap{display:flex;align-items:center;justify-content:space-between;}
-  .top-nav a.back{font-size:13px;text-decoration:none;opacity:.7;}
-  .top-nav a.back:hover{opacity:1;}
-  .brand-tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;}
-
-  .hero{padding-top:8px;}
-  .hero .eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:14px;display:block;}
-  .hero h1{font-size:clamp(32px,6vw,48px);}
-  .hero .lede{margin-top:16px;font-size:16px;max-width:52ch;opacity:.85;}
-
-  .price-box{margin-top:28px;}
-  .price-box .fp{font-family:'Fraunces',serif;font-size:28px;}
-  .price-box small{font-family:'Work Sans',sans-serif;font-size:13px;opacity:.7;}
-
-  .btn{
-    display:inline-block;font-family:'Work Sans',sans-serif;font-size:14px;font-weight:500;
-    letter-spacing:0.02em;padding:16px 34px;border-radius:999px;text-decoration:none;
-    border:none;cursor:pointer;transition:opacity .2s ease, transform .2s ease, box-shadow .2s ease;
-  }
-  .btn:hover{opacity:.92;transform:translateY(-2px);}
-  .btn-gold{background:var(--cream);color:var(--coffee);box-shadow:0 8px 22px rgba(232,206,154,.45);}
-  .btn-gold:hover{box-shadow:0 12px 28px rgba(232,206,154,.6);}
-  .btn-primary{background:var(--coffee);color:var(--sand);box-shadow:0 8px 22px rgba(61,42,30,.22);}
-
-  .cta{margin-top:26px;}
-  .fineprint{font-size:12.5px;opacity:.7;margin-top:14px;max-width:400px;}
-
-  .features{border-top:1px solid rgba(61,42,30,.14);}
-  .features h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:28px;max-width:460px;}
-  .feat-list{display:flex;flex-direction:column;gap:0;}
-  .feat-item{display:flex;gap:14px;padding:16px 2px;border-top:1px solid rgba(61,42,30,.12);}
-  .feat-item:first-child{border-top:none;}
-  .feat-item .ico{font-family:'Fraunces',serif;font-size:15px;opacity:.5;flex-shrink:0;width:22px;}
-  .feat-item p{margin:0;font-size:14.5px;opacity:.88;}
-
-  .como{border-top:1px solid rgba(61,42,30,.14);}
-  .como h2{font-size:clamp(22px,3.4vw,28px);margin-bottom:24px;max-width:460px;}
-  .passo{display:flex;gap:16px;padding:14px 2px;}
-  .passo .n{font-family:'Fraunces',serif;font-size:20px;opacity:.4;flex-shrink:0;width:26px;}
-  .passo p{margin:0;font-size:14.5px;opacity:.88;padding-top:2px;}
-
-  footer{text-align:center;padding:40px 20px 60px;font-size:12px;opacity:.6;}
-
-  /* ---------- checkout modal (mesmo padrão visual do checkout do guia) ---------- */
-  .checkout-overlay{
-    display:none;position:fixed;inset:0;background:rgba(20,13,9,.72);
-    z-index:999;align-items:center;justify-content:center;padding:20px;
-  }
-  .checkout-overlay.open{display:flex;}
-  .checkout-panel{
-    background:var(--sand);color:var(--coffee);
-    max-width:420px;width:100%;max-height:90vh;overflow-y:auto;
-    border-radius:20px;padding:32px 28px;text-align:center;
-    box-shadow:0 24px 60px rgba(20,13,9,.35);
-  }
-  .checkout-panel h3{font-family:'Fraunces',serif;font-size:20px;font-weight:400;margin-bottom:8px;}
-  .checkout-panel .cp-sub{font-size:13px;opacity:.75;margin-bottom:24px;}
-  .checkout-panel input[type="email"]{
-    width:100%;padding:13px 16px;border:1px solid rgba(61,42,30,.25);
-    border-radius:10px;font-family:'Work Sans',sans-serif;font-size:15px;
-    margin-bottom:14px;background:#fff;color:var(--coffee);
-  }
-  .checkout-panel .btn{width:100%;text-align:center;}
-  .checkout-panel .cp-msg{font-size:12.5px;margin-top:14px;opacity:.85;min-height:16px;}
-  .checkout-panel .qr-box{margin:18px 0;}
-  .checkout-panel .qr-box img{width:200px;height:200px;margin:0 auto 14px;display:block;border-radius:12px;}
-  .checkout-panel .pix-code{
-    font-family:monospace;font-size:11px;word-break:break-all;
-    background:#fff;border:1px solid rgba(61,42,30,.15);border-radius:10px;
-    padding:12px;max-height:70px;overflow-y:auto;margin-bottom:12px;text-align:left;
-  }
-  .checkout-panel .cp-close{
-    display:inline-block;margin-top:16px;font-size:12px;
-    text-decoration:underline;opacity:.7;background:none;border:none;cursor:pointer;color:var(--coffee);
-  }
-  .cp-spinner{
-    width:22px;height:22px;border-radius:50%;
-    border:2px solid rgba(61,42,30,.2);border-top-color:var(--cream);
-    margin:10px auto;animation:spin 0.8s linear infinite;
-  }
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .cp-success{font-size:15px;margin-bottom:8px;}
-</style>
+<link rel="stylesheet" href="/shared/venda.css">
 </head>
 <body>
 
   <div class="top-nav">
     <div class="wrap">
-      <a class="back" href="/">← voltar pro site</a>
-      <span class="brand-tag">estúdio avesso</span>
+      <a class="back" href="/">← estúdio avesso</a>
+      <span class="brand-tag">ferramenta do avesso</span>
     </div>
   </div>
 
   <section class="hero">
     <div class="wrap">
-      <span class="eyebrow">ferramenta do avesso</span>
-      <h1>molda — gere seu conteúdo para lançamento</h1>
-      <p class="lede">crie conteúdo pro seu lançamento em minutos: escolha o formato, escreva o conteúdo de cada página e o molda gera as imagens já na sua identidade — cores, tipografia e símbolo do jeito que você definir.</p>
+      <span class="eyebrow">gerador de conteúdo pra lançamentos</span>
+      <h1>monte o carrossel do seu lançamento sem abrir o canva.</h1>
+      <p class="lede">o molda é uma ferramenta simples: você escreve o conteúdo, escolhe o formato, e ele gera as imagens prontas — já na sua identidade visual. sem mensalidade, sem curva de aprendizado, sem precisar entender de design.</p>
 
       <div class="price-box">
         <span class="fp"><span class="js-price-molda">R$ 29,90</span></span>
@@ -132,13 +33,41 @@
       <div class="cta">
         <button class="btn btn-gold" id="btn-abrir-checkout">quero o molda — pagar com pix</button>
       </div>
-      <p class="fineprint">pagamento via pix, confirmado automaticamente. depois de pagar você cria sua senha e já acessa o molda direto no site, sempre que quiser.</p>
+      <p class="fineprint">depois de pagar você cria sua senha e já acessa o molda direto no site, sempre que quiser — em qualquer aparelho.</p>
+      <div class="trust-row">
+        <span>pagamento único, sem assinatura</span>
+        <span>acesso imediato após o pix</span>
+        <span>funciona no navegador, sem instalar nada</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="publico">
+    <div class="wrap publico">
+      <div class="sim">
+        <h3>o molda é pra você se</h3>
+        <ul>
+          <li>tem um lançamento, produto ou evento chegando e precisa de conteúdo rápido</li>
+          <li>já tem (ou consegue definir) cores e fonte da sua marca</li>
+          <li>quer parar de pagar designer ou perder horas no canva pra cada carrossel</li>
+          <li>prefere pagar uma vez e usar sempre que precisar, sem mensalidade</li>
+        </ul>
+      </div>
+      <div class="nao">
+        <h3>talvez não seja pra você se</h3>
+        <ul>
+          <li>você procura um editor de design completo, tipo canva ou photoshop</li>
+          <li>precisa de templates prontos de terceiros, sem nenhuma identidade própria</li>
+          <li>quer alguém fazendo o conteúdo por você (nesse caso, veja a <a href="/#formatos" style="text-decoration:underline;">manutenção contínua</a> da avesso)</li>
+        </ul>
+      </div>
     </div>
   </section>
 
   <section class="features">
     <div class="wrap">
-      <h2>o que o molda faz por você</h2>
+      <span class="eyebrow-section">o que você recebe</span>
+      <h2>tudo pronto pra publicar, sem sair da ferramenta</h2>
       <div class="feat-list">
         <div class="feat-item"><span class="ico">—</span><p>escolha o formato: story (9:16), feed (4:5), post quadrado (1:1) ou uma proporção sua.</p></div>
         <div class="feat-item"><span class="ico">—</span><p>defina sua identidade uma vez — cores, símbolo e tipografia — e salve como perfil pra reaproveitar sempre.</p></div>
@@ -151,10 +80,46 @@
 
   <section class="como">
     <div class="wrap">
-      <h2>como funciona</h2>
-      <div class="passo"><span class="n">1</span><p>você paga o pix aqui nesta página.</p></div>
+      <span class="eyebrow-section">como funciona</span>
+      <h2>3 passos até seu carrossel pronto</h2>
+      <div class="passo"><span class="n">1</span><p>você paga o pix aqui nesta página — leva menos de um minuto.</p></div>
       <div class="passo"><span class="n">2</span><p>assim que o pagamento confirma, você cria sua senha de acesso.</p></div>
       <div class="passo"><span class="n">3</span><p>a partir daí, o molda fica sempre disponível pra você aqui no site — e-mail e senha, sem precisar de código nem link avulso.</p></div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="wrap">
+      <span class="eyebrow-section">perguntas rápidas</span>
+      <h2>antes de decidir</h2>
+      <div class="faq-item">
+        <h3>preciso saber design pra usar?</h3>
+        <p>não. você escreve o texto e escolhe cores/fonte uma vez — o molda organiza o resto.</p>
+      </div>
+      <div class="faq-item">
+        <h3>funciona no celular?</h3>
+        <p>funciona em qualquer navegador, mas o ideal é usar num computador — é mais confortável pra escrever e ajustar o conteúdo de várias páginas de uma vez.</p>
+      </div>
+      <div class="faq-item">
+        <h3>é assinatura?</h3>
+        <p>não — pagamento único. você paga uma vez e usa o molda sempre que quiser, sem cobrança recorrente.</p>
+      </div>
+      <div class="faq-item">
+        <h3>meus dados e minhas imagens ficam salvos em algum servidor?</h3>
+        <p>não — a geração acontece no seu próprio navegador. nada do que você escreve ou gera é enviado pra nenhum servidor da avesso.</p>
+      </div>
+      <div class="faq-item">
+        <h3>quem faz o molda?</h3>
+        <p>é uma ferramenta do <a href="/" style="text-decoration:underline;">estúdio avesso</a>, um estúdio de marketing de conteúdo focado em quem não quer virar refém das redes sociais pra vender.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-final">
+    <div class="wrap">
+      <h2>seu próximo lançamento não precisa te tomar um fim de semana inteiro.</h2>
+      <p class="lede">pague uma vez, use sempre que precisar.</p>
+      <button class="btn btn-gold" id="btn-abrir-checkout-2">quero o molda — pagar com pix</button>
     </div>
   </section>
 
@@ -205,6 +170,8 @@
         }
       }).catch(function(){});
 
+      var btn2 = document.getElementById('btn-abrir-checkout-2');
+      if(btn2) btn2.addEventListener('click', function(){ document.getElementById('btn-abrir-checkout').click(); });
     })();
   </script>
   <script src="/shared/checkout.js" data-produto="molda"></script>
