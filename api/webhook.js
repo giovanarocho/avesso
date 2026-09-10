@@ -1,19 +1,18 @@
-import { dbGetPagamento, dbPatchPagamento, sendCodeEmail } from '../lib/services.js';
+import { confirmarPagamento } from '../lib/services.js';
 
 export default async function handler(req, res) {
   // O mercado pago manda uma notificação aqui a cada mudança de status.
-  // Não é obrigatório pro fluxo de compra funcionar (o check-status, que a
-  // própria página chama enquanto espera o pix, já cobre isso) — mas serve
-  // de reforço: se a cliente pagar e fechar a aba na hora, é esse aviso que
-  // garante que o e-mail do código sai mesmo assim, sem depender dela ficar
-  // com a tela aberta.
+  // Não é obrigatório pro fluxo de compra funcionar (o /api/payment?action=
+  // status, que a própria página chama enquanto espera o pix, já cobre
+  // isso) — mas serve de reforço: se a cliente pagar e fechar a aba na
+  // hora, é esse aviso que garante que o e-mail sai mesmo assim.
   try {
     console.log('MP webhook query:', JSON.stringify(req.query));
     console.log('MP webhook body:', JSON.stringify(req.body));
 
     const paymentId = extractPaymentId(req);
     if (paymentId) {
-      await confirmarESeNecessarioAvisar(paymentId);
+      await confirmarPagamento(paymentId);
     }
   } catch (e) {
     console.log('erro processando webhook (respondendo 200 mesmo assim):', e.message);
@@ -34,23 +33,4 @@ function extractPaymentId(req) {
     body.id ||
     null
   );
-}
-
-async function confirmarESeNecessarioAvisar(paymentId) {
-  const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
-  if (!ACCESS_TOKEN) return;
-
-  const mpRes = await fetch('https://api.mercadopago.com/v1/payments/' + encodeURIComponent(paymentId), {
-    headers: { Authorization: 'Bearer ' + ACCESS_TOKEN }
-  });
-  if (!mpRes.ok) return;
-  const data = await mpRes.json();
-  if (data.status !== 'approved') return;
-
-  const row = await dbGetPagamento(paymentId);
-  await dbPatchPagamento(paymentId, { status: 'approved' });
-  if (row && row.email && !row.code_sent) {
-    const sent = await sendCodeEmail(row.email, String(paymentId));
-    if (sent) await dbPatchPagamento(paymentId, { code_sent: true });
-  }
 }

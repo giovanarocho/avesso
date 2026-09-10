@@ -1,30 +1,21 @@
-# avesso — página de venda + checkout automático do guia e do molda
+# avesso — página de venda + checkout automático das ferramentas
 
 Isso é um projetinho completo pra publicar na Vercel (grátis). Ele tem:
 
-- `index.html` — a página de venda nova (hero limpa, guia em destaque, seção "ferramentas do avesso" com guia + molda, depois os outros dois formatos).
-- `guia/index.html` — o guia em si (o caderno interativo), protegido por um código de acesso.
-- `molda/index.html` — a página de venda do molda, independente (pode ser divulgada direto, sem passar pela home).
-- `molda/app.html` — o molda em si (a ferramenta de gerar carrossel), atrás de um login de verdade (e-mail + senha).
-- `painel/index.html` — o painel administrativo (`/painel`), protegido por senha: edita os preços (guia, base pronta, manutenção e molda) sem precisar de código nem redeploy, e mostra a lista de vendas.
-- `api/` — as funções que rodam no servidor da Vercel (não no seu navegador): geram o pix, confirmam o pagamento, liberam o código de acesso do guia (ou a conta do molda), e (se configurado) mandam e-mail, gravam no banco e atendem o painel.
+- `index.html` — a página de venda principal (hero, proposta, seção "nossas ferramentas" com guia + molda, depois os outros dois formatos sob consulta).
+- `guia-venda/index.html` e `molda/index.html` — a página de venda própria de cada ferramenta (link direto, divulgável sem passar pela home).
+- `guia/index.html` e `molda/app.html` — as ferramentas em si, atrás de conta (e-mail + senha).
+- `conta/index.html` — a página `/conta`: login único, "criar senha" (primeira compra), "esqueci a senha", e a lista de ferramentas que a pessoa já tem (com atalho pra abrir) e as que ainda não tem (com botão de comprar ali mesmo — fica fácil comprar uma segunda ferramenta depois).
+- `shared/gate.js` e `shared/checkout.js` — dois arquivinhos reaproveitados por qualquer ferramenta: um tranca o acesso até confirmar login + posse daquela ferramenta (e manda pra `/conta` se faltar algo), o outro cuida do checkout pix inteiro (gerar QR, checar pagamento). **é isso que deixa simples adicionar uma ferramenta nova** — veja a seção "como adicionar uma ferramenta nova" mais abaixo.
+- `lib/products.js` — o catálogo: uma lista com todas as ferramentas vendidas por conta. Login, checkout, painel e a página `/conta` leem daqui — não são arquivos separados por ferramenta.
+- `painel/index.html` — o painel administrativo (`/painel`), protegido por senha: edita os preços de todas as ferramentas do catálogo (sem precisar de redeploy) e mostra a lista de vendas.
+- `api/` — as 6 funções que rodam no servidor da Vercel: `payment.js` (criar/checar pix de qualquer ferramenta), `auth.js` (login/criar senha/redefinir senha/sessão), `account.js` (lista de ferramentas de quem está logado), `admin.js` (painel), `config.js` (preços pro site) e `webhook.js` (aviso do mercado pago).
 
-O guia e o molda são dois produtos com formas de acesso diferentes, de propósito:
+## conta única pra tudo
 
-- **guia** — sem conta. O "código de acesso" é o próprio id do pagamento pix, verificado ao vivo no Mercado Pago a cada uso.
-- **molda** — com conta de verdade (e-mail + senha), porque é uma ferramenta que a pessoa volta a usar sempre, em qualquer aparelho, sem depender de guardar um código.
+Todo mundo que compra qualquer ferramenta usa a **mesma conta** (e-mail + senha). Na primeira compra, a pessoa cria a senha; nas próximas (de outra ferramenta), ela só entra com a senha de sempre — sem passar de novo pelo passo de criar conta. A página `/conta` mostra tudo: o que ela já tem (com atalho pra abrir) e o que ainda não tem (com botão de comprar).
 
-Sem isso, qualquer pessoa com o link do guia acessava sem pagar. Com isso, o guia fica atrás de um código de acesso — e esse código só é gerado depois que o Mercado Pago confirma o pagamento, no servidor. Não tem como "enganar" clicando em algum botão sem pagar de verdade.
-
-### sobre o código de acesso (isso é novo)
-
-O link `/guia` pode ficar público sem problema — ele mesmo pede o código antes de mostrar qualquer coisa. O código é simplesmente o número do pagamento pix da pessoa. Funciona assim:
-
-1. Depois que o pix é confirmado, a tela mostra o código (e um botão "abrir o guia" que já leva o código junto no link, então na maioria das vezes a pessoa nem precisa digitar nada).
-2. Se a pessoa fechar a aba e voltar depois, ela digita esse mesmo código na tela de acesso do guia (`/guia`) — ele fica salvo ali com “comprou e perdeu o código? fala com a gente no whatsapp” como saída, caso ela perca.
-3. Uma vez validado uma vez naquele navegador, o guia libera sozinho nas próximas visitas (fica lembrado ali no aparelho).
-
-Como não guardamos o pagamento em nenhum banco de dados nosso, quem verifica o código é sempre a própria API do Mercado Pago (`/api/verify-code`), na hora — não tem como fraudar digitando um código qualquer.
+Isso substitui o antigo "código de acesso" do guia (que era o próprio id do pagamento, sem senha nenhuma) — agora guia e molda funcionam do mesmo jeito.
 
 ## passo a passo pra colocar no ar
 
@@ -35,7 +26,7 @@ Vá em https://www.mercadopago.com.br, crie a conta (pode ser a mesma que você 
 ### 2. pegue o Access Token de produção
 
 1. Acesse https://www.mercadopago.com.br/developers/panel
-2. Crie uma aplicação (qualquer nome, ex: "avesso guia")
+2. Crie uma aplicação (qualquer nome, ex: "avesso")
 3. Vá em **Credenciais de produção**
 4. Copie o **Access Token** (começa com `APP_USR-...`) — guarde, você vai usar no passo 5.
 
@@ -45,16 +36,9 @@ Vá em https://vercel.com/signup e crie a conta (pode entrar com o e-mail ou com
 
 ### 4. suba este projeto
 
-A forma mais simples, sem precisar de GitHub:
+A forma mais simples, sem precisar de terminal: sobe esta pasta pra um repositório no GitHub e importa em https://vercel.com/new.
 
-1. Instale a CLI da Vercel (uma vez só): abra o terminal e rode `npm i -g vercel`
-2. Dentro da pasta deste projeto, rode `vercel` e siga as perguntas (aceite as opções padrão)
-3. Ele vai te dar um link tipo `https://avesso-site.vercel.app` — esse já é o site funcionando (mas ainda sem as chaves configuradas, então o pix não vai gerar ainda).
-
-Se preferir não usar terminal, você também pode:
-1. Subir esta pasta pra um repositório no GitHub
-2. Em https://vercel.com/new, importar esse repositório
-3. Clicar em "Deploy"
+Se preferir terminal: instale a CLI (`npm i -g vercel`) e, dentro da pasta do projeto, rode `vercel`.
 
 ### 5. configure as variáveis de ambiente
 
@@ -63,111 +47,98 @@ No painel da Vercel: **seu projeto > Settings > Environment Variables**, adicion
 | nome | valor |
 |---|---|
 | `MP_ACCESS_TOKEN` | o access token de produção que você copiou no passo 2 |
-| `GUIA_LINK` | deixe em branco (o padrão já é `/guia`, a página que vem dentro deste projeto) — só preencha se um dia hospedar o guia em outro lugar |
 | `GUIA_PRICE` | `39.90` |
+| `MOLDA_PRICE` | `29.90` |
 | `BASE_PRICE` | `6000` |
 | `MANUTENCAO_PRICE` | `1500` |
 | `MANUTENCAO_VAGAS` | `restam poucas vagas por vez, pra dar atenção de verdade a cada cliente.` |
-| `MOLDA_PRICE` | `29.90` |
 
-Depois de salvar, vá na aba **Deployments**, clique nos "..." do último deploy e escolha **Redeploy** (isso é tudo que você precisa fazer sempre que quiser mudar um preço depois — trocar o valor aqui e clicar em redeploy, sem mexer em nenhum código).
+Depois de salvar, vá na aba **Deployments**, clique nos "..." do último deploy e escolha **Redeploy**.
 
-### 5b. (opcional, mas recomendado) ative o e-mail automático do código + registro das vendas
+### 5b. banco de dados (supabase) — necessário pras contas
 
-Sem fazer isso, o site funciona normalmente — o código de acesso continua aparecendo na tela depois do pix. Com isso, o código também é mandado sozinho por e-mail, e toda venda fica registrada numa tabela que você pode consultar.
+Sem isso o site continua no ar, mas ninguém consegue criar conta nem comprar de verdade (as ferramentas dependem do supabase pra guardar e-mail/senha e o histórico de compras).
 
-**banco de dados (supabase):**
+1. Crie uma conta grátis em https://supabase.com e crie um novo projeto (a senha de banco que ele pedir não é usada em nenhum lugar, pode ser qualquer uma).
+2. Dentro do projeto, vá em **SQL Editor** → **New query**, cole o conteúdo do arquivo `supabase_schema.sql` e clique em **Run**. Isso cria as tabelas `pagamentos` (registro das vendas) e `config` (os preços editáveis pelo painel).
+3. Repete o passo acima com o arquivo `supabase_migration_contas.sql` — cria a tabela `usuarios` (contas) e mais alguns campos. Seguro rodar mesmo que você já tenha rodado uma migração antiga antes (tudo aqui é "só adiciona se não existir").
+4. Pra pegar a chave: **Settings → API Keys**, aba **"Legacy anon, service_role API keys"** (não a aba "Publishable and secret API keys", que é outro sistema) — copie a chave **service_role** (clique em **Reveal** primeiro).
+5. Pra pegar a URL: **Settings → General** → copie o **Project ID** — a Project URL é `https://<esse-project-id>.supabase.co`.
 
-1. Crie uma conta grátis em https://supabase.com e crie um novo projeto (escolha uma senha de banco qualquer, você não vai precisar dela).
-2. Dentro do projeto, vá em **SQL Editor** → **New query**, cole o conteúdo do arquivo `supabase_schema.sql` (vem junto nesta pasta) e clique em **Run**. Isso cria as tabelas `pagamentos` (registro das vendas) e `config` (os preços editáveis pelo painel).
-3. Pra pegar a chave: vá em **Settings → API Keys**, clique na aba **"Legacy anon, service_role API keys"** (não na aba "Publishable and secret API keys", que é outro sistema mais novo) e copie a chave **service_role** — clique em **Reveal** primeiro pra ela aparecer inteira. Não é a `anon`/pública, é a marcada como secreta.
-4. Pra pegar a URL: vá em **Settings → General** e copie o **Project ID** — a Project URL é `https://<esse-project-id>.supabase.co`.
-
-**e-mail (resend):**
-
-1. Crie uma conta grátis em https://resend.com (100 e-mails/dia grátis, dá bastante folga).
-2. Vá em **Domains > Add Domain**, coloque `oestudioavesso.com.br` e siga as instruções — eles vão te dar alguns registros de DNS pra adicionar no mesmo lugar (registro.br) onde você configurou o domínio pra Vercel. Isso é necessário: sem verificar o domínio, o Resend só deixa mandar e-mail de teste pra você mesma, não pras suas clientes.
-3. Depois do domínio aparecer como **verificado** (pode levar de minutos a algumas horas), vá em **API Keys > Create API Key** e copie a chave.
-
-**juntando tudo na vercel:**
-
-Volte em **Settings > Environment Variables** e adicione mais estas:
+Na Vercel, adicione:
 
 | nome | valor |
 |---|---|
-| `SUPABASE_URL` | a Project URL que você copiou |
-| `SUPABASE_SERVICE_KEY` | a chave service_role que você copiou |
-| `RESEND_API_KEY` | a chave que você criou no resend |
-| `RESEND_FROM` | `estúdio avesso <guia@oestudioavesso.com.br>` (o domínio depois do @ precisa ser o que você verificou no resend) |
+| `SUPABASE_URL` | a Project URL |
+| `SUPABASE_SERVICE_KEY` | a chave service_role |
+| `CONTA_SESSION_SECRET` | uma senha longa qualquer (só ela usa, pra assinar as sessões de login) — pode gerar com `openssl rand -hex 32` |
 | `SITE_URL` | `https://oestudioavesso.com.br` |
 
-Redeploy de novo depois de salvar. A partir daí, toda compra aprovada: manda o e-mail com o código automaticamente, e grava uma linha na tabela `pagamentos` do supabase (dá pra ver essa tabela a qualquer momento em **Table Editor**, dentro do próprio supabase — sem precisar de mim pra consultar).
+Redeploy depois de salvar.
 
-### 5c. (opcional, mas recomendado) ative o painel administrativo (`/painel`)
+### 5c. e-mail (resend) — recomendado
 
-Isso depende do supabase já estar configurado (passo 5b) — é de lá que o painel lê e grava os preços e as vendas.
+Sem isso, o site funciona normalmente, só não manda e-mail de boas-vindas/confirmação nem de redefinição de senha — a pessoa só vê a tela depois do pagamento.
 
-1. Escolha uma senha forte (não tem limite de tentativas de login, então evite algo óbvio).
-2. Na Vercel, adicione a variável `ADMIN_PASSWORD` com essa senha.
+1. Crie uma conta grátis em https://resend.com (100 e-mails/dia grátis).
+2. **Domains > Add Domain**, coloque `oestudioavesso.com.br`, siga as instruções de DNS (no mesmo lugar onde configurou o domínio pra Vercel).
+3. Depois de **verificado**, vá em **API Keys > Create API Key**.
+
+Na Vercel, adicione:
+
+| nome | valor |
+|---|---|
+| `RESEND_API_KEY` | a chave criada |
+| `RESEND_FROM` | `estúdio avesso <guia@oestudioavesso.com.br>` (o domínio depois do @ precisa ser o verificado no resend) |
+
+Redeploy.
+
+### 5d. painel administrativo (`/painel`) — recomendado
+
+1. Escolha uma senha forte.
+2. Na Vercel, adicione `ADMIN_PASSWORD` com essa senha.
 3. Redeploy.
-4. Acesse `https://oestudioavesso.com.br/painel` (ou o link `.vercel.app`, se o domínio ainda não estiver ativo), digite a senha, e pronto: dá pra mudar os preços na hora (sem precisar mexer em variável de ambiente nem redeploy) e ver a lista de vendas.
-
-Esse endereço não aparece em nenhum lugar do site — só quem souber o link chega nele — mas do mesmo jeito, sem a senha certa ninguém entra.
-
-### 5d. ative o molda (a ferramenta de gerar carrossel)
-
-O molda **precisa** do supabase configurado (passo 5b) — é lá que ficam as contas (e-mail + senha) de quem comprou. Sem isso, a página de venda do molda funciona, mas ninguém consegue criar conta depois de pagar.
-
-1. Se ainda não rodou o `supabase_schema.sql` (passo 5b), rode ele primeiro.
-2. Dentro do supabase, vá em **SQL Editor** → **New query**, cole o conteúdo do arquivo `supabase_migration_molda.sql` (vem junto nesta pasta) e clique em **Run**. Isso só adiciona coisas novas — não mexe em nada do guia nem apaga nada que já existe. Cria a tabela `molda_usuarios` (contas do molda) e um campo de preço a mais na tabela `config`.
-3. Na Vercel, adicione a variável `MOLDA_SESSION_SECRET` com uma senha longa qualquer (só ela usa, pra assinar as sessões de login do molda — não precisa guardar em lugar nenhum, só definir uma vez e esquecer). Pode gerar uma rodando `openssl rand -hex 32` no terminal, por exemplo.
-4. Redeploy.
-
-A partir daí, `/molda` fica no ar como página de venda, e depois de pagar a pessoa cria a senha em `/molda/app.html` e passa a acessar o molda direto pelo site, com e-mail e senha, em qualquer aparelho. O e-mail com o link de "criar sua senha" depende do resend estar configurado (passo 5b) — sem isso, o link de criar senha só aparece na própria tela depois do pix confirmar (igual acontece hoje com o código do guia).
+4. Acesse `/painel`, digite a senha — dá pra mudar os preços de qualquer ferramenta na hora e ver a lista de vendas.
 
 ### 6. teste com um pagamento pequeno de verdade
 
-Recomendo gerar um pix de teste pagando com um valor baixo (pode temporariamente colocar `GUIA_PRICE=1` pra testar com R$1) antes de deixar no ar com o preço final. Depois volte o valor e clique em redeploy.
+Recomendo gerar um pix de teste com um valor baixo (pode temporariamente colocar `GUIA_PRICE=1`) antes de deixar no ar com o preço final. Depois volta o valor e clica em redeploy — ou já usa o painel pra isso, sem precisar mexer em variável nenhuma.
 
 ### 7. (opcional) use seu domínio próprio
 
-Em **Settings > Domains** na Vercel, você pode apontar um domínio seu (tipo `avesso.com.br`) pra esse projeto, seguindo as instruções que a própria Vercel mostra na tela.
+**Settings > Domains** na Vercel.
+
+### (opcional) webhook do mercado pago
+
+Deixa o envio de e-mail mais confiável (não depende da aba do site ficar aberta). No painel de desenvolvedor do Mercado Pago, cadastre a url `https://oestudioavesso.com.br/api/webhook` pro evento de pagamentos.
 
 ## como funciona por dentro (resumo)
 
-1. A pessoa clica em "quero o guia — pagar com pix" e digita o e-mail.
-2. A página chama `/api/create-payment`, que pede ao Mercado Pago pra gerar um pix (usando seu Access Token, que fica só no servidor, nunca no navegador de ninguém).
-3. A página mostra o QR code e o código copia-e-cola, e começa a checar a cada 3 segundos se o pagamento já foi aprovado (`/api/check-status`).
-4. Quando o Mercado Pago confirma o pagamento, `/api/check-status` responde com o código de acesso e o link `/guia?code=...` — só nesse momento eles aparecem na tela.
-5. A pessoa clica em "abrir o guia": a página `/guia` lê o código da url, confirma com `/api/verify-code` (que também conversa direto com o Mercado Pago) e libera o conteúdo. O código fica salvo no navegador dela, então da próxima vez o guia libera sozinho.
-6. Se você configurou o supabase e o resend (passo 5b): assim que `/api/check-status` vê o pagamento aprovado, ele manda o e-mail com o código (uma única vez por pagamento) e atualiza a linha da venda no banco. O `/api/webhook` faz a mesma coisa como reforço — útil se a pessoa pagar pelo app do banco e fechar a aba do site antes da confirmação aparecer na tela. Sem essas duas variáveis configuradas, esse passo simplesmente não acontece e o resto continua igual.
-7. Os preços que aparecem no site e o valor cobrado de verdade no pix vêm sempre do mesmo lugar: primeiro do banco (se você já editou pelo `/painel`), e só como reserva da variável de ambiente — então o painel e o site nunca ficam com preços diferentes entre si.
+1. A pessoa clica em "comprar com pix" (na home, em `/guia-venda`, em `/molda` ou dentro de `/conta`) e digita o e-mail.
+2. A página chama `/api/payment?action=create&produto=guia` (ou `molda`, ou o slug de qualquer ferramenta nova), que pede ao Mercado Pago pra gerar um pix.
+3. A página mostra o QR code e checa a cada 3 segundos se aprovou (`/api/payment?action=status`).
+4. Quando aprova: se o e-mail já tinha conta, a pessoa só precisa entrar (e-mail + senha de sempre); se é a primeira compra dela, ela cria uma senha em `/conta?setup=1&...`. Os dois casos também recebem e-mail (se o resend estiver configurado).
+5. A partir daí, a pessoa entra em `/conta` (ou direto na ferramenta, que manda pra `/conta` sozinha se faltar login) com e-mail + senha, em qualquer aparelho — e vê ali tanto o que já comprou quanto o que ainda pode comprar.
+6. Os preços que aparecem no site e o valor cobrado de verdade no pix vêm sempre do mesmo lugar: primeiro do banco (editável pelo `/painel`), e só como reserva da variável de ambiente.
 
-### o molda, por dentro
+## como adicionar uma ferramenta nova
 
-O fluxo é parecido com o do guia até o pagamento confirmar — daí em diante, muda porque é conta de verdade:
+Isso é o que a reestruturação inteira existe pra deixar simples — nenhum passo abaixo mexe em checkout, login, painel ou na página `/conta`, porque todos eles leem o catálogo (`lib/products.js`) sozinhos:
 
-1. Na página `/molda`, a pessoa paga o pix (`/api/molda-create-payment` + `/api/molda-check-status`, iguais aos do guia, só que cobrando o `moldaPrice` e marcando o pagamento como produto `"molda"`).
-2. Assim que o Mercado Pago confirma, em vez de mostrar um código, a tela redireciona pra `/molda/app.html?setup=1&payment_id=...&email=...` — e, se o resend estiver configurado, manda esse mesmo link por e-mail.
-3. Em `/molda/app.html`, a tela de "criar sua senha" chama `/api/molda-set-password`, que confere de novo no Mercado Pago (nunca confia só no que veio da url) que aquele pagamento é aprovado, é do molda, e bate com o e-mail informado — só depois disso cria a conta em `molda_usuarios` (senha nunca fica salva em texto puro, só hash).
-4. Dali em diante, a pessoa entra sempre por e-mail + senha (`/api/molda-login`), e o `/molda/app.html` guarda um token de sessão (30 dias) no navegador dela — sem precisar logar toda vez. Se esquecer a senha, `/api/molda-request-reset` manda um link novo por e-mail, que expira em 30 minutos.
-5. A ferramenta em si (gerar as páginas do carrossel) é a mesma que já existia — tudo acontece no navegador da pessoa, nada é enviado pro servidor. O molda não depende do supabase pra isso, só o login em si.
+1. Adiciona uma entrada em `lib/products.js` (slug, nome, o texto que vai na descrição do pix, variável de ambiente e preço padrão, caminho da ferramenta e da página de venda dela).
+2. Sobe a página da ferramenta em si, protegida por `<script src="/shared/gate.js" data-produto="seu-slug"></script>` — não precisa escrever nenhuma tela de login, ele cuida disso sozinho (manda pra `/conta` se faltar login ou se a conta não tiver aquela ferramenta).
+3. (opcional) Sobe uma página de venda própria pra ela, reaproveitando o checkout com `<script src="/shared/checkout.js" data-produto="seu-slug"></script>` — copia o html do modal de `guia-venda/index.html` ou `molda/index.html` como base.
+4. O preço dela já aparece sozinho no painel (`/painel`) — não precisa editar esse arquivo nem rodar nenhuma migração de banco, a não ser que você queira o preço com uma coluna própria no lugar do campo genérico (não é necessário).
 
-### (opcional) configurar o webhook no Mercado Pago
-
-Isso deixa o envio de e-mail mais confiável (não depende da aba do site ficar aberta). No painel de desenvolvedor do Mercado Pago, na sua aplicação, procure por **Webhooks** / **Notificações** e cadastre a url `https://oestudioavesso.com.br/api/webhook` pro evento de pagamentos. Sem isso, tudo continua funcionando do mesmo jeito — só depende de a pessoa deixar a aba do site aberta até o pix confirmar (o que já é o padrão hoje).
+Nenhum desses passos cria uma função nova na Vercel — o `/api/payment.js`, `/api/auth.js` e `/api/account.js` já servem qualquer ferramenta do catálogo.
 
 ## se quiser trocar algo depois
 
-- **preço de qualquer um dos três serviços**: se o painel `/painel` estiver ativo (passo 5c), edite direto por lá — vale na hora, sem redeploy. Sem o painel configurado, muda a variável de ambiente na Vercel e clica em redeploy.
-- **texto de vagas da manutenção**: mesma coisa — pelo painel (campo "texto de vagas"), ou pela variável `MANUTENCAO_VAGAS`.
-- **onde o guia está hospedado**: só mexe em `GUIA_LINK` se um dia tirar o guia daqui e hospedar em outro lugar. Do jeito que está, não precisa tocar nisso.
-- **conteúdo do guia**: edite o `guia/index.html`.
-- **textos, cores, seções da página de venda**: aí sim precisa editar o `index.html` (ou me pedir pra ajustar e te mandar o arquivo atualizado).
-- **texto do e-mail do código**: no arquivo `lib/services.js`, dentro da função `sendCodeEmail` (ou me pede pra ajustar).
-- **texto dos e-mails do molda** (boas-vindas / redefinir senha): também em `lib/services.js`, nas funções `sendMoldaBoasVindasEmail` e `sendMoldaResetEmail`.
-- **ver todas as vendas**: pelo `/painel` (mais prático) ou direto em supabase.com > seu projeto > Table Editor > tabela `pagamentos`.
-- **ver as contas do molda**: supabase.com > seu projeto > Table Editor > tabela `molda_usuarios`.
-- **trocar a senha do painel**: muda `ADMIN_PASSWORD` na Vercel e redeploy. Quem já estava logado continua entrando por até 24h (o tempo que uma sessão dura) — se quiser derrubar todo mundo na hora, defina também `ADMIN_SECRET` com um valor novo.
-- **derrubar todas as sessões do molda de uma vez** (ex: se desconfiar de algo): troca `MOLDA_SESSION_SECRET` na Vercel por um valor novo e redeploy — todo mundo precisa logar de novo, mas as contas e senhas continuam intactas.
-- **conteúdo/estilo da página de venda do molda**: edite `molda/index.html`. **a ferramenta em si**: `molda/app.html` (o corpo dela é o mesmo código do gerador de carrossel — mexa com calma).
+- **preço de qualquer ferramenta**: pelo `/painel` (vale na hora, sem redeploy) — ou pela variável de ambiente correspondente + redeploy, se o painel ainda não estiver configurado.
+- **conteúdo do guia**: edite `guia/index.html`. **conteúdo/lógica do molda**: `molda/app.html`.
+- **textos e páginas de venda**: `index.html` (home), `guia-venda/index.html`, `molda/index.html`.
+- **textos dos e-mails**: `lib/services.js`, funções `sendBoasVindasEmail`, `sendCompraConfirmadaEmail`, `sendResetEmail`.
+- **ver todas as vendas**: `/painel`, ou direto em supabase.com > seu projeto > Table Editor > tabela `pagamentos`.
+- **ver as contas**: supabase.com > seu projeto > Table Editor > tabela `usuarios`.
+- **trocar a senha do painel**: muda `ADMIN_PASSWORD` na Vercel e redeploy.
+- **derrubar todas as sessões de conta de uma vez** (ex: se desconfiar de algo): troca `CONTA_SESSION_SECRET` na Vercel por um valor novo e redeploy — todo mundo precisa logar de novo, as contas e senhas continuam intactas.

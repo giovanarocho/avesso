@@ -485,6 +485,35 @@
   @media (max-width:520px){
     section{padding:clamp(56px,14vw,80px) 0;}
   }
+
+  /* ---------- posicionamento + passos (o que você recebe) ---------- */
+  .guia-positioning{
+    font-family:'Fraunces',serif;font-style:italic;
+    font-size:clamp(17px,2.4vw,20px);line-height:1.5;
+    max-width:480px;margin-bottom:28px;opacity:.95;
+  }
+  .passos-eyebrow{
+    font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;
+    margin-bottom:14px;display:block;
+  }
+  .passos h2{font-size:clamp(24px,3.6vw,32px);margin-bottom:12px;max-width:560px;}
+  .passos .sub{font-size:15px;max-width:520px;margin-bottom:40px;opacity:.8;}
+  .passo-list{display:flex;flex-direction:column;}
+  .passo-item{
+    display:grid;grid-template-columns:auto 1fr;gap:20px;
+    padding:22px 2px;border-top:1px solid rgba(61,42,30,.14);
+  }
+  .passo-item:last-child{border-bottom:1px solid rgba(61,42,30,.14);}
+  .passo-num{
+    font-family:'Fraunces',serif;font-size:14px;opacity:.5;
+    width:28px;padding-top:2px;
+  }
+  .passo-item h3{font-size:17px;font-weight:500;font-family:'Work Sans',sans-serif;margin-bottom:6px;}
+  .passo-item p{font-size:14.5px;opacity:.8;max-width:520px;margin:0;}
+  .passo-item .passo-label{
+    font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
+    opacity:.55;display:block;margin-bottom:4px;
+  }
 </style><style>
   .top-nav{padding:22px 0;}
   .top-nav .wrap{display:flex;align-items:center;justify-content:space-between;}
@@ -509,6 +538,7 @@
         <div>
           <span class="eyebrow reveal in">ferramenta do avesso</span>
           <h2 class="reveal in">guia marketing essencial</h2>
+          <p class="guia-positioning reveal in">você não precisa de mais informações e dicas de marketing. você precisa de clareza e passo a passo. é isso que o guia faz por você.</p>
           <p class="lead reveal in">um passo a passo interativo pra organizar google, whatsapp, redes e conteúdo — sozinha, no seu ritmo, sem depender de mim pra começar.</p>
 
           <div class="guia-price reveal in">
@@ -517,10 +547,10 @@
           </div>
 
           <ul class="guia-includes reveal in">
-            <li>passo a passo pra organizar google, whatsapp business, redes e conteúdo</li>
-            <li>você preenche o que é seu, sem pesquisar em outro lugar</li>
-            <li>termina com o dossiê da sua marca, pronto em pdf</li>
-            <li>fica salvo no navegador — você volta quando quiser</li>
+            <li>passo a passo interativo com os 5 marcos da sua presença online (abaixo, o que você recebe em cada um)</li>
+            <li>você preenche o que é seu, direto na tela — sem pesquisar em outro lugar nem decidir sozinha o que fazer primeiro</li>
+            <li>termina com o dossiê da sua marca pronto em pdf — nome, identidade, perfis e conteúdo, tudo num lugar só</li>
+            <li>fica salvo no navegador — você entra, sai e volta de onde parou, sem perder nada</li>
           </ul>
 
           <div class="guia-cta reveal in">
@@ -541,6 +571,57 @@
             <span class="active"></span><span></span><span></span><span></span>
           </div>
           <p class="guia-gallery-caption">prints reais do guia — dossiê, checklist, cronograma de conteúdo e passo a passo, direto de quem já usou.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="passos sec-sand">
+    <div class="wrap wrap-wide">
+      <span class="passos-eyebrow reveal in">o que você recebe</span>
+      <h2 class="reveal in">5 passos, 5 coisas prontas — não 5 aulas.</h2>
+      <p class="sub reveal in">em cada marco você não sai só "sabendo mais" — sai com algo pronto, decidido e no lugar.</p>
+
+      <div class="passo-list">
+        <div class="passo-item reveal in">
+          <span class="passo-num">01</span>
+          <div>
+            <span class="passo-label">nome, branding e identidade visual</span>
+            <h3>você sai com sua marca fechada no papel</h3>
+            <p>nome validado (ou escolhido), paleta de cores, tipografia e um mini manual — pra parar de decidir "qual fonte uso mesmo?" toda vez que for postar algo.</p>
+          </div>
+        </div>
+        <div class="passo-item reveal in">
+          <span class="passo-num">02</span>
+          <div>
+            <span class="passo-label">perfil da empresa no google</span>
+            <h3>você sai com seu negócio aparecendo no google e no maps</h3>
+            <p>fotos, horário, endereço e descrição certos — configurados, não só explicados.</p>
+          </div>
+        </div>
+        <div class="passo-item reveal in">
+          <span class="passo-num">03</span>
+          <div>
+            <span class="passo-label">whatsapp business</span>
+            <h3>você sai com um whatsapp que parece profissional</h3>
+            <p>catálogo, mensagens automáticas e etiquetas configuradas — sem parecer um robô nem te tomar mais tempo no dia a dia.</p>
+          </div>
+        </div>
+        <div class="passo-item reveal in">
+          <span class="passo-num">04</span>
+          <div>
+            <span class="passo-label">redes sociais</span>
+            <h3>você sai com bio, destaques e o que postar nas próximas semanas</h3>
+            <p>sem precisar inventar do zero nem ficar decidindo "o que eu posto hoje" toda manhã.</p>
+          </div>
+        </div>
+        <div class="passo-item reveal in">
+          <span class="passo-num">05</span>
+          <div>
+            <span class="passo-label">manutenção</span>
+            <h3>você sai com uma rotina simples pra manter tudo vivo</h3>
+            <p>o suficiente pra continuar sozinha depois, sem isso virar um segundo emprego.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -579,12 +660,8 @@
 
       <div id="cp-step-sucesso" style="display:none;">
         <p class="cp-success">pagamento confirmado 🎉</p>
-        <p class="cp-sub">seu acesso ao guia está liberado. guarde o código abaixo — é ele que libera o guia, caso você feche essa tela ou acesse de outro aparelho.</p>
-        <div class="cp-code-box">
-          <span id="cp-code-valor"></span>
-          <button class="cp-copy-code" id="cp-copiar-codigo" type="button">copiar</button>
-        </div>
-        <a class="btn btn-primary" id="cp-link-guia" href="#" target="_blank" rel="noopener">abrir o guia</a>
+        <p class="cp-sub" id="cp-sucesso-sub">seu acesso está liberado.</p>
+        <a class="btn btn-primary" id="cp-link-conta" href="/conta">abrir minha conta</a>
       </div>
 
       <button class="cp-close" id="cp-close">fechar</button>
@@ -617,118 +694,9 @@
         }, 3200);
       }
 
-      // ---- checkout do guia ----
-      var overlay = document.getElementById('checkout-overlay');
-      var stepEmail = document.getElementById('cp-step-email');
-      var stepPix = document.getElementById('cp-step-pix');
-      var stepSucesso = document.getElementById('cp-step-sucesso');
-      var pollTimer = null;
-
-      function resetCheckout(){
-        stepEmail.style.display = 'block';
-        stepPix.style.display = 'none';
-        stepSucesso.style.display = 'none';
-        document.getElementById('cp-email-msg').textContent = '';
-        document.getElementById('cp-email').value = '';
-        if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
-      }
-
-      function openCheckout(){
-        resetCheckout();
-        overlay.classList.add('open');
-      }
-      function closeCheckout(){
-        overlay.classList.remove('open');
-        if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
-      }
-
-      document.getElementById('btn-abrir-checkout').addEventListener('click', openCheckout);
-      document.getElementById('cp-close').addEventListener('click', closeCheckout);
-      overlay.addEventListener('click', function(e){ if(e.target === overlay) closeCheckout(); });
-
-      document.getElementById('cp-gerar-pix').addEventListener('click', function(){
-        var email = document.getElementById('cp-email').value.trim();
-        var msgEl = document.getElementById('cp-email-msg');
-        if(!email || email.indexOf('@') === -1){
-          msgEl.textContent = 'digite um e-mail válido.';
-          return;
-        }
-        msgEl.textContent = 'gerando pix…';
-
-        fetch('/api/create-payment', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({email: email})
-        }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
-        .then(function(res){
-          if(!res.ok){
-            msgEl.textContent = 'não consegui gerar o pix agora. tenta de novo em instantes.';
-            return;
-          }
-          var data = res.data;
-          if(data.qr_code_base64){
-            document.getElementById('cp-qr-img').src = 'data:image/png;base64,' + data.qr_code_base64;
-          }
-          document.getElementById('cp-pix-code').textContent = data.qr_code || '';
-
-          stepEmail.style.display = 'none';
-          stepPix.style.display = 'block';
-
-          startPolling(data.payment_id);
-        }).catch(function(){
-          msgEl.textContent = 'não consegui conectar. verifica sua internet e tenta de novo.';
-        });
-      });
-
-      document.getElementById('cp-copiar').addEventListener('click', function(){
-        var code = document.getElementById('cp-pix-code').textContent;
-        if(!code) return;
-        navigator.clipboard.writeText(code).then(function(){
-          document.getElementById('cp-copiar').textContent = 'copiado!';
-          setTimeout(function(){ document.getElementById('cp-copiar').textContent = 'copiar código pix'; }, 2000);
-        }).catch(function(){});
-      });
-
-      document.getElementById('cp-copiar-codigo').addEventListener('click', function(){
-        var code = document.getElementById('cp-code-valor').textContent;
-        if(!code) return;
-        var btn = document.getElementById('cp-copiar-codigo');
-        navigator.clipboard.writeText(code).then(function(){
-          btn.textContent = 'copiado!';
-          setTimeout(function(){ btn.textContent = 'copiar'; }, 2000);
-        }).catch(function(){});
-      });
-
-      function startPolling(paymentId){
-        var attempts = 0;
-        var maxAttempts = 200;
-        pollTimer = setInterval(function(){
-          attempts++;
-          if(attempts > maxAttempts){
-            clearInterval(pollTimer);
-            document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a avesso.';
-            return;
-          }
-          fetch('/api/check-status?payment_id=' + encodeURIComponent(paymentId))
-            .then(function(r){ return r.json(); })
-            .then(function(data){
-              if(data.approved && data.link){
-                clearInterval(pollTimer);
-                pollTimer = null;
-                stepPix.style.display = 'none';
-                stepSucesso.style.display = 'block';
-                document.getElementById('cp-link-guia').setAttribute('href', data.link);
-                document.getElementById('cp-code-valor').textContent = data.code || '';
-              } else if(data.status === 'rejected' || data.status === 'cancelled'){
-                clearInterval(pollTimer);
-                pollTimer = null;
-                document.getElementById('cp-status-msg').textContent = 'esse pix não foi confirmado. feche e tente gerar um novo.';
-              }
-            }).catch(function(){});
-        }, 3000);
-      }
     })();
   </script>
+  <script src="/shared/checkout.js" data-produto="guia"></script>
 
 </body>
 </html>

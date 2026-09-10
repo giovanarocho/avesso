@@ -4,14 +4,15 @@ import {
   dbConfigured,
   dbListPagamentos,
   dbSetConfig,
+  dbSetPrecoProduto,
   issueAdminToken,
   verifyAdminToken
 } from '../lib/services.js';
 
 // login, lista de vendas e edição de preços do painel, juntos num arquivo
-// só (ações por ?action=) — só pra caber no limite de 12 funções
-// serverless do plano hobby da vercel. comportamento idêntico ao que era
-// antes em admin-login.js, admin-sales.js e admin-update-config.js.
+// só (ações por ?action=) — pra caber com folga no limite de funções
+// serverless do plano hobby da vercel, mesmo depois de o catálogo de
+// ferramentas crescer.
 
 function getToken(req) {
   const auth = (req.headers && req.headers.authorization) || '';
@@ -54,32 +55,48 @@ async function actionUpdateConfig(req, res, body) {
   }
 
   const fields = {};
-  if (body.guiaPrice !== undefined && body.guiaPrice !== '') fields.guia_price = parseFloat(body.guiaPrice);
   if (body.basePrice !== undefined && body.basePrice !== '') fields.base_price = parseFloat(body.basePrice);
   if (body.manutencaoPrice !== undefined && body.manutencaoPrice !== '') {
     fields.manutencao_price = parseFloat(body.manutencaoPrice);
   }
   if (body.manutencaoVagas !== undefined) fields.manutencao_vagas = String(body.manutencaoVagas);
-  if (body.moldaPrice !== undefined && body.moldaPrice !== '') fields.molda_price = parseFloat(body.moldaPrice);
 
-  for (const key of ['guia_price', 'base_price', 'manutencao_price', 'molda_price']) {
+  for (const key of ['base_price', 'manutencao_price']) {
     if (key in fields && (isNaN(fields[key]) || fields[key] < 0)) {
       res.status(400).json({ error: 'preço inválido' });
       return;
     }
   }
 
-  if (Object.keys(fields).length === 0) {
+  // preços das ferramentas do catálogo (guia, molda, e qualquer uma nova)
+  // vêm num objeto único { guia: 39.9, molda: 29.9, ... } — cada um grava
+  // no lugar certo (coluna fixa pras duas de sempre, campo genérico pro
+  // resto) via dbSetPrecoProduto.
+  const precos = body.precos && typeof body.precos === 'object' ? body.precos : {};
+  for (const slug of Object.keys(precos)) {
+    const valor = parseFloat(precos[slug]);
+    if (precos[slug] === '' || precos[slug] === undefined) continue;
+    if (isNaN(valor) || valor < 0) {
+      res.status(400).json({ error: 'preço inválido' });
+      return;
+    }
+    await dbSetPrecoProduto(slug, valor);
+  }
+
+  if (Object.keys(fields).length === 0 && Object.keys(precos).length === 0) {
     res.status(400).json({ error: 'nada pra atualizar' });
     return;
   }
-  fields.updated_at = new Date().toISOString();
 
-  const ok = await dbSetConfig(fields);
-  if (!ok) {
-    res.status(502).json({ error: 'falha ao salvar no banco' });
-    return;
+  if (Object.keys(fields).length > 0) {
+    fields.updated_at = new Date().toISOString();
+    const ok = await dbSetConfig(fields);
+    if (!ok) {
+      res.status(502).json({ error: 'falha ao salvar no banco' });
+      return;
+    }
   }
+
   res.status(200).json({ ok: true });
 }
 

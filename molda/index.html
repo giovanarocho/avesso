@@ -188,8 +188,8 @@
 
       <div id="cp-step-sucesso" style="display:none;">
         <p class="cp-success">pagamento confirmado 🎉</p>
-        <p class="cp-sub">falta só criar sua senha pra começar a usar o molda.</p>
-        <a class="btn btn-primary" id="cp-link-molda" href="#">criar minha senha</a>
+        <p class="cp-sub" id="cp-sucesso-sub">seu acesso está liberado.</p>
+        <a class="btn btn-primary" id="cp-link-conta" href="/conta">abrir minha conta</a>
       </div>
 
       <button class="cp-close" id="cp-close">fechar</button>
@@ -205,106 +205,9 @@
         }
       }).catch(function(){});
 
-      var overlay = document.getElementById('checkout-overlay');
-      var stepEmail = document.getElementById('cp-step-email');
-      var stepPix = document.getElementById('cp-step-pix');
-      var stepSucesso = document.getElementById('cp-step-sucesso');
-      var pollTimer = null;
-
-      function resetCheckout(){
-        stepEmail.style.display = 'block';
-        stepPix.style.display = 'none';
-        stepSucesso.style.display = 'none';
-        document.getElementById('cp-email-msg').textContent = '';
-        document.getElementById('cp-email').value = '';
-        if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
-      }
-
-      function openCheckout(){
-        resetCheckout();
-        overlay.classList.add('open');
-      }
-      function closeCheckout(){
-        overlay.classList.remove('open');
-        if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
-      }
-
-      document.getElementById('btn-abrir-checkout').addEventListener('click', openCheckout);
-      document.getElementById('cp-close').addEventListener('click', closeCheckout);
-      overlay.addEventListener('click', function(e){ if(e.target === overlay) closeCheckout(); });
-
-      document.getElementById('cp-gerar-pix').addEventListener('click', function(){
-        var email = document.getElementById('cp-email').value.trim();
-        var msgEl = document.getElementById('cp-email-msg');
-        if(!email || email.indexOf('@') === -1){
-          msgEl.textContent = 'digite um e-mail válido.';
-          return;
-        }
-        msgEl.textContent = 'gerando pix…';
-
-        fetch('/api/molda-create-payment', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({email: email})
-        }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
-        .then(function(res){
-          if(!res.ok){
-            msgEl.textContent = 'não consegui gerar o pix agora. tenta de novo em instantes.';
-            return;
-          }
-          var data = res.data;
-          if(data.qr_code_base64){
-            document.getElementById('cp-qr-img').src = 'data:image/png;base64,' + data.qr_code_base64;
-          }
-          document.getElementById('cp-pix-code').textContent = data.qr_code || '';
-
-          stepEmail.style.display = 'none';
-          stepPix.style.display = 'block';
-
-          startPolling(data.payment_id);
-        }).catch(function(){
-          msgEl.textContent = 'não consegui conectar. verifica sua internet e tenta de novo.';
-        });
-      });
-
-      document.getElementById('cp-copiar').addEventListener('click', function(){
-        var code = document.getElementById('cp-pix-code').textContent;
-        if(!code) return;
-        navigator.clipboard.writeText(code).then(function(){
-          document.getElementById('cp-copiar').textContent = 'copiado!';
-          setTimeout(function(){ document.getElementById('cp-copiar').textContent = 'copiar código pix'; }, 2000);
-        }).catch(function(){});
-      });
-
-      function startPolling(paymentId){
-        var attempts = 0;
-        var maxAttempts = 200; // ~10 minutos, checando a cada 3s
-        pollTimer = setInterval(function(){
-          attempts++;
-          if(attempts > maxAttempts){
-            clearInterval(pollTimer);
-            document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a avesso.';
-            return;
-          }
-          fetch('/api/molda-check-status?payment_id=' + encodeURIComponent(paymentId))
-            .then(function(r){ return r.json(); })
-            .then(function(data){
-              if(data.approved && data.setupLink){
-                clearInterval(pollTimer);
-                pollTimer = null;
-                stepPix.style.display = 'none';
-                stepSucesso.style.display = 'block';
-                document.getElementById('cp-link-molda').setAttribute('href', data.setupLink);
-              } else if(data.status === 'rejected' || data.status === 'cancelled'){
-                clearInterval(pollTimer);
-                pollTimer = null;
-                document.getElementById('cp-status-msg').textContent = 'esse pix não foi confirmado. feche e tente gerar um novo.';
-              }
-            }).catch(function(){});
-        }, 3000);
-      }
     })();
   </script>
+  <script src="/shared/checkout.js" data-produto="molda"></script>
 
 </body>
 </html>

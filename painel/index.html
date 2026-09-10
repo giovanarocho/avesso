@@ -137,6 +137,7 @@
               <textarea id="f-vagas"></textarea>
             </div>
           </div>
+          <div class="field-row" id="f-outras-ferramentas"></div>
           <button class="save-btn" id="save-precos-btn" type="button">salvar preços</button>
           <p id="precos-msg"></p>
         </div>
@@ -228,6 +229,12 @@
   }
 
   // ---------- preços ----------
+  // "outrasFerramentas" guarda o slug de qualquer produto do catálogo além
+  // de guia/molda (que têm campo fixo) — assim, se uma ferramenta nova for
+  // adicionada no catálogo (lib/products.js), o campo pra editar o preço
+  // dela aparece aqui sozinho, sem precisar mexer neste arquivo.
+  var outrasFerramentas = [];
+
   function loadPrecos(){
     fetch('/api/config').then(function(r){ return r.json(); }).then(function(cfg){
       document.getElementById('f-guia').value = cfg.guiaPrice;
@@ -235,6 +242,15 @@
       document.getElementById('f-manutencao').value = cfg.manutencaoPrice;
       document.getElementById('f-molda').value = cfg.moldaPrice;
       document.getElementById('f-vagas').value = cfg.manutencaoVagas;
+
+      outrasFerramentas = Object.keys(cfg.precos || {}).filter(function(slug){
+        return slug !== 'guia' && slug !== 'molda';
+      });
+      var container = document.getElementById('f-outras-ferramentas');
+      container.innerHTML = outrasFerramentas.map(function(slug){
+        return '<div class="field"><label for="f-outra-' + slug + '">' + slug + ' (R$)</label>' +
+          '<input id="f-outra-' + slug + '" type="number" step="0.01" min="0" value="' + cfg.precos[slug] + '"></div>';
+      }).join('');
     }).catch(function(){});
   }
 
@@ -243,15 +259,24 @@
     var msg = document.getElementById('precos-msg');
     btn.disabled = true;
     msg.textContent = 'salvando…';
+
+    var precos = {
+      guia: document.getElementById('f-guia').value,
+      molda: document.getElementById('f-molda').value
+    };
+    outrasFerramentas.forEach(function(slug){
+      var el = document.getElementById('f-outra-' + slug);
+      if(el) precos[slug] = el.value;
+    });
+
     authFetch('/api/admin?action=update-config', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        guiaPrice: document.getElementById('f-guia').value,
         basePrice: document.getElementById('f-base').value,
         manutencaoPrice: document.getElementById('f-manutencao').value,
-        moldaPrice: document.getElementById('f-molda').value,
-        manutencaoVagas: document.getElementById('f-vagas').value
+        manutencaoVagas: document.getElementById('f-vagas').value,
+        precos: precos
       })
     }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
       .then(function(res){
@@ -290,18 +315,17 @@
         return;
       }
       var html = '<div class="table-scroll"><table><thead><tr>' +
-        '<th>data</th><th>e-mail</th><th>valor</th><th>status</th><th>e-mail enviado</th><th>guia acessado</th>' +
+        '<th>data</th><th>e-mail</th><th>produto</th><th>valor</th><th>status</th><th>e-mail enviado</th>' +
         '</tr></thead><tbody>';
       rows.forEach(function(row){
         var data_fmt = row.created_at ? new Date(row.created_at).toLocaleString('pt-BR') : '—';
-        var acessado = row.guia_acessado_em ? new Date(row.guia_acessado_em).toLocaleDateString('pt-BR') : '—';
         html += '<tr>' +
           '<td>' + data_fmt + '</td>' +
           '<td>' + (row.email || '—') + '</td>' +
+          '<td>' + (row.produto || 'guia') + '</td>' +
           '<td>' + fmtMoney(row.amount || 0) + '</td>' +
           '<td>' + statusTag(row.status) + '</td>' +
           '<td>' + (row.code_sent ? 'sim' : 'não') + '</td>' +
-          '<td>' + acessado + '</td>' +
           '</tr>';
       });
       html += '</tbody></table></div>';

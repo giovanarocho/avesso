@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>minha conta — estúdio avesso</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --sand:#F3EADA; --cream:#E8CE9A; --coffee:#3D2A1E; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Work Sans',sans-serif;font-weight:400;line-height:1.6;
+    -webkit-font-smoothing:antialiased;background:var(--sand);color:var(--coffee);
+    min-height:100vh;
+  }
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.15;}
+  a{color:inherit;}
+  .wrap{max-width:720px;margin:0 auto;padding:0 24px;}
+
+  .top-nav{padding:22px 0;}
+  .top-nav .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .top-nav a.back{font-size:13px;text-decoration:none;opacity:.7;}
+  .top-nav a.back:hover{opacity:1;}
+  .brand-tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;}
+
+  .btn{
+    display:inline-block;font-family:'Work Sans',sans-serif;font-size:14px;font-weight:500;
+    letter-spacing:0.02em;padding:14px 28px;border-radius:999px;text-decoration:none;
+    border:none;cursor:pointer;transition:opacity .2s ease, transform .2s ease;
+    width:100%;text-align:center;box-sizing:border-box;
+  }
+  .btn:hover{opacity:.92;}
+  .btn:disabled{opacity:.5;cursor:default;}
+  .btn-gold{background:var(--cream);color:var(--coffee);}
+  .btn-primary{background:var(--coffee);color:var(--sand);}
+  .btn-outline{background:none;color:var(--coffee);border:1px solid rgba(61,42,30,.35);}
+
+  /* ---------- login / criar senha / redefinir ---------- */
+  #auth-view{padding:24px 0 80px;}
+  .auth-card{
+    max-width:400px;margin:24px auto 0;background:#fff;border:1px solid rgba(61,42,30,.14);
+    border-radius:20px;padding:32px 28px;text-align:center;
+  }
+  .auth-eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin-bottom:14px;}
+  .auth-lede{font-size:14px;margin-bottom:22px;opacity:.85;line-height:1.55;}
+  .auth-card input{
+    width:100%;box-sizing:border-box;padding:13px 15px;border-radius:10px;
+    border:1px solid rgba(61,42,30,.22);font-size:14.5px;margin-bottom:12px;font-family:inherit;color:var(--coffee);
+  }
+  .auth-msg{font-size:12.5px;margin-top:14px;min-height:16px;opacity:.85;}
+  .auth-switch{font-size:12.5px;margin-top:18px;opacity:.8;}
+  .auth-switch a{color:var(--coffee);text-decoration:underline;cursor:pointer;}
+  .auth-step{display:none;}
+  .auth-step.active{display:block;}
+  h1.page-title{font-size:clamp(24px,4vw,32px);text-align:center;margin-bottom:4px;}
+  p.page-sub{font-size:14px;text-align:center;opacity:.75;max-width:420px;margin:0 auto;}
+
+  /* ---------- conta logada ---------- */
+  #account-view{padding:24px 0 80px;display:none;}
+  .account-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:10px;}
+  .account-head button{background:none;border:none;text-decoration:underline;font-size:12.5px;color:var(--coffee);opacity:.7;cursor:pointer;font-family:inherit;}
+  .account-eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;}
+  h1.account-title{font-size:clamp(22px,3.4vw,28px);margin:6px 0 40px;}
+
+  .prod-grid{display:grid;grid-template-columns:1fr;gap:18px;}
+  @media(min-width:600px){.prod-grid{grid-template-columns:1fr 1fr;}}
+  .prod-card{
+    border:1px solid rgba(61,42,30,.14);border-radius:16px;padding:24px;
+    background:rgba(61,42,30,.02);display:flex;flex-direction:column;
+  }
+  .prod-card.owned{background:#fff;}
+  .prod-card .tag{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a6a1f;font-weight:600;margin-bottom:8px;}
+  .prod-card h3{font-size:18px;margin-bottom:6px;}
+  .prod-card p{font-size:13.5px;opacity:.78;margin-bottom:16px;}
+  .prod-card .prod-price{font-family:'Fraunces',serif;font-size:20px;margin-bottom:14px;}
+  .prod-card .actions{margin-top:auto;}
+  .empty-msg{font-size:14px;opacity:.7;text-align:center;padding:30px 0;}
+
+  /* ---------- checkout modal (compra pelas ferramentas ainda não compradas) ---------- */
+  .checkout-overlay{
+    display:none;position:fixed;inset:0;background:rgba(20,13,9,.72);
+    z-index:999;align-items:center;justify-content:center;padding:20px;
+  }
+  .checkout-overlay.open{display:flex;}
+  .checkout-panel{
+    background:var(--sand);color:var(--coffee);
+    max-width:400px;width:100%;max-height:90vh;overflow-y:auto;
+    border-radius:20px;padding:32px 28px;text-align:center;
+  }
+  .checkout-panel h3{font-family:'Fraunces',serif;font-size:19px;font-weight:400;margin-bottom:8px;}
+  .checkout-panel .cp-sub{font-size:13px;opacity:.75;margin-bottom:22px;}
+  .checkout-panel input[type="email"]{
+    width:100%;padding:13px 15px;border:1px solid rgba(61,42,30,.25);
+    border-radius:10px;font-size:14.5px;margin-bottom:14px;background:#fff;color:var(--coffee);font-family:inherit;
+  }
+  .qr-box{margin:16px 0;}
+  .qr-box img{width:190px;height:190px;margin:0 auto 12px;display:block;border-radius:12px;}
+  .pix-code{
+    font-family:monospace;font-size:11px;word-break:break-all;
+    background:#fff;border:1px solid rgba(61,42,30,.15);border-radius:10px;
+    padding:12px;max-height:64px;overflow-y:auto;margin-bottom:12px;text-align:left;
+  }
+  .cp-close{display:inline-block;margin-top:16px;font-size:12px;text-decoration:underline;opacity:.7;background:none;border:none;cursor:pointer;color:var(--coffee);}
+  .cp-spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(61,42,30,.2);border-top-color:var(--cream);margin:8px auto;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .cp-msg{font-size:12.5px;margin-top:12px;opacity:.85;min-height:16px;}
+  .cp-success{font-size:15px;margin-bottom:8px;}
+</style>
+</head>
+<body class="sec-sand">
+
+  <div class="top-nav">
+    <div class="wrap">
+      <a class="back" href="/">← voltar pro site</a>
+      <span class="brand-tag">estúdio avesso</span>
+    </div>
+  </div>
+
+  <!-- ---------- login / criar senha / esqueci / redefinir ---------- -->
+  <div id="auth-view">
+    <div class="wrap">
+      <h1 class="page-title">sua conta avesso</h1>
+      <p class="page-sub">um e-mail e uma senha só — servem pra qualquer ferramenta que você comprar da avesso.</p>
+
+      <div class="auth-card">
+        <div class="auth-step active" id="step-login">
+          <p class="auth-eyebrow">entrar</p>
+          <p class="auth-lede">entre com o e-mail e a senha da sua conta.</p>
+          <input id="login-email" type="email" placeholder="seu e-mail" autocomplete="username">
+          <input id="login-password" type="password" placeholder="sua senha" autocomplete="current-password">
+          <button class="btn btn-primary" id="login-btn" type="button">entrar</button>
+          <p class="auth-msg" id="login-msg"></p>
+          <p class="auth-switch">esqueceu a senha? <a id="goto-forgot">redefinir</a></p>
+        </div>
+
+        <div class="auth-step" id="step-setup">
+          <p class="auth-eyebrow">criar sua senha</p>
+          <p class="auth-lede">pagamento confirmado! escolha uma senha — ela vai servir pra qualquer ferramenta que você comprar da avesso depois.</p>
+          <input id="setup-email" type="email" placeholder="seu e-mail" autocomplete="username">
+          <input id="setup-password" type="password" placeholder="nova senha (mín. 8 caracteres)" autocomplete="new-password">
+          <input id="setup-password2" type="password" placeholder="confirmar senha" autocomplete="new-password">
+          <button class="btn btn-primary" id="setup-btn" type="button">criar senha e entrar</button>
+          <p class="auth-msg" id="setup-msg"></p>
+        </div>
+
+        <div class="auth-step" id="step-forgot">
+          <p class="auth-eyebrow">redefinir senha</p>
+          <p class="auth-lede">digite o e-mail da sua conta — se existir, mandamos um link pra escolher uma senha nova.</p>
+          <input id="forgot-email" type="email" placeholder="seu e-mail" autocomplete="username">
+          <button class="btn btn-primary" id="forgot-btn" type="button">mandar link</button>
+          <p class="auth-msg" id="forgot-msg"></p>
+          <p class="auth-switch"><a id="goto-login">voltar pro login</a></p>
+        </div>
+
+        <div class="auth-step" id="step-reset">
+          <p class="auth-eyebrow">escolher nova senha</p>
+          <input id="reset-password" type="password" placeholder="nova senha (mín. 8 caracteres)" autocomplete="new-password">
+          <input id="reset-password2" type="password" placeholder="confirmar senha" autocomplete="new-password">
+          <button class="btn btn-primary" id="reset-btn" type="button">salvar senha e entrar</button>
+          <p class="auth-msg" id="reset-msg"></p>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:12px;margin-top:24px;opacity:.65;">precisa de ajuda? <a href="https://wa.me/5548999936071" style="text-decoration:underline;">fala com a gente no whatsapp</a>.</p>
+    </div>
+  </div>
+
+  <!-- ---------- conta logada: ferramentas ---------- -->
+  <div id="account-view">
+    <div class="wrap">
+      <div class="account-head">
+        <span class="account-eyebrow" id="account-email"></span>
+        <button id="logout-btn" type="button">sair</button>
+      </div>
+      <h1 class="account-title">suas ferramentas</h1>
+      <div id="produtos-grid" class="prod-grid"><p class="empty-msg">carregando…</p></div>
+    </div>
+  </div>
+
+  <!-- ---------- checkout (comprar uma ferramenta que falta) ---------- -->
+  <div class="checkout-overlay" id="checkout-overlay">
+    <div class="checkout-panel">
+      <div id="cp-step-email">
+        <h3 id="cp-produto-nome">comprar</h3>
+        <p class="cp-sub" id="cp-produto-preco"></p>
+        <button class="btn btn-primary" id="cp-gerar-pix" type="button">gerar pix</button>
+        <p class="cp-msg" id="cp-email-msg"></p>
+      </div>
+      <div id="cp-step-pix" style="display:none;">
+        <h3>escaneie ou copie o código</h3>
+        <p class="cp-sub">assim que o pagamento confirmar, a ferramenta libera aqui na hora.</p>
+        <div class="qr-box">
+          <img id="cp-qr-img" src="" alt="qr code pix">
+          <div class="pix-code" id="cp-pix-code"></div>
+          <button class="btn btn-outline" id="cp-copiar" type="button">copiar código pix</button>
+        </div>
+        <div class="cp-spinner" id="cp-spinner"></div>
+        <p class="cp-msg" id="cp-status-msg">aguardando confirmação do pagamento…</p>
+      </div>
+      <div id="cp-step-sucesso" style="display:none;">
+        <p class="cp-success">pagamento confirmado 🎉</p>
+        <p class="cp-sub">já apareceu na sua lista de ferramentas.</p>
+        <button class="btn btn-primary" id="cp-continuar" type="button">continuar</button>
+      </div>
+      <button class="cp-close" id="cp-close" type="button">fechar</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var TOKEN_KEY = 'avesso_conta_token';
+  var params = new URLSearchParams(window.location.search);
+
+  var authView = document.getElementById('auth-view');
+  var accountView = document.getElementById('account-view');
+
+  function getToken(){ try{ return localStorage.getItem(TOKEN_KEY); }catch(e){ return null; } }
+  function setToken(t){ try{ localStorage.setItem(TOKEN_KEY, t); }catch(e){} }
+  function clearToken(){ try{ localStorage.removeItem(TOKEN_KEY); }catch(e){} }
+
+  function showAuthStep(id){
+    document.querySelectorAll('.auth-step').forEach(function(el){ el.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    authView.style.display = 'block';
+    accountView.style.display = 'none';
+  }
+
+  document.getElementById('goto-forgot').addEventListener('click', function(){ showAuthStep('step-forgot'); });
+  document.getElementById('goto-login').addEventListener('click', function(){ showAuthStep('step-login'); });
+
+  // ---- login ----
+  document.getElementById('login-btn').addEventListener('click', function(){
+    var email = document.getElementById('login-email').value.trim();
+    var password = document.getElementById('login-password').value;
+    var msg = document.getElementById('login-msg');
+    var btn = this;
+    if(!email || !password){ msg.textContent = 'preencha e-mail e senha.'; return; }
+    msg.textContent = 'entrando…'; btn.disabled = true;
+    fetch('/api/auth?action=login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email: email, password: password})
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){ msg.textContent = res.data.error || 'e-mail ou senha incorretos.'; return; }
+        onAuthenticated(res.data.token, res.data.email);
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+  document.getElementById('login-password').addEventListener('keydown', function(e){ if(e.key === 'Enter') document.getElementById('login-btn').click(); });
+
+  // ---- criar senha (pós-pagamento, primeira compra) ----
+  document.getElementById('setup-btn').addEventListener('click', function(){
+    var paymentId = params.get('payment_id');
+    var email = document.getElementById('setup-email').value.trim();
+    var p1 = document.getElementById('setup-password').value;
+    var p2 = document.getElementById('setup-password2').value;
+    var msg = document.getElementById('setup-msg');
+    var btn = this;
+    if(!email || email.indexOf('@') === -1){ msg.textContent = 'digite um e-mail válido.'; return; }
+    if(p1.length < 8){ msg.textContent = 'a senha precisa ter pelo menos 8 caracteres.'; return; }
+    if(p1 !== p2){ msg.textContent = 'as senhas não são iguais.'; return; }
+    if(!paymentId){ msg.textContent = 'link incompleto — usa o link do e-mail de confirmação.'; return; }
+    msg.textContent = 'criando conta…'; btn.disabled = true;
+    fetch('/api/auth?action=set-password', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({payment_id: paymentId, email: email, password: p1})
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){ msg.textContent = res.data.error || 'não consegui criar sua conta.'; return; }
+        onAuthenticated(res.data.token, res.data.email);
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+
+  // ---- esqueci a senha ----
+  document.getElementById('forgot-btn').addEventListener('click', function(){
+    var email = document.getElementById('forgot-email').value.trim();
+    var msg = document.getElementById('forgot-msg');
+    var btn = this;
+    if(!email || email.indexOf('@') === -1){ msg.textContent = 'digite um e-mail válido.'; return; }
+    msg.textContent = 'enviando…'; btn.disabled = true;
+    fetch('/api/auth?action=request-reset', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email: email})
+    }).then(function(r){ return r.json(); })
+      .then(function(){
+        btn.disabled = false;
+        msg.textContent = 'se essa conta existir, mandamos um link pro e-mail. confere sua caixa de entrada.';
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+
+  // ---- redefinir (via link do e-mail) ----
+  document.getElementById('reset-btn').addEventListener('click', function(){
+    var token = params.get('token');
+    var p1 = document.getElementById('reset-password').value;
+    var p2 = document.getElementById('reset-password2').value;
+    var msg = document.getElementById('reset-msg');
+    var btn = this;
+    if(p1.length < 8){ msg.textContent = 'a senha precisa ter pelo menos 8 caracteres.'; return; }
+    if(p1 !== p2){ msg.textContent = 'as senhas não são iguais.'; return; }
+    if(!token){ msg.textContent = 'link incompleto — peça um novo link de redefinição.'; return; }
+    msg.textContent = 'salvando…'; btn.disabled = true;
+    fetch('/api/auth?action=reset-password', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({token: token, password: p1})
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){ msg.textContent = res.data.error || 'não consegui redefinir a senha.'; return; }
+        onAuthenticated(res.data.token, res.data.email);
+      }).catch(function(){ btn.disabled = false; msg.textContent = 'não consegui conectar. tenta de novo.'; });
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', function(){
+    clearToken();
+    showAuthStep('step-login');
+  });
+
+  // ---- pós-login: mostra a conta e decide se volta sozinho pra ferramenta ----
+  function onAuthenticated(token, email){
+    setToken(token);
+    loadAccountView(email);
+  }
+
+  function fmtMoney(v){
+    v = Number(v) || 0;
+    var hasCents = Math.round(v * 100) % 100 !== 0;
+    return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: hasCents ? 2 : 0, maximumFractionDigits:2});
+  }
+
+  var produtosCache = [];
+
+  function loadAccountView(email){
+    authView.style.display = 'none';
+    accountView.style.display = 'block';
+    document.getElementById('account-email').textContent = email;
+
+    fetch('/api/account', { headers: { Authorization: 'Bearer ' + getToken() } })
+      .then(function(r){
+        if(r.status === 401) throw new Error('unauthorized');
+        return r.json();
+      })
+      .then(function(data){
+        produtosCache = data.produtos || [];
+        renderProdutos();
+
+        var returnTo = params.get('returnTo');
+        var produtoAlvo = params.get('produto');
+        if(returnTo){
+          if(!produtoAlvo){
+            window.location.href = returnTo;
+            return;
+          }
+          var alvo = produtosCache.filter(function(p){ return p.slug === produtoAlvo; })[0];
+          if(alvo && alvo.owned){
+            window.location.href = returnTo;
+          }
+        }
+      })
+      .catch(function(){
+        clearToken();
+        showAuthStep('step-login');
+      });
+  }
+
+  function renderProdutos(){
+    var grid = document.getElementById('produtos-grid');
+    if(produtosCache.length === 0){
+      grid.innerHTML = '<p class="empty-msg">nenhuma ferramenta no catálogo ainda.</p>';
+      return;
+    }
+    grid.innerHTML = produtosCache.map(function(p){
+      if(p.owned){
+        return '<div class="prod-card owned"><span class="tag">sua ferramenta</span>' +
+          '<h3>' + p.nome + '</h3><p>' + p.tagline + '</p>' +
+          '<div class="actions"><a class="btn btn-gold" href="' + p.appPath + '">abrir</a></div></div>';
+      }
+      return '<div class="prod-card"><span class="tag">ainda não comprou</span>' +
+        '<h3>' + p.nome + '</h3><p>' + p.tagline + '</p>' +
+        '<div class="prod-price">' + fmtMoney(p.preco) + '</div>' +
+        '<div class="actions">' +
+        '<button class="btn btn-primary" data-slug="' + p.slug + '" data-nome="' + p.nome + '" data-preco="' + p.preco + '">comprar com pix</button>' +
+        '<a href="' + p.vendaPath + '" style="display:block;text-align:center;font-size:12.5px;margin-top:10px;text-decoration:underline;opacity:.75;">saiba mais</a>' +
+        '</div></div>';
+    }).join('');
+
+    grid.querySelectorAll('button[data-slug]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        openCheckout(btn.getAttribute('data-slug'), btn.getAttribute('data-nome'), btn.getAttribute('data-preco'));
+      });
+    });
+  }
+
+  // ---- checkout (compra de dentro da conta, já logada — não passa pelo
+  // passo de criar senha, porque a conta já existe) ----
+  var overlay = document.getElementById('checkout-overlay');
+  var cpStepEmail = document.getElementById('cp-step-email');
+  var cpStepPix = document.getElementById('cp-step-pix');
+  var cpStepSucesso = document.getElementById('cp-step-sucesso');
+  var pollTimer = null;
+  var currentSlug = null;
+
+  function openCheckout(slug, nome, preco){
+    currentSlug = slug;
+    document.getElementById('cp-produto-nome').textContent = nome;
+    document.getElementById('cp-produto-preco').textContent = fmtMoney(preco) + ' · pagamento único via pix';
+    cpStepEmail.style.display = 'block';
+    cpStepPix.style.display = 'none';
+    cpStepSucesso.style.display = 'none';
+    document.getElementById('cp-email-msg').textContent = '';
+    overlay.classList.add('open');
+  }
+  function closeCheckout(){
+    overlay.classList.remove('open');
+    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+  }
+  document.getElementById('cp-close').addEventListener('click', closeCheckout);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeCheckout(); });
+
+  document.getElementById('cp-gerar-pix').addEventListener('click', function(){
+    var email = document.getElementById('account-email').textContent;
+    var msgEl = document.getElementById('cp-email-msg');
+    msgEl.textContent = 'gerando pix…';
+
+    fetch('/api/payment?action=create&produto=' + encodeURIComponent(currentSlug), {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email: email})
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        if(!res.ok){ msgEl.textContent = 'não consegui gerar o pix agora. tenta de novo em instantes.'; return; }
+        var data = res.data;
+        if(data.qr_code_base64){ document.getElementById('cp-qr-img').src = 'data:image/png;base64,' + data.qr_code_base64; }
+        document.getElementById('cp-pix-code').textContent = data.qr_code || '';
+        cpStepEmail.style.display = 'none';
+        cpStepPix.style.display = 'block';
+        startPolling(data.payment_id);
+      }).catch(function(){ msgEl.textContent = 'não consegui conectar. verifica sua internet e tenta de novo.'; });
+  });
+
+  document.getElementById('cp-copiar').addEventListener('click', function(){
+    var code = document.getElementById('cp-pix-code').textContent;
+    if(!code) return;
+    navigator.clipboard.writeText(code).then(function(){
+      var b = document.getElementById('cp-copiar');
+      b.textContent = 'copiado!';
+      setTimeout(function(){ b.textContent = 'copiar código pix'; }, 2000);
+    }).catch(function(){});
+  });
+
+  document.getElementById('cp-continuar').addEventListener('click', function(){
+    closeCheckout();
+    var returnTo = params.get('returnTo');
+    var produtoAlvo = params.get('produto');
+    if(returnTo && produtoAlvo === currentSlug){
+      window.location.href = returnTo;
+    }
+  });
+
+  function startPolling(paymentId){
+    var attempts = 0, maxAttempts = 200;
+    pollTimer = setInterval(function(){
+      attempts++;
+      if(attempts > maxAttempts){
+        clearInterval(pollTimer);
+        document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a avesso.';
+        return;
+      }
+      fetch('/api/payment?action=status&payment_id=' + encodeURIComponent(paymentId))
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data.approved){
+            clearInterval(pollTimer); pollTimer = null;
+            cpStepPix.style.display = 'none';
+            cpStepSucesso.style.display = 'block';
+            fetch('/api/account', { headers: { Authorization: 'Bearer ' + getToken() } })
+              .then(function(r){ return r.json(); })
+              .then(function(data){ produtosCache = data.produtos || []; renderProdutos(); }).catch(function(){});
+          } else if(data.status === 'rejected' || data.status === 'cancelled'){
+            clearInterval(pollTimer); pollTimer = null;
+            document.getElementById('cp-status-msg').textContent = 'esse pix não foi confirmado. feche e tente gerar um novo.';
+          }
+        }).catch(function(){});
+    }, 3000);
+  }
+
+  // ---- estado inicial, a partir da url e da sessão salva ----
+  if(params.get('setup') === '1'){
+    showAuthStep('step-setup');
+    var setupEmail = params.get('email');
+    if(setupEmail) document.getElementById('setup-email').value = setupEmail;
+  } else if(params.get('reset') === '1' && params.get('token')){
+    showAuthStep('step-reset');
+  } else {
+    var savedToken = getToken();
+    var loginEmailHint = params.get('email');
+    if(loginEmailHint) document.getElementById('login-email').value = loginEmailHint;
+    if(savedToken){
+      fetch('/api/auth?action=session', { headers: { Authorization: 'Bearer ' + savedToken } })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data.valid){ loadAccountView(data.email); }
+          else { clearToken(); showAuthStep('step-login'); }
+        }).catch(function(){ showAuthStep('step-login'); });
+    } else {
+      showAuthStep('step-login');
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
