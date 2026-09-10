@@ -42,29 +42,36 @@
     </div>
   </section>
 
-  <section class="publico">
+  <section class="publico bg-cream">
     <div class="wrap publico">
-      <div class="sim">
-        <h3>o molda é pra você se</h3>
-        <ul>
-          <li>tem um lançamento, produto ou evento chegando e precisa de conteúdo rápido</li>
-          <li>já tem (ou consegue definir) cores e fonte da sua marca</li>
-          <li>quer parar de pagar designer ou perder horas no canva pra cada carrossel</li>
-          <li>prefere pagar uma vez e usar sempre que precisar, sem mensalidade</li>
-        </ul>
+      <span class="eyebrow-section">é pra você?</span>
+      <h2>vale a pena ler isso antes de decidir</h2>
+      <div class="publico-grid">
+        <div class="sim">
+          <h3>o molda é pra você se</h3>
+          <ul>
+            <li>tem um lançamento, produto ou evento chegando e precisa de conteúdo rápido</li>
+            <li>já tem (ou consegue definir) cores e fonte da sua marca</li>
+            <li>quer parar de pagar designer ou perder horas no canva pra cada carrossel</li>
+            <li>prefere pagar uma vez e usar sempre que precisar, sem mensalidade</li>
+          </ul>
+        </div>
+        <div class="nao">
+          <h3>talvez não seja pra você se</h3>
+          <ul>
+            <li>você procura um editor de design completo, tipo canva ou photoshop</li>
+            <li>precisa de templates prontos de terceiros, sem nenhuma identidade própria</li>
+            <li>quer alguém fazendo o conteúdo por você (nesse caso, veja a <a href="/#formatos" style="text-decoration:underline;">manutenção contínua</a> da avesso)</li>
+          </ul>
+        </div>
       </div>
-      <div class="nao">
-        <h3>talvez não seja pra você se</h3>
-        <ul>
-          <li>você procura um editor de design completo, tipo canva ou photoshop</li>
-          <li>precisa de templates prontos de terceiros, sem nenhuma identidade própria</li>
-          <li>quer alguém fazendo o conteúdo por você (nesse caso, veja a <a href="/#formatos" style="text-decoration:underline;">manutenção contínua</a> da avesso)</li>
-        </ul>
+      <div class="section-cta">
+        <button class="btn btn-gold btn-sm js-cta-checkout">quero o molda — pagar com pix</button>
       </div>
     </div>
   </section>
 
-  <section class="features">
+  <section class="features bg-coffee">
     <div class="wrap">
       <span class="eyebrow-section">o que você recebe</span>
       <h2>tudo pronto pra publicar, sem sair da ferramenta</h2>
@@ -74,6 +81,9 @@
         <div class="feat-item"><span class="ico">—</span><p>escreva título, subtítulo e texto de cada página do carrossel — até 20 páginas por vez.</p></div>
         <div class="feat-item"><span class="ico">—</span><p>adicione elementos visuais extras (textura, pattern, imagem de fundo) e escolha em quais páginas eles aparecem.</p></div>
         <div class="feat-item"><span class="ico">—</span><p>gere e baixe as imagens prontas pra publicar — sem precisar abrir nenhum outro programa de design.</p></div>
+      </div>
+      <div class="section-cta">
+        <button class="btn btn-gold btn-sm js-cta-checkout">quero o molda — pagar com pix</button>
       </div>
     </div>
   </section>
@@ -88,7 +98,7 @@
     </div>
   </section>
 
-  <section class="faq">
+  <section class="faq bg-cream">
     <div class="wrap">
       <span class="eyebrow-section">perguntas rápidas</span>
       <h2>antes de decidir</h2>
@@ -115,7 +125,7 @@
     </div>
   </section>
 
-  <section class="cta-final">
+  <section class="cta-final bg-coffee">
     <div class="wrap">
       <h2>seu próximo lançamento não precisa te tomar um fim de semana inteiro.</h2>
       <p class="lede">pague uma vez, use sempre que precisar.</p>
@@ -170,8 +180,9 @@
         }
       }).catch(function(){});
 
-      var btn2 = document.getElementById('btn-abrir-checkout-2');
-      if(btn2) btn2.addEventListener('click', function(){ document.getElementById('btn-abrir-checkout').click(); });
+      document.querySelectorAll('#btn-abrir-checkout-2, .js-cta-checkout').forEach(function(btn){
+        btn.addEventListener('click', function(){ document.getElementById('btn-abrir-checkout').click(); });
+      });
     })();
   </script>
   <script src="/shared/checkout.js" data-produto="molda"></script>

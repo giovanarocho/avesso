@@ -73,29 +73,36 @@
     </div>
   </section>
 
-  <section class="publico">
+  <section class="publico bg-cream">
     <div class="wrap publico">
-      <div class="sim">
-        <h3>o guia é pra você se</h3>
-        <ul>
-          <li>tem um negócio próprio e cuida do marketing sozinha</li>
-          <li>já tentou ler sobre marketing mas ainda não sabe por onde começar de verdade</li>
-          <li>quer decisões tomadas (nome, cores, o que postar) em vez de mais uma lista de dicas</li>
-          <li>prefere pagar uma vez e seguir no seu próprio ritmo, sem depender de agenda de terceiros</li>
-        </ul>
+      <span class="eyebrow-section">é pra você?</span>
+      <h2>vale a pena ler isso antes de decidir</h2>
+      <div class="publico-grid">
+        <div class="sim">
+          <h3>o guia é pra você se</h3>
+          <ul>
+            <li>tem um negócio próprio e cuida do marketing sozinha</li>
+            <li>já tentou ler sobre marketing mas ainda não sabe por onde começar de verdade</li>
+            <li>quer decisões tomadas (nome, cores, o que postar) em vez de mais uma lista de dicas</li>
+            <li>prefere pagar uma vez e seguir no seu próprio ritmo, sem depender de agenda de terceiros</li>
+          </ul>
+        </div>
+        <div class="nao">
+          <h3>talvez não seja pra você se</h3>
+          <ul>
+            <li>você já tem tudo isso organizado e só precisa de execução contínua (nesse caso, veja a <a href="/#formatos" style="text-decoration:underline;">manutenção contínua</a> da avesso)</li>
+            <li>prefere que alguém monte tudo por você, do zero, sob medida (veja a <a href="/#formatos" style="text-decoration:underline;">base pronta</a>)</li>
+            <li>procura um curso longo, com aulas em vídeo — isso aqui é direto ao ponto, pra fazer, não pra assistir</li>
+          </ul>
+        </div>
       </div>
-      <div class="nao">
-        <h3>talvez não seja pra você se</h3>
-        <ul>
-          <li>você já tem tudo isso organizado e só precisa de execução contínua (nesse caso, veja a <a href="/#formatos" style="text-decoration:underline;">manutenção contínua</a> da avesso)</li>
-          <li>prefere que alguém monte tudo por você, do zero, sob medida (veja a <a href="/#formatos" style="text-decoration:underline;">base pronta</a>)</li>
-          <li>procura um curso longo, com aulas em vídeo — isso aqui é direto ao ponto, pra fazer, não pra assistir</li>
-        </ul>
+      <div class="section-cta">
+        <button class="btn btn-gold btn-sm js-cta-checkout">quero o guia — pagar com pix</button>
       </div>
     </div>
   </section>
 
-  <section class="passos">
+  <section class="passos bg-coffee">
     <div class="wrap">
       <span class="eyebrow-section">o que você recebe</span>
       <h2>5 passos, 5 coisas prontas — não 5 aulas.</h2>
@@ -143,6 +150,9 @@
           </div>
         </div>
       </div>
+      <div class="section-cta">
+        <button class="btn btn-gold btn-sm js-cta-checkout">quero o guia — pagar com pix</button>
+      </div>
     </div>
   </section>
 
@@ -156,7 +166,7 @@
     </div>
   </section>
 
-  <section class="faq">
+  <section class="faq bg-cream">
     <div class="wrap">
       <span class="eyebrow-section">perguntas rápidas</span>
       <h2>antes de decidir</h2>
@@ -183,7 +193,7 @@
     </div>
   </section>
 
-  <section class="cta-final">
+  <section class="cta-final bg-coffee">
     <div class="wrap">
       <h2>clareza custa R$ 39,90 e leva minutos pra liberar.</h2>
       <p class="lede">pague uma vez, siga no seu ritmo.</p>
@@ -254,8 +264,9 @@
         }, 3200);
       }
 
-      var btn2 = document.getElementById('btn-abrir-checkout-2');
-      if(btn2) btn2.addEventListener('click', function(){ document.getElementById('btn-abrir-checkout').click(); });
+      document.querySelectorAll('#btn-abrir-checkout-2, .js-cta-checkout').forEach(function(btn){
+        btn.addEventListener('click', function(){ document.getElementById('btn-abrir-checkout').click(); });
+      });
     })();
   </script>
   <script src="/shared/checkout.js" data-produto="guia"></script>
