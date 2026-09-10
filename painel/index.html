@@ -144,6 +144,20 @@
       </section>
 
       <section>
+        <h2>tutoriais do guia</h2>
+        <div class="card">
+          <p class="hint" style="margin-bottom:14px;font-size:12.5px;opacity:.7;">
+            cole aqui o link do drive (ou youtube) de cada vídeo, conforme forem ficando prontos.
+            o botão "acessar tutorial" de cada marco no guia aparece assim que o link é salvo —
+            até lá, mostra "tutorial em breve". dá pra deixar em branco e voltar aqui depois.
+          </p>
+          <div id="f-tutoriais"></div>
+          <button class="save-btn" id="save-tutoriais-btn" type="button">salvar links de tutorial</button>
+          <p id="tutoriais-msg"></p>
+        </div>
+      </section>
+
+      <section>
         <h2>vendas</h2>
         <div id="vendas-area"><p class="empty-msg">carregando…</p></div>
       </section>
@@ -168,6 +182,7 @@
     gate.style.display = 'none';
     app.style.display = 'block';
     loadPrecos();
+    loadTutoriais();
     loadVendas();
   }
   function showGate(msg){
@@ -288,6 +303,66 @@
           return;
         }
         msg.textContent = 'salvo! já vale pro site (sem precisar de redeploy).';
+        setTimeout(function(){ msg.textContent = ''; }, 4000);
+      }).catch(function(e){
+        btn.disabled = false;
+        if(e.message !== 'unauthorized') msg.textContent = 'não consegui salvar. tenta de novo.';
+      });
+  });
+
+  // ---------- tutoriais do guia ----------
+  // um vídeo por marco do guia — a chave aqui precisa bater com a usada em
+  // guia/index.html (TUTORIAIS_MARCO) pra cada link cair no marco certo.
+  var TUTORIAL_MARCOS = [
+    {key:'escopo',            label:'marco 0 — escopo da marca'},
+    {key:'identidade-visual', label:'marco 1 — identidade visual'},
+    {key:'google',            label:'marco 2 — perfil no google'},
+    {key:'whatsapp',          label:'marco 3 — whatsapp business'},
+    {key:'site',              label:'marco 4 — site / landing page'},
+    {key:'redes',             label:'marco 5 — redes sociais'},
+    {key:'manutencao',        label:'marco 6 — manutenção'},
+    {key:'trafego-pago',      label:'marco 7 — tráfego pago'}
+  ];
+
+  function loadTutoriais(){
+    fetch('/api/config').then(function(r){ return r.json(); }).then(function(cfg){
+      var tutoriais = cfg.tutoriais || {};
+      var container = document.getElementById('f-tutoriais');
+      container.innerHTML = TUTORIAL_MARCOS.map(function(m){
+        var val = tutoriais[m.key] || '';
+        return '<div class="field" style="margin-bottom:10px;"><label for="f-tut-' + m.key + '">' + m.label + '</label>' +
+          '<input id="f-tut-' + m.key + '" type="url" placeholder="https://drive.google.com/..." value="' +
+          val.replace(/"/g, '&quot;') + '"></div>';
+      }).join('');
+    }).catch(function(){});
+  }
+
+  document.getElementById('save-tutoriais-btn').addEventListener('click', function(){
+    var btn = this;
+    var msg = document.getElementById('tutoriais-msg');
+    btn.disabled = true;
+    msg.textContent = 'salvando…';
+
+    var tutoriais = {};
+    TUTORIAL_MARCOS.forEach(function(m){
+      var el = document.getElementById('f-tut-' + m.key);
+      if(el) tutoriais[m.key] = el.value.trim();
+    });
+
+    authFetch('/api/admin?action=update-config', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ tutoriais: tutoriais })
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){
+          msg.textContent = res.data && res.data.error === 'banco de dados (supabase) não configurado no servidor'
+            ? 'o supabase ainda não está configurado — sem ele, não dá pra editar os links por aqui.'
+            : 'não consegui salvar. tenta de novo.';
+          return;
+        }
+        msg.textContent = 'salvo! já vale no guia (sem precisar de redeploy).';
         setTimeout(function(){ msg.textContent = ''; }, 4000);
       }).catch(function(e){
         btn.disabled = false;

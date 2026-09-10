@@ -5,6 +5,7 @@ import {
   dbListPagamentos,
   dbSetConfig,
   dbSetPrecoProduto,
+  dbSetTutoriais,
   issueAdminToken,
   verifyAdminToken
 } from '../lib/services.js';
@@ -83,7 +84,25 @@ async function actionUpdateConfig(req, res, body) {
     await dbSetPrecoProduto(slug, valor);
   }
 
-  if (Object.keys(fields).length === 0 && Object.keys(precos).length === 0) {
+  // links dos vídeos-tutorial de cada marco do guia — objeto único
+  // { escopo: "https://drive...", "identidade-visual": "...", ... }.
+  // string vazia limpa o link (marco volta a mostrar "em breve").
+  const tutoriais = body.tutoriais && typeof body.tutoriais === 'object' ? body.tutoriais : {};
+  let tutoriaisChanged = false;
+  for (const key of Object.keys(tutoriais)) {
+    if (typeof tutoriais[key] !== 'string') { delete tutoriais[key]; continue; }
+    tutoriais[key] = tutoriais[key].trim();
+    tutoriaisChanged = true;
+  }
+  if (tutoriaisChanged) {
+    const ok = await dbSetTutoriais(tutoriais);
+    if (!ok) {
+      res.status(502).json({ error: 'falha ao salvar links de tutorial no banco' });
+      return;
+    }
+  }
+
+  if (Object.keys(fields).length === 0 && Object.keys(precos).length === 0 && !tutoriaisChanged) {
     res.status(400).json({ error: 'nada pra atualizar' });
     return;
   }

@@ -203,6 +203,20 @@ td.dropzone.drag-over input{border-color:var(--brass);background:var(--paper-dee
 .btn.small{padding:9px 15px;font-size:11.5px;}
 .btn.ghost{background:transparent;color:var(--brown);}
 
+/* tutorial link (um por marco, editável no painel) */
+.tutorial-link{margin-top:2px;}
+.tutorial-btn{
+  display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;
+  color:var(--brass-ink);border:1px solid var(--brass);border-radius:2px;padding:6px 11px;
+  transition:background .12s ease, color .12s ease;
+}
+.tutorial-btn:hover{background:var(--brass);color:var(--paper);}
+.tutorial-btn.disabled{
+  color:var(--brown-soft);border-color:var(--line-strong);cursor:default;opacity:.75;
+}
+.tutorial-btn.disabled:hover{background:transparent;color:var(--brown-soft);}
+
 /* prompt box (marco 1) */
 .prompt-box{
   margin-top:20px;background:var(--paper-deep);border:1px dashed var(--line-strong);
@@ -319,7 +333,8 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
   <section id="s-m0">
     <div class="section-head">
       <span class="section-num">Marco 0</span>
-      <h2>Nome, branding e identidade visual</h2>
+      <h2>Escopo da marca</h2>
+      <div class="tutorial-link" data-tutorial="escopo"></div>
     </div>
     <div class="prose">
       <p>Antes de criar perfis e postar conteúdo, você precisa saber com clareza quem é a sua marca. Sem isso, qualquer post — por mais bonito que seja — vai parecer genérico.</p>
@@ -331,17 +346,37 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
       <label for="m0-faz">O que você faz, exatamente?</label>
       <textarea id="m0-faz" placeholder="Descreva sem jargão, como se explicasse para alguém de fora da sua área."></textarea>
     </div>
+
+    <div class="prose">
+      <h3>Diferencial: cuidado com o óbvio</h3>
+      <p>O erro mais comum aqui é responder com algo que qualquer concorrente também diria — qualidade, bom atendimento, preço justo. Isso não é diferencial, é o mínimo esperado: todo mundo promete isso, então não diferencia nada.</p>
+      <p><b>Não é diferencial:</b> "eu ofereço um atendimento de qualidade", "meu preço cabe no bolso", "eu amo o que eu faço". <b>É diferencial</b> algo específico e comparável — algo que o cliente consegue repetir pra outra pessoa numa frase só, tipo "ela é a única da região que faz X do jeito Y" ou "ele entrega na metade do prazo que os outros levam".</p>
+    </div>
+    <div class="field">
+      <label for="m0-dif">Qual é o seu diferencial de verdade? (evite o genérico — seja específica)</label>
+      <textarea id="m0-dif"></textarea>
+    </div>
+
     <div class="field">
       <label for="m0-para">Para quem você faz isso? Quem é o seu público — e quem não é?</label>
       <textarea id="m0-para"></textarea>
     </div>
     <div class="field">
-      <label for="m0-dif">Por que alguém escolheria você e não o concorrente?</label>
-      <textarea id="m0-dif"></textarea>
+      <label for="m0-servicos">Quais são os seus principais serviços ou produtos, definidos com clareza?</label>
+      <textarea id="m0-servicos" placeholder="Liste um por um — o que cada um inclui e pra quem ele é."></textarea>
     </div>
     <div class="field">
-      <label for="m0-servicos">Quais são os seus principais serviços ou produtos?</label>
-      <textarea id="m0-servicos"></textarea>
+      <label for="m0-proposito">Por que a sua marca existe, além de vender? Qual é o propósito por trás do que você faz?</label>
+      <textarea id="m0-proposito"></textarea>
+    </div>
+    <div class="field">
+      <label for="m0-nome-check">Você já tem um nome? Ele é fácil de lembrar, escrever e pronunciar? Está disponível como @ nas redes e como domínio?</label>
+      <textarea id="m0-nome-check"></textarea>
+    </div>
+
+    <div class="prose">
+      <h3>Identidade verbal</h3>
+      <p>Assim como a sua marca tem (ou vai ter) uma identidade visual, ela também tem um jeito de falar reconhecível. Escolha as opções abaixo pra guiar esse tom.</p>
     </div>
     <div class="field">
       <label>Qual sensação você quer que as pessoas sintam ao conhecer a sua marca?</label>
@@ -361,9 +396,19 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
       <label for="m0-pessoa">Se a sua marca fosse uma pessoa, como ela se vestiria, falaria e se comportaria?</label>
       <textarea id="m0-pessoa"></textarea>
     </div>
-    <div class="field">
-      <label for="m0-nome-check">Você já tem um nome? Ele é fácil de lembrar, escrever e pronunciar? Está disponível como @ nas redes e como domínio?</label>
-      <textarea id="m0-nome-check"></textarea>
+  </section>
+
+  <!-- MARCO 1 — IDENTIDADE VISUAL -->
+  <section id="s-visual">
+    <div class="section-head">
+      <span class="section-num">Marco 1</span>
+      <h2>Identidade visual</h2>
+      <div class="tutorial-link" data-tutorial="identidade-visual"></div>
+    </div>
+    <div class="prose">
+      <p>Aqui, uma coisa importa mais do que qualquer dica deste guia: <b>nada substitui um bom design.</b></p>
+      <p>Antes de decidir quanto investir nisso, uma pergunta ajuda mais do que qualquer teoria: quanto tempo você imagina que a sua marca vai durar? É esse tempo que o investimento em identidade visual vai valer.</p>
+      <p>Identidade visual não é só logo e paleta de cores — é um sistema. É o que vai bater automaticamente em todo post, todo story, toda apresentação e todo material que você (ou qualquer pessoa em seu nome) for criar depois. Quanto mais sólido esse sistema, menos você precisa reinventar a roda toda vez que for comunicar algo.</p>
     </div>
     <div class="field">
       <label>Você já tem cores, fontes e logo definidos, ou vai construir isso do zero?</label>
@@ -371,22 +416,24 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
         <button class="chip" data-v="Já tem cores, fontes e logo definidos">já tenho definidos</button>
         <button class="chip" data-v="Vai construir a identidade visual do zero">vou construir do zero</button>
       </div>
-      <div class="checklist-box" id="box-visual-dev" style="display:none;margin-top:14px;"><div id="checks-visualdev"></div></div>
     </div>
-
     <div class="prose">
-      <h3>Evite a aparência genérica</h3>
-      <p>O erro mais comum nessa fase é usar um template pronto sem adaptar nada — mesma fonte, mesma paleta, mesmo layout que centenas de outras marcas na sua área.</p>
-      <p>Você não precisa de uma identidade visual complexa. Precisa de poucos elementos, bem escolhidos e usados sempre da mesma forma: uma paleta de cores, uma ou duas fontes, e um elemento gráfico que se repete (pode ser tão simples quanto um traço, uma forma ou um jeito específico de organizar as informações).</p>
+      <h3>Sinais de um bom trabalho de identidade visual</h3>
+      <p>Sirva essa lista tanto pra avaliar o que você já tem quanto pra avaliar uma proposta nova:</p>
     </div>
-    <div class="pullquote"><p>É essa repetição que cria reconhecimento. Uma marca genérica muda de cara a cada post; uma marca com identidade é reconhecível mesmo sem o nome escrito.</p></div>
+    <div class="checklist-box" id="box-visual-dev"><div id="checks-visualdev"></div></div>
+    <div class="pullquote"><p>É a repetição desse sistema que cria reconhecimento. Uma marca genérica muda de cara a cada post; uma marca com identidade é reconhecível mesmo sem o nome escrito.</p></div>
+    <div class="prose">
+      <p>Se preferir não montar isso sozinha nem contratar às cegas, dá pra conversar com quem já faz esse tipo de trabalho todo dia — inclusive aqui no <a href="/#formatos">estúdio avesso</a>.</p>
+    </div>
   </section>
 
-  <!-- MARCO 1 -->
+  <!-- MARCO 2 -->
   <section id="s-m1">
     <div class="section-head">
-      <span class="section-num">Marco 1</span>
+      <span class="section-num">Marco 2</span>
       <h2>Perfil da Empresa no Google</h2>
+      <div class="tutorial-link" data-tutorial="google"></div>
     </div>
     <div class="prose">
       <p>O Perfil da Empresa no Google (antigo Google Meu Negócio) é, muitas vezes, o primeiro contato que um cliente em potencial tem com você — antes mesmo do Instagram. É ele que aparece quando alguém pesquisa o seu nome ou o seu serviço na região.</p>
@@ -414,11 +461,12 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     </div>
   </section>
 
-  <!-- MARCO 2 -->
+  <!-- MARCO 3 -->
   <section id="s-m2">
     <div class="section-head">
-      <span class="section-num">Marco 2</span>
+      <span class="section-num">Marco 3</span>
       <h2>WhatsApp Business</h2>
+      <div class="tutorial-link" data-tutorial="whatsapp"></div>
     </div>
     <div class="prose">
       <p>O WhatsApp costuma ser o canal onde a venda realmente acontece. Vale configurar bem, porque é ali que a pessoa decide confiar em você ou não.</p>
@@ -430,11 +478,30 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     </div>
   </section>
 
-  <!-- MARCO 3 -->
+  <!-- MARCO 4 — SITE / LANDING PAGE -->
+  <section id="s-site">
+    <div class="section-head">
+      <span class="section-num">Marco 4</span>
+      <h2>Site / landing page</h2>
+      <div class="tutorial-link" data-tutorial="site"></div>
+    </div>
+    <div class="prose">
+      <p>Com o Google e o WhatsApp configurados, falta um lugar central que reúne tudo — um link só, que você pode colocar em qualquer bio, cartão de visita ou perfil, sem depender de nenhuma rede social pra existir.</p>
+      <h3>O que uma landing page essencial precisa ter</h3>
+    </div>
+    <div class="checklist-box"><div id="checks-site"></div></div>
+    <div class="prose">
+      <p>Dá pra montar uma versão simples sozinha em ferramentas como Linktree, Carrd, Canva Sites ou Notion — nenhuma delas é perfeita, mas resolve o essencial: ter um link fixo, organizado, que representa sua marca.</p>
+      <p>Se preferir que alguém monte isso por você — uma landing page de verdade, com a identidade visual aplicada e pensada pra conversão — isso também é um dos formatos que o <a href="/#formatos">estúdio avesso</a> oferece.</p>
+    </div>
+  </section>
+
+  <!-- MARCO 5 -->
   <section id="s-m3">
     <div class="section-head">
-      <span class="section-num">Marco 3</span>
+      <span class="section-num">Marco 5</span>
       <h2>Redes sociais</h2>
+      <div class="tutorial-link" data-tutorial="redes"></div>
     </div>
     <div class="prose">
       <p>Você não precisa estar em todas as redes sociais. Precisa estar onde o seu público está — e presente de verdade, não só com o perfil criado.</p>
@@ -456,11 +523,12 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     <div class="checklist-box"><div id="checks-teste"></div></div>
   </section>
 
-  <!-- MARCO 4 -->
+  <!-- MARCO 6 -->
   <section id="s-m4">
     <div class="section-head">
-      <span class="section-num">Marco 4</span>
+      <span class="section-num">Marco 6</span>
       <h2>Manutenção</h2>
+      <div class="tutorial-link" data-tutorial="manutencao"></div>
     </div>
     <div class="prose">
       <p>Ter um perfil bem montado é só o começo. O que mantém ele vivo é a manutenção — e ela não precisa ser diária nem exaustiva.</p>
@@ -500,6 +568,22 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     </div>
   </section>
 
+  <!-- MARCO 7 — TRÁFEGO PAGO -->
+  <section id="s-trafego">
+    <div class="section-head">
+      <span class="section-num">Marco 7</span>
+      <h2>Tráfego pago</h2>
+      <div class="tutorial-link" data-tutorial="trafego-pago"></div>
+    </div>
+    <div class="prose">
+      <p>Depois que a base, a identidade, os canais e o conteúdo estão rodando, tráfego pago é o que acelera — leva o que você já construiu pra mais gente, mais rápido. Mas essa é a etapa em que dizemos com todas as letras: <b>nada substitui um bom profissional aqui.</b></p>
+      <p>Tráfego pago mal configurado queima dinheiro rápido — não é como errar um story, é literalmente pagar caro por um resultado ruim (ou nenhum). Não é o tipo de coisa pra aprender testando com o seu próprio orçamento.</p>
+      <p>Se ainda não é o momento de contratar, existem pessoas que ensinam isso de graça — vale estudar antes de rodar sua primeira campanha sozinha.</p>
+      <h3>Como reconhecer um bom profissional (ou um bom conteúdo gratuito) de tráfego pago</h3>
+    </div>
+    <div class="checklist-box"><div id="checks-trafego"></div></div>
+  </section>
+
   <!-- FECHAMENTO -->
   <section id="s-fim">
     <div class="section-head">
@@ -507,7 +591,7 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
       <h2>O seu caderno até aqui</h2>
     </div>
     <div class="prose">
-      <p>Marketing essencial não é sobre fazer tudo. É sobre fazer o suficiente, bem feito, de forma consistente. Recapitulando o caminho: a base vem primeiro; o marco 0 é uma identidade clara; o marco 1, um Perfil da Empresa no Google completo e verificado; o marco 2, um WhatsApp Business organizado; o marco 3, presença estratégica em até 2 redes sociais; o marco 4, manutenção simples.</p>
+      <p>Marketing essencial não é sobre fazer tudo. É sobre fazer o suficiente, bem feito, de forma consistente. Recapitulando o caminho: a base vem primeiro; o marco 0 é o escopo da marca; o marco 1, a identidade visual; o marco 2, um Perfil da Empresa no Google completo e verificado; o marco 3, um WhatsApp Business organizado; o marco 4, um site ou landing page central; o marco 5, presença estratégica em até 3 redes sociais; o marco 6, manutenção simples; o marco 7, o que observar antes de investir em tráfego pago.</p>
       <p>Você não precisa ser perfeita nem estar em todo lugar. Precisa estar presente onde importa, de um jeito que representa o seu trabalho de verdade.</p>
     </div>
 
@@ -536,7 +620,7 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
 var DEFAULT_STATE = {
   nome:"",
   checks:{},
-  m0:{faz:"",para:"",dif:"",servicos:"",sensacoes:[],pessoa:"",nomeCheck:"",visual:""},
+  m0:{faz:"",para:"",dif:"",servicos:"",proposito:"",sensacoes:[],pessoa:"",nomeCheck:"",visual:""},
   m1:{tom:"próximo e profissional"},
   m2:{},
   m3:{redes:{}},
@@ -629,14 +713,17 @@ function groupPending(groupKey, items){
 
 /* ---------------------------------- rail / stamps ---------------------------------- */
 var MARCOS = [
-  {id:"s-intro", key:"intro", label:"I"},
-  {id:"s-base",  key:"base",  label:"B"},
-  {id:"s-m0",    key:"m0",    label:"0"},
-  {id:"s-m1",    key:"m1",    label:"1"},
-  {id:"s-m2",    key:"m2",    label:"2"},
-  {id:"s-m3",    key:"m3",    label:"3"},
-  {id:"s-m4",    key:"m4",    label:"4"},
-  {id:"s-fim",   key:"fim",   label:"F"}
+  {id:"s-intro",   key:"intro",   label:"I"},
+  {id:"s-base",    key:"base",    label:"B"},
+  {id:"s-m0",      key:"m0",      label:"0"},
+  {id:"s-visual",  key:"visual",  label:"1"},
+  {id:"s-m1",      key:"m1",      label:"2"},
+  {id:"s-m2",      key:"m2",      label:"3"},
+  {id:"s-site",    key:"site",    label:"4"},
+  {id:"s-m3",      key:"m3",      label:"5"},
+  {id:"s-m4",      key:"m4",      label:"6"},
+  {id:"s-trafego", key:"trafego", label:"7"},
+  {id:"s-fim",     key:"fim",     label:"F"}
 ];
 var stampsEl = document.getElementById("stamps");
 MARCOS.forEach(function(m){
@@ -650,11 +737,14 @@ function isDone(key){
   if(key==="intro") return true;
   if(key==="base") return groupDone("base",4);
   if(key==="m0") return !!(state.m0.faz.trim() && state.m0.para.trim() && state.m0.dif.trim());
+  if(key==="visual") return !!state.m0.visual;
   if(key==="m1") return groupDone("m1",8);
   if(key==="m2") return groupDone("m2",8);
+  if(key==="site") return groupDone("site",6);
   if(key==="m3") return groupDone("m3i",5);
   if(key==="m4") return groupDone("m4",1);
-  if(key==="fim") return isDone("base") && isDone("m0") && isDone("m1") && isDone("m2") && isDone("m3") && isDone("m4");
+  if(key==="trafego") return true;
+  if(key==="fim") return isDone("base") && isDone("m0") && isDone("visual") && isDone("m1") && isDone("m2") && isDone("site") && isDone("m3") && isDone("m4");
   return false;
 }
 /* ---------------------------------- hero ---------------------------------- */
@@ -703,7 +793,7 @@ document.getElementById("checks-base").addEventListener("change", renderBaseStat
 renderBaseStatus();
 
 /* ---------------------------------- MARCO 0 ---------------------------------- */
-var m0fields = ["faz","para","dif","servicos","pessoa","nomeCheck"];
+var m0fields = ["faz","para","dif","servicos","proposito","pessoa","nomeCheck"];
 m0fields.forEach(function(f){
   var el = document.getElementById("m0-" + (f==="nomeCheck" ? "nome-check" : f));
   el.value = state.m0[f];
@@ -711,9 +801,14 @@ m0fields.forEach(function(f){
 });
 wireChips("m0-sensacoes", state.m0.sensacoes, 3);
 var VISUAL_DO_ZERO = "Vai construir a identidade visual do zero";
-renderChecklist("checks-visualdev","visualdev",["Desenvolver identidade visual (paleta de cores, fontes e um elemento gráfico que se repete)."]);
+renderChecklist("checks-visualdev","visualdev",[
+  "Não é só um logo — vem com um sistema de aplicação (cores, tipografia, elementos gráficos e regras de uso).",
+  "Funciona em preto e branco e em tamanho pequeno, sem perder a força.",
+  "Reflete o que você respondeu no escopo da marca (diferencial, público, sensações) — não é genérico.",
+  "Você recebe os arquivos originais editáveis, não só o PNG final."
+]);
 function refreshVisualBox(){
-  document.getElementById("box-visual-dev").style.display = (state.m0.visual === VISUAL_DO_ZERO) ? "block" : "none";
+  document.getElementById("box-visual-dev").style.display = "block";
 }
 (function wireVisual(){
   var el = document.getElementById("m0-visual");
@@ -807,6 +902,24 @@ renderChecklistHow("checks-m2","m2",[
    how:"Segure uma conversa na lista e escolha Etiquetar. Crie etiquetas como \"novo contato\", \"orçamento enviado\", \"fechado\" e \"pós-venda\"."},
   {t:"Link direto (wa.me) na bio do Instagram, no Perfil do Google e na landing page.",
    how:"Seu link é wa.me/ + seu número com DDI e DDD, sem espaços ou símbolos (ex.: wa.me/5511999999999). Cole esse link nos outros perfis."}
+]);
+
+/* ---------------------------------- SITE / LANDING PAGE ---------------------------------- */
+renderChecklist("checks-site","site",[
+  "Uma frase clara, logo no topo, dizendo o que você faz e pra quem — sem precisar rolar a página pra entender.",
+  "Um botão ou link direto pro WhatsApp, sempre visível, não só no rodapé.",
+  "Seus principais serviços ou produtos, com preço ou faixa de preço se fizer sentido mostrar.",
+  "Prova social: depoimento, print de conversa ou foto de resultado — algo que não seja só a sua palavra.",
+  "Um pouco sobre você ou sua marca — por que confiar, não só o que você vende.",
+  "Carrega rápido e funciona bem no celular (é de lá que a maioria vai acessar)."
+]);
+
+/* ---------------------------------- TRÁFEGO PAGO ---------------------------------- */
+renderChecklist("checks-trafego","trafego",[
+  "Mostra resultados reais (métricas, não só prints de \"fature muito\").",
+  "Explica o raciocínio por trás da campanha, não só o passo a passo de clicar em botões.",
+  "Não promete resultado garantido — tráfego pago envolve teste, e quem promete certeza tá vendendo ilusão.",
+  "Se for contratar, pede acesso à sua conta de anúncios — nunca sua senha pessoal, nem que você transfira saldo direto pra conta dele."
 ]);
 
 /* ---------------------------------- MARCO 3 ---------------------------------- */
@@ -934,31 +1047,36 @@ function pendingActions(){
   if(!state.m0.faz.trim() || !state.m0.para.trim() || !state.m0.dif.trim()){
     actions.push("Marco 0 — responda o que você faz, pra quem e seu diferencial.");
   }
-  if(state.m0.visual === VISUAL_DO_ZERO && !state.checks["visualdev0"]){
-    actions.push("Marco 0 — desenvolver identidade visual (paleta, fontes e elemento gráfico).");
+  if(!state.m0.visual){
+    actions.push("Marco 1 — decidir se você já tem identidade visual definida ou vai construir do zero.");
   }
   groupPending("m1",[
     "Criar o perfil em google.com/business","Escolher a categoria certa","Definir a forma de atendimento",
     "Preencher horário, telefone e site","Verificar o perfil","Escrever a descrição com o prompt",
     "Adicionar as fotos","Ativar e responder avaliações"
-  ]).forEach(function(t){ actions.push("Marco 1 — " + t); });
+  ]).forEach(function(t){ actions.push("Marco 2 — " + t); });
   groupPending("m2",[
     "Migrar para o WhatsApp Business","Preencher o perfil","Cadastrar catálogo","Configurar saudação",
     "Configurar mensagem de ausência","Cadastrar respostas rápidas","Criar etiquetas","Colocar o link wa.me"
-  ]).forEach(function(t){ actions.push("Marco 2 — " + t); });
+  ]).forEach(function(t){ actions.push("Marco 3 — " + t); });
+  groupPending("site",[
+    "Frase clara no topo dizendo o que você faz","Botão ou link direto pro WhatsApp",
+    "Serviços ou produtos com preço/faixa de preço","Prova social (depoimento, print, foto de resultado)",
+    "Um pouco sobre você ou sua marca","Testar velocidade e visual no celular"
+  ]).forEach(function(t){ actions.push("Marco 4 — " + t); });
   if(selectedRedes().length === 0){
-    actions.push("Marco 3 — escolher em quais redes sociais vale a pena estar.");
+    actions.push("Marco 5 — escolher em quais redes sociais vale a pena estar.");
   }
   groupPending("m3i",[
     "Nome de usuário e exibição claros","Escrever a bio","Colocar link na bio",
     "Organizar destaques","Publicar posts estruturais"
-  ]).forEach(function(t){ actions.push("Marco 3 — " + t); });
-  groupPending("m4",["Escolher ideias da semana","Marcar stories no calendário"]).forEach(function(t){ actions.push("Marco 4 — " + t); });
+  ]).forEach(function(t){ actions.push("Marco 5 — " + t); });
+  groupPending("m4",["Escolher ideias da semana","Marcar stories no calendário"]).forEach(function(t){ actions.push("Marco 6 — " + t); });
   return actions;
 }
 var WALL_LABELS = [
-  {key:"base", t:"a base"}, {key:"m0", t:"marco 0"}, {key:"m1", t:"marco 1"},
-  {key:"m2", t:"marco 2"}, {key:"m3", t:"marco 3"}, {key:"m4", t:"marco 4"}
+  {key:"base", t:"a base"}, {key:"m0", t:"marco 0"}, {key:"visual", t:"marco 1"}, {key:"m1", t:"marco 2"},
+  {key:"m2", t:"marco 3"}, {key:"site", t:"marco 4"}, {key:"m3", t:"marco 5"}, {key:"m4", t:"marco 6"}
 ];
 function renderStampWall(){
   var wall = document.getElementById("stamp-wall");
@@ -986,6 +1104,7 @@ function genDossieText(){
   lines.push("Para quem: " + (state.m0.para||"—"));
   lines.push("Diferencial: " + (state.m0.dif||"—"));
   lines.push("Serviços/produtos: " + (state.m0.servicos||"—"));
+  lines.push("Propósito: " + (state.m0.proposito||"—"));
   lines.push("Sensações: " + (state.m0.sensacoes.join(", ")||"—"));
   lines.push("Identidade visual: " + (state.m0.visual||"—"));
   lines.push("");
@@ -1185,6 +1304,7 @@ function genDossiePdf(){
   addLabelValue("Para quem", state.m0.para);
   addLabelValue("Diferencial", state.m0.dif);
   addLabelValue("Serviços/produtos", state.m0.servicos);
+  addLabelValue("Propósito", state.m0.proposito);
   addLabelValue("Sensações", state.m0.sensacoes.join(", "));
   addLabelValue("Identidade visual", state.m0.visual);
 
@@ -1226,6 +1346,23 @@ document.getElementById("dl-guide").addEventListener("click", function(){
 });
 
 refreshStamps();
+
+/* ---------------------------------- tutoriais (um vídeo por marco) ---------------------------------- */
+// links vêm de /api/config (campo "tutoriais"), editáveis no painel sem redeploy.
+// enquanto não tiver link salvo pra um marco, mostra "tutorial em breve".
+function renderTutorialLinks(tutoriais){
+  document.querySelectorAll("[data-tutorial]").forEach(function(el){
+    var url = (tutoriais && tutoriais[el.dataset.tutorial]) || "";
+    if(url){
+      el.innerHTML = '<a class="tutorial-btn" href="' + url.replace(/"/g,"&quot;") + '" target="_blank" rel="noopener">▸ acessar tutorial</a>';
+    }else{
+      el.innerHTML = '<span class="tutorial-btn disabled">tutorial em breve</span>';
+    }
+  });
+}
+fetch("/api/config").then(function(r){ return r.json(); }).then(function(cfg){
+  renderTutorialLinks(cfg.tutoriais || {});
+}).catch(function(){ renderTutorialLinks({}); });
 
 })();
 </script>
