@@ -178,7 +178,7 @@
   function login(password){
     gateMsg.textContent = 'entrando…';
     gateBtn.disabled = true;
-    fetch('/api/admin-login', {
+    fetch('/api/admin?action=login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ password: password })
@@ -243,7 +243,7 @@
     var msg = document.getElementById('precos-msg');
     btn.disabled = true;
     msg.textContent = 'salvando…';
-    authFetch('/api/admin-update-config', {
+    authFetch('/api/admin?action=update-config', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -279,7 +279,7 @@
 
   function loadVendas(){
     var area = document.getElementById('vendas-area');
-    authFetch('/api/admin-sales').then(function(r){ return r.json(); }).then(function(data){
+    authFetch('/api/admin?action=sales').then(function(r){ return r.json(); }).then(function(data){
       if(data.dbConfigured === false){
         area.innerHTML = '<p class="empty-msg">o supabase ainda não está configurado — assim que estiver, as vendas aparecem aqui automaticamente.</p>';
         return;

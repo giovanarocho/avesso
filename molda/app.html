@@ -1452,7 +1452,7 @@ document.getElementById("btn-zip").addEventListener("click", async function(){
     var btn = document.getElementById('gate-login-btn');
     if(!email || !password){ msg.textContent = 'preencha e-mail e senha.'; return; }
     msg.textContent = 'entrando…'; btn.disabled = true;
-    fetch('/api/molda-login', {
+    fetch('/api/molda-auth?action=login', {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({email: email, password: password})
     }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
@@ -1483,7 +1483,7 @@ document.getElementById("btn-zip").addEventListener("click", async function(){
     if(p1 !== p2){ msg.textContent = 'as senhas não são iguais.'; return; }
     if(!paymentId){ msg.textContent = 'link incompleto — falta o pagamento. usa o link do e-mail de confirmação.'; return; }
     msg.textContent = 'criando conta…'; btn.disabled = true;
-    fetch('/api/molda-set-password', {
+    fetch('/api/molda-auth?action=set-password', {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({payment_id: paymentId, email: email, password: p1})
     }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
@@ -1501,7 +1501,7 @@ document.getElementById("btn-zip").addEventListener("click", async function(){
     var btn = document.getElementById('gate-forgot-btn');
     if(!email || email.indexOf('@') === -1){ msg.textContent = 'digite um e-mail válido.'; return; }
     msg.textContent = 'enviando…'; btn.disabled = true;
-    fetch('/api/molda-request-reset', {
+    fetch('/api/molda-auth?action=request-reset', {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({email: email})
     }).then(function(r){ return r.json(); })
@@ -1523,7 +1523,7 @@ document.getElementById("btn-zip").addEventListener("click", async function(){
     if(p1 !== p2){ msg.textContent = 'as senhas não são iguais.'; return; }
     if(!token){ msg.textContent = 'link incompleto — peça um novo link de redefinição.'; return; }
     msg.textContent = 'salvando…'; btn.disabled = true;
-    fetch('/api/molda-reset-password', {
+    fetch('/api/molda-auth?action=reset-password', {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({token: token, password: p1})
     }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
@@ -1551,7 +1551,7 @@ document.getElementById("btn-zip").addEventListener("click", async function(){
     var savedToken;
     try{ savedToken = localStorage.getItem(KEY); }catch(e){}
     if(savedToken){
-      fetch('/api/molda-session', { headers: { 'Authorization': 'Bearer ' + savedToken } })
+      fetch('/api/molda-auth?action=session', { headers: { 'Authorization': 'Bearer ' + savedToken } })
         .then(function(r){ return r.json(); })
         .then(function(data){
           if(data.valid){ unlock(savedToken, data.email); }
