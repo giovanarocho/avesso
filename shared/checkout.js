@@ -186,7 +186,10 @@
             creditCard: 'all',
             debitCard: 'all',
             ticket: 'excluded',
-            bankTransfer: 'excluded',
+            // "excluded" não é aceito aqui pro brasil (a única opção de
+            // bank_transfer válida é "pix") — por isso deixamos de fora:
+            // como já temos nossa própria aba de pix ao lado, não precisa
+            // declarar nada pra esse campo.
             maxInstallments: maxInstallments
           }
         },
