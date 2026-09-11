@@ -504,10 +504,15 @@
       }
       cardBrickEl.innerHTML = '';
       var mp = new window.MercadoPago(cfg.mpPublicKey, { locale: 'pt-BR' });
+      // o mercado pago recusa (com um erro genérico, sem dizer o motivo)
+      // planos de parcelamento cuja parcela fica baixa demais — então em
+      // preços de teste bem baixos (ex.: R$ 1) a gente limita quantas
+      // parcelas oferece, pra sempre existir pelo menos 1 parcela válida.
+      var maxInstallments = currentPreco ? Math.max(1, Math.min(12, Math.floor(currentPreco / 5))) : 1;
       brickInstance = mp.bricks().create('payment', 'cp-card-brick', {
         initialization: { amount: currentPreco, payer: { email: email } },
         customization: {
-          paymentMethods: { creditCard: 'all', debitCard: 'all', ticket: 'excluded', bankTransfer: 'excluded', maxInstallments: 12 }
+          paymentMethods: { creditCard: 'all', debitCard: 'all', ticket: 'excluded', bankTransfer: 'excluded', maxInstallments: maxInstallments }
         },
         callbacks: {
           onReady: function(){

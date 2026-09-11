@@ -168,6 +168,11 @@
         return;
       }
       var amount = cfg.precos && cfg.precos[produto];
+      // o mercado pago recusa (com um erro genérico, sem dizer o motivo)
+      // planos de parcelamento cuja parcela fica baixa demais — então em
+      // preços de teste bem baixos (ex.: R$ 1) a gente limita quantas
+      // parcelas oferece, pra sempre existir pelo menos 1 parcela válida.
+      var maxInstallments = amount ? Math.max(1, Math.min(12, Math.floor(amount / 5))) : 1;
       cardBrickEl.innerHTML = '';
       var mp = new window.MercadoPago(cfg.mpPublicKey, { locale: 'pt-BR' });
       var bricksBuilder = mp.bricks();
@@ -182,7 +187,7 @@
             debitCard: 'all',
             ticket: 'excluded',
             bankTransfer: 'excluded',
-            maxInstallments: 12
+            maxInstallments: maxInstallments
           }
         },
         callbacks: {
