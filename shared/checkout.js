@@ -185,11 +185,12 @@
           paymentMethods: {
             creditCard: 'all',
             debitCard: 'all',
-            ticket: 'excluded',
-            // "excluded" não é aceito aqui pro brasil (a única opção de
-            // bank_transfer válida é "pix") — por isso deixamos de fora:
-            // como já temos nossa própria aba de pix ao lado, não precisa
-            // declarar nada pra esse campo.
+            // "excluded" não é aceito pra ticket nem bank_transfer aqui no
+            // brasil (as únicas opções válidas são os métodos específicos,
+            // tipo "bolbradesco"/"pix") — então deixamos os dois de fora em
+            // vez de mandar um valor inválido. como só oferecemos cartão
+            // aqui (pix já tem sua própria aba ao lado), fica só cartão
+            // mesmo, só que sem esse parâmetro travando a validação.
             maxInstallments: maxInstallments
           }
         },

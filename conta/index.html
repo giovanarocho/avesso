@@ -512,10 +512,11 @@
       brickInstance = mp.bricks().create('payment', 'cp-card-brick', {
         initialization: { amount: currentPreco, payer: { email: email } },
         customization: {
-          // "excluded" não é aceito pro campo bankTransfer no brasil (a
-          // única opção válida ali é "pix") — deixamos de fora do objeto
-          // em vez de mandar um valor inválido.
-          paymentMethods: { creditCard: 'all', debitCard: 'all', ticket: 'excluded', maxInstallments: maxInstallments }
+          // "excluded" não é aceito pra ticket nem bankTransfer no brasil
+          // (as únicas opções válidas são métodos específicos, tipo
+          // "bolbradesco"/"pix") — deixamos os dois de fora do objeto em
+          // vez de mandar um valor inválido.
+          paymentMethods: { creditCard: 'all', debitCard: 'all', maxInstallments: maxInstallments }
         },
         callbacks: {
           onReady: function(){
