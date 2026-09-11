@@ -510,6 +510,10 @@
           paymentMethods: { creditCard: 'all', debitCard: 'all', ticket: 'excluded', bankTransfer: 'excluded', maxInstallments: 12 }
         },
         callbacks: {
+          onReady: function(){
+            // sem esse callback o SDK recusa criar o brick (erro: "onReady
+            // e/ou onError são obrigatórios") e a tela trava no esqueleto.
+          },
           onSubmit: function(params){
             var formData = params.formData || {};
             return new Promise(function(resolve, reject){

@@ -41,6 +41,18 @@ section.bg-cream{border-top:1px solid rgba(61,42,30,.1);}
 .top-nav a.back{font-size:13px;text-decoration:none;opacity:.7;}
 .top-nav a.back:hover{opacity:1;}
 .brand-tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;}
+.top-nav-right{display:flex;align-items:center;gap:16px;}
+.conta-link{
+  font-size:12.5px;font-weight:600;text-decoration:none;
+  background:var(--cream);color:var(--coffee);
+  padding:7px 14px;border-radius:999px;transition:transform .15s ease;
+}
+.conta-link:hover{transform:translateY(-1px);}
+@media(max-width:520px){
+  .top-nav-right{gap:10px;}
+  .brand-tag{display:none;}
+  .conta-link{font-size:11.5px;padding:6px 12px;}
+}
 
 .hero{padding-top:8px;border-top:none;}
 .hero .eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:14px;display:block;}

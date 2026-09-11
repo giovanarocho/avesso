@@ -186,6 +186,11 @@
           }
         },
         callbacks: {
+          onReady: function () {
+            // dispara quando o brick termina de montar os campos de cartão —
+            // sem ele, o SDK recusa criar o brick (erro: "onReady e/ou onError
+            // são obrigatórios") e a tela fica travada no esqueleto de carregamento.
+          },
           onSubmit: function (params) {
             var formData = params.formData || {};
             return new Promise(function (resolve, reject) {

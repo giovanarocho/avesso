@@ -217,6 +217,25 @@ td.dropzone.drag-over input{border-color:var(--brass);background:var(--paper-dee
 }
 .tutorial-btn.disabled:hover{background:transparent;color:var(--brown-soft);}
 
+/* suporte pago via whatsapp (flutuante) */
+.whatsapp-support-float{
+  position:fixed;right:20px;bottom:20px;z-index:970;
+  display:flex;align-items:center;gap:10px;
+  background:#25D366;color:#fff;text-decoration:none;
+  padding:12px 18px;border-radius:999px;
+  box-shadow:0 10px 24px rgba(0,0,0,.28);
+  font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+  max-width:250px;transition:transform .15s ease;
+}
+.whatsapp-support-float:hover{transform:translateY(-2px);}
+.whatsapp-support-float svg{width:24px;height:24px;fill:#fff;flex-shrink:0;}
+@media(max-width:520px){
+  .whatsapp-support-float{
+    right:14px;bottom:14px;padding:10px 14px;max-width:168px;font-size:11px;
+  }
+  .whatsapp-support-float svg{width:20px;height:20px;}
+}
+
 /* prompt box (marco 1) */
 .prompt-box{
   margin-top:20px;background:var(--paper-deep);border:1px dashed var(--line-strong);
@@ -229,7 +248,7 @@ td.dropzone.drag-over input{border-color:var(--brass);background:var(--paper-dee
 }
 .prompt-body{font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--ink);}
 .prompt-body b{color:var(--brass-ink);font-weight:600;}
-.prompt-actions{margin-top:14px;}
+.prompt-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;}
 
 /* table */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line-strong);border-radius:4px;}
@@ -554,6 +573,10 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
         <tbody></tbody>
       </table>
     </div>
+    <div class="prompt-actions" style="margin-top:10px;">
+      <button class="btn small" id="dl-table-png">Baixar tabela (.png)</button>
+      <button class="btn small ghost" id="dl-table-pdf">Baixar tabela (.pdf)</button>
+    </div>
     <div class="checklist-box" style="margin-top:20px;"><div id="checks-m4"></div></div>
 
     <div class="prose">
@@ -602,15 +625,19 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
       <div class="dossie-sub">O que você já definiu, reunido em um só lugar.</div>
       <div class="dossie-actions">
         <button class="btn" id="dl-dossie">Baixar dossiê e checklist (.pdf)</button>
-        <button class="btn ghost" id="dl-guide">Baixar guia para imprimir</button>
       </div>
     </div>
   </section>
 
 </main>
 
-<footer>estúdio avesso — caderno de marca · o progresso fica salvo neste navegador · feito por rocholab</footer>
 <div class="toast" id="toast"></div>
+
+<a class="whatsapp-support-float" target="_blank" rel="noopener"
+   href="https://wa.me/5548999936071?text=Oi%21%20estou%20usando%20o%20guia%20marketing%20essencial%20e%20quero%20solicitar%20suporte%20%28R%24%2019%2C90%29.">
+  <svg viewBox="0 0 32 32"><path d="M16.004 3C9.376 3 4 8.373 4 15c0 2.386.703 4.61 1.912 6.484L4 29l7.702-1.876A11.93 11.93 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3zm0 21.75c-1.996 0-3.86-.557-5.45-1.523l-.39-.232-4.573 1.115 1.147-4.457-.255-.406A9.71 9.71 0 0 1 5.25 15c0-5.93 4.824-10.75 10.754-10.75S26.75 9.07 26.75 15 21.934 24.75 16.004 24.75zm5.86-8.05c-.32-.16-1.9-.938-2.194-1.045-.294-.107-.508-.16-.722.16-.213.32-.827 1.045-1.014 1.258-.187.213-.373.24-.694.08-.32-.16-1.352-.498-2.575-1.588-.952-.85-1.595-1.9-1.782-2.22-.187-.32-.02-.493.14-.652.144-.144.32-.373.48-.56.16-.187.213-.32.32-.533.107-.213.053-.4-.027-.56-.08-.16-.722-1.74-.99-2.383-.26-.626-.526-.54-.722-.55-.187-.008-.4-.01-.614-.01-.213 0-.56.08-.854.4-.294.32-1.12 1.095-1.12 2.67 0 1.575 1.147 3.096 1.307 3.31.16.213 2.257 3.446 5.468 4.833.764.33 1.36.527 1.826.674.767.244 1.464.21 2.016.127.615-.092 1.9-.777 2.168-1.527.267-.75.267-1.393.187-1.527-.08-.133-.294-.213-.614-.373z"/></svg>
+  <span>solicitar suporte por apenas R$ 19,90</span>
+</a>
 
 <script>
 (function(){
@@ -1133,102 +1160,6 @@ function genDossieText(){
   }
   return lines.join("\n");
 }
-function genGuidePdf(){
-  var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
-  if(!jsPDFCtor) return null;
-  var doc = new jsPDFCtor({unit:"pt", format:"a4"});
-  var pageW = doc.internal.pageSize.getWidth();
-  var pageH = doc.internal.pageSize.getHeight();
-  var margin = 48;
-  var maxW = pageW - margin*2;
-  var lineH = 14;
-  var y = margin;
-
-  function ensureSpace(h){ if(y + h > pageH - margin){ doc.addPage(); y = margin; } }
-  function addCover(){
-    doc.setFont("helvetica","bold"); doc.setFontSize(22); doc.setTextColor(61,42,30);
-    doc.text("Marketing essencial", margin, y); y += 28;
-    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(120,100,80);
-    var lines = doc.splitTextToSize("um guia interativo do estúdio avesso · caderno de marca de " + (nome()||"você"), maxW);
-    lines.forEach(function(l){ doc.text(l, margin, y); y += 15; });
-    y += 18;
-  }
-  function addKicker(text){
-    y += 10; ensureSpace(16);
-    doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(168,118,60);
-    doc.text(text.toUpperCase(), margin, y); y += 14;
-  }
-  function addH2(text){
-    ensureSpace(24);
-    doc.setFont("helvetica","bold"); doc.setFontSize(15); doc.setTextColor(61,42,30);
-    doc.text(text, margin, y); y += 8;
-    doc.setDrawColor(168,118,60); doc.setLineWidth(1);
-    doc.line(margin, y, margin+maxW, y); y += 16;
-  }
-  function addP(text, italic){
-    doc.setFont("helvetica", italic ? "italic" : "normal"); doc.setFontSize(italic?11:10.5); doc.setTextColor(40,25,15);
-    var lines = doc.splitTextToSize(text, maxW);
-    lines.forEach(function(l){ ensureSpace(lineH); doc.text(l, margin, y); y += lineH; });
-    y += 6;
-  }
-  function addBullet(title, sub){
-    if(!title) return;
-    var boxSize=8, indent=boxSize+9;
-    doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.setTextColor(40,25,15);
-    var lines = doc.splitTextToSize(title, maxW-indent);
-    lines.forEach(function(l,i){
-      ensureSpace(lineH);
-      if(i===0){ doc.setDrawColor(168,118,60); doc.setLineWidth(1); doc.rect(margin, y-boxSize+1, boxSize, boxSize); }
-      doc.text(l, margin+indent, y); y += lineH;
-    });
-    if(sub){
-      doc.setFont("helvetica","italic"); doc.setFontSize(9.5); doc.setTextColor(110,90,70);
-      var subLines = doc.splitTextToSize(sub, maxW-indent);
-      subLines.forEach(function(l){ ensureSpace(13); doc.text(l, margin+indent, y); y+=13; });
-    }
-    y += 4;
-  }
-  function addMono(text){
-    doc.setFont("courier","normal"); doc.setFontSize(9.5); doc.setTextColor(40,25,15);
-    var lines = doc.splitTextToSize(text, maxW);
-    ensureSpace(10);
-    lines.forEach(function(l){ ensureSpace(13); doc.text(l, margin, y); y += 13; });
-    y += 8;
-  }
-
-  addCover();
-
-  document.querySelectorAll("main > section").forEach(function(section){
-    if(section.id === "s-hero" || section.id === "s-fim") return;
-    var kicker = section.querySelector(".section-num");
-    var h2 = section.querySelector("h2");
-    if(kicker) addKicker(kicker.textContent);
-    if(h2) addH2(h2.textContent);
-
-    section.querySelectorAll(".prose p, .rede-limit-note").forEach(function(p){
-      addP(p.textContent.trim());
-    });
-    section.querySelectorAll(".pullquote p").forEach(function(p){
-      addP(p.textContent.trim(), true);
-    });
-    section.querySelectorAll(".check-item").forEach(function(item){
-      var t = item.querySelector(".d");
-      var how = item.querySelector(".how-body");
-      addBullet(t ? t.textContent.trim() : "", how ? "Como fazer: " + how.textContent.trim() : null);
-    });
-    section.querySelectorAll(".rede-card").forEach(function(card){
-      var name = card.querySelector(".rede-name");
-      var desc = card.querySelector(".rede-desc");
-      addBullet(name ? name.textContent.trim() : "", desc ? desc.textContent.trim() : null);
-    });
-    section.querySelectorAll(".prompt-body").forEach(function(pb){
-      var t = pb.textContent.trim();
-      if(t) addMono(t);
-    });
-  });
-
-  return doc.output("blob");
-}
 function genDossiePdf(){
   var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
   if(!jsPDFCtor) return null;
@@ -1339,10 +1270,61 @@ document.getElementById("dl-dossie").addEventListener("click", async function(){
   if(!blob){ offerDownload("dossie-de-marca.md", genDossieText()); return; }
   offerDownload("dossie-de-marca.pdf", blob);
 });
-document.getElementById("dl-guide").addEventListener("click", function(){
-  var blob = genGuidePdf();
-  if(!blob){ toast("Não consegui gerar o guia neste ambiente."); return; }
-  offerDownload("guia-marketing-essencial.pdf", blob);
+
+/* ---------------------------------- exportar só a tabela (planejamento semanal) ---------------------------------- */
+var html2canvasPromise = null;
+function loadHtml2Canvas(){
+  if(window.html2canvas) return Promise.resolve();
+  if(html2canvasPromise) return html2canvasPromise;
+  html2canvasPromise = new Promise(function(resolve, reject){
+    var s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+    s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return html2canvasPromise;
+}
+function captureTableCanvas(){
+  var tableWrap = document.querySelector("#s-m4 .tbl-wrap");
+  return loadHtml2Canvas().then(function(){
+    return window.html2canvas(tableWrap, {
+      backgroundColor: getComputedStyle(document.body).getPropertyValue("--paper") || "#F4ECDD",
+      scale: 2
+    });
+  });
+}
+document.getElementById("dl-table-png").addEventListener("click", function(){
+  var btn = this; btn.disabled = true;
+  captureTableCanvas().then(function(canvas){
+    btn.disabled = false;
+    canvas.toBlob(function(blob){ offerDownload("plano-de-conteudo.png", blob); });
+  }).catch(function(){
+    btn.disabled = false;
+    toast("Não consegui gerar a imagem da tabela agora.");
+  });
+});
+document.getElementById("dl-table-pdf").addEventListener("click", function(){
+  var btn = this; btn.disabled = true;
+  captureTableCanvas().then(function(canvas){
+    btn.disabled = false;
+    var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+    if(!jsPDFCtor){ toast("Não consegui gerar o PDF neste ambiente."); return; }
+    var imgData = canvas.toDataURL("image/png");
+    var isLandscape = canvas.width > canvas.height;
+    var doc = new jsPDFCtor({unit:"pt", format:"a4", orientation: isLandscape ? "landscape" : "portrait"});
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    var margin = 36;
+    var maxW = pageW - margin*2;
+    var maxH = pageH - margin*2;
+    var ratio = Math.min(maxW / canvas.width, maxH / canvas.height);
+    var w = canvas.width * ratio, h = canvas.height * ratio;
+    doc.addImage(imgData, "PNG", (pageW-w)/2, (pageH-h)/2, w, h);
+    offerDownload("plano-de-conteudo.pdf", doc.output("blob"));
+  }).catch(function(){
+    btn.disabled = false;
+    toast("Não consegui gerar o PDF da tabela agora.");
+  });
 });
 
 refreshStamps();

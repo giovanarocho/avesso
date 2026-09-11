@@ -89,6 +89,19 @@
     .guide-float-main{font-size:11px;}
   }
 
+  .conta-link-float{
+    position:fixed;top:18px;right:24px;z-index:960;
+    background:var(--cream);color:var(--coffee);
+    font-family:'Work Sans',sans-serif;font-size:12.5px;font-weight:600;
+    padding:9px 17px;border-radius:999px;text-decoration:none;
+    box-shadow:0 6px 16px rgba(0,0,0,.18);
+    transition:transform .2s ease;
+  }
+  .conta-link-float:hover{transform:translateY(-2px);}
+  @media(max-width:520px){
+    .conta-link-float{top:12px;right:14px;padding:7px 14px;font-size:11px;}
+  }
+
   .scroll-progress{
     position:fixed;top:0;left:0;height:3px;width:0%;
     background:var(--cream);z-index:1000;
@@ -516,6 +529,7 @@
 <body>
 
   <div class="scroll-progress" id="scroll-progress"></div>
+  <a href="/conta" class="conta-link-float">minha conta</a>
 
   <section class="hero" id="topo">
     <div class="hero-blob b1"></div>
