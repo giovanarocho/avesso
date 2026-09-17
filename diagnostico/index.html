@@ -596,10 +596,10 @@
   });
 
   async function callSample(prompt) {
-    const res = await fetch('/api/diagnostico', {
+    const res = await fetch('/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt })
+      body: JSON.stringify({ action: 'diagnostico', prompt: prompt })
     });
     if (!res.ok) throw new Error('api_error');
     const data = await res.json();

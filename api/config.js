@@ -1,7 +1,69 @@
 import { resolvePrices } from '../lib/services.js';
 
+const MAX_PROMPT_LENGTH = 8000;
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // ação extra encaixada aqui pra não estourar o limite de 12 funções
+  // serverless do plano hobby da vercel (mesma solução do molda-auth.js).
+  // gera as leituras do diagnóstico de posicionamento (página /diagnostico).
+  if (req.method === 'POST' && req.body && req.body.action === 'diagnostico') {
+    const API_KEY = process.env.ANTHROPIC_API_KEY;
+    if (!API_KEY) {
+      res.status(500).json({ error: 'ANTHROPIC_API_KEY não configurada no servidor' });
+      return;
+    }
+
+    const prompt = (req.body.prompt || '').toString();
+    if (!prompt || prompt.length > MAX_PROMPT_LENGTH) {
+      res.status(400).json({ error: 'prompt inválido ou muito longo' });
+      return;
+    }
+
+    try {
+      const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 700,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!anthropicRes.ok) {
+        const errText = await anthropicRes.text();
+        console.error('erro da api anthropic:', errText);
+        res.status(502).json({ error: 'falha ao gerar a leitura agora' });
+        return;
+      }
+
+      const data = await anthropicRes.json();
+      const text = (data.content || [])
+        .filter(function (block) { return block.type === 'text'; })
+        .map(function (block) { return block.text; })
+        .join('\n')
+        .trim();
+
+      if (!text) {
+        res.status(502).json({ error: 'resposta vazia' });
+        return;
+      }
+
+      res.status(200).json({ text: text });
+    } catch (err) {
+      console.error('erro interno na ação diagnostico (via /api/config):', err);
+      res.status(500).json({ error: 'erro interno' });
+    }
+    return;
+  }
+
+  // comportamento original: devolve os preços públicos.
   const prices = await resolvePrices();
   // a public key do Mercado Pago é feita pra ficar no navegador (diferente
   // do MP_ACCESS_TOKEN, que é secreto e só usado no servidor) — é o que o
