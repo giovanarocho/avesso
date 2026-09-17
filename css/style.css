@@ -1,0 +1,1042 @@
+/* ==========================================================================
+   ROCHO LAB — estilos
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,440;0,9..144,560;1,9..144,440&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg: #f7f3ec;
+  --bg-alt: #eee7d9;
+  --panel: #fffdf9;
+  --ink: #201e19;
+  --ink-soft: #5c574c;
+  --ink-faint: #8b8578;
+  --accent: #333f2d;      /* verde laboratório */
+  --accent-soft: #4c5a44;
+  --clay: #b0623c;        /* terracota */
+  --clay-soft: #d98f66;
+  --line: #ddd4c1;
+  --line-soft: #e8e1d2;
+  --radius: 14px;
+  --maxw: 1180px;
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+html{
+  scroll-behavior: smooth;
+}
+
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img{ max-width: 100%; display: block; }
+
+a{ color: inherit; text-decoration: none; }
+
+.wrap{
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+h1, h2, h3, h4{
+  font-family: var(--serif);
+  font-weight: 440;
+  line-height: 1.12;
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+p{ margin: 0; }
+
+.eyebrow{
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.09em;
+  text-transform: lowercase;
+  color: var(--accent-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.eyebrow::before{
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--clay);
+  display: inline-block;
+}
+
+/* ---------- reveal on scroll ---------- */
+.reveal{
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.is-visible{
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- header ---------- */
+header.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(247, 243, 236, 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.header-inner{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+}
+.logo{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 560;
+  color: var(--ink);
+}
+.logo .mark{
+  height: 30px;
+  width: auto;
+  display: block;
+}
+nav.main-nav{
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+nav.main-nav a:not(.btn){
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  position: relative;
+  padding: 4px 0;
+}
+nav.main-nav a:not(.btn):hover, nav.main-nav a.active{ color: var(--ink); }
+nav.main-nav a.active::after{
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -3px;
+  height: 2px;
+  background: var(--clay);
+  border-radius: 2px;
+}
+.btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 500;
+  padding: 11px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .2s ease;
+  white-space: nowrap;
+}
+.btn:hover{ transform: translateY(-1px); }
+.btn-solid{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #f7f3ec;
+}
+.btn-solid:hover{ background: var(--accent-soft); border-color: var(--accent-soft); }
+.btn-ghost:hover{ background: var(--ink); color: var(--bg); }
+
+.nav-toggle{
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+.nav-toggle span{
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--ink);
+  margin: 5px 0;
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  padding: 96px 0 88px;
+}
+.hero .eyebrow{ margin-bottom: 26px; }
+.hero h1{
+  font-size: clamp(38px, 6vw, 68px);
+  max-width: 15ch;
+}
+.hero .hero-sub{
+  margin-top: 26px;
+  max-width: 44ch;
+  font-size: 18px;
+  color: var(--ink-soft);
+}
+.hero .hero-actions{
+  margin-top: 40px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ---------- section shell ---------- */
+section{ padding: 88px 0; }
+section.alt{ background: var(--bg-alt); }
+.section-head{
+  max-width: 62ch;
+  margin-bottom: 48px;
+}
+.section-head h2{
+  font-size: clamp(28px, 3.6vw, 42px);
+  margin-top: 18px;
+}
+.section-head p{
+  margin-top: 18px;
+  color: var(--ink-soft);
+  font-size: 17px;
+  max-width: 58ch;
+}
+
+/* ---------- patchwork / retalhos section ---------- */
+.patch-grid{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  max-width: 420px;
+}
+.patch-grid span{
+  aspect-ratio: 1;
+  border-radius: 6px;
+}
+.patch-grid.chaos span:nth-child(1){ background:#c96b3f; transform: rotate(-6deg) scale(1.15); }
+.patch-grid.chaos span:nth-child(2){ background:#33402f; transform: translateY(6px); }
+.patch-grid.chaos span:nth-child(3){ background:#e0c9a6; transform: rotate(4deg); }
+.patch-grid.chaos span:nth-child(4){ background:#7c8a6c; transform: translateY(-8px) scale(.9); }
+.patch-grid.chaos span:nth-child(5){ background:#b0623c; transform: rotate(10deg); }
+.patch-grid.chaos span:nth-child(6){ background:#26241f; transform: translateY(4px) rotate(-3deg); }
+.patch-grid.chaos span:nth-child(7){ background:#d98f66; transform: rotate(-8deg) scale(1.05); }
+.patch-grid.chaos span:nth-child(8){ background:#4c5a44; }
+.patch-grid.chaos span:nth-child(9){ background:#efe0c4; transform: translateY(8px) rotate(5deg); }
+.patch-grid.chaos span:nth-child(10){ background:#8f4b2c; }
+.patch-grid.chaos span:nth-child(11){ background:#333f2d; transform: rotate(-4deg); }
+.patch-grid.chaos span:nth-child(12){ background:#c8bda2; }
+
+.patch-grid.order span{ background: var(--accent); }
+.patch-grid.order span:nth-child(3n){ background: var(--clay); }
+.patch-grid.order span:nth-child(5n){ background: #e0c9a6; }
+
+.patch-row{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 30px 0;
+}
+.patch-row .arrow{
+  font-family: var(--serif);
+  font-size: 30px;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.split{
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 64px;
+  align-items: center;
+}
+.split .visual{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.split .visual small{
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  letter-spacing: .06em;
+}
+
+/* ---------- philosophy ---------- */
+.philosophy-list{
+  display: grid;
+  gap: 26px;
+  margin-top: 40px;
+}
+.philosophy-item{
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 22px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--line);
+}
+.philosophy-item:last-child{ border-bottom: none; }
+.philosophy-item .num{
+  font-family: var(--mono);
+  color: var(--clay);
+  font-size: 13px;
+  padding-top: 4px;
+}
+.philosophy-item h3{
+  font-size: 21px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.philosophy-item p{ color: var(--ink-soft); }
+
+/* ---------- services ---------- */
+.services-grid{
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 44px;
+}
+.service-card{
+  background: var(--panel);
+  padding: 34px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 220px;
+}
+.service-card .tag{
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+}
+.service-card h3{
+  font-size: 19px;
+  font-weight: 500;
+}
+.service-card p{
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  margin-top: auto;
+}
+/* o "01 — Sistema Visual" vem em destaque: primeiro e com mais peso
+   visual, pra deixar claro que é a frente principal — as outras duas
+   são o ponto de partida (identidade) e o desdobramento (site). */
+.service-card.featured{
+  background: var(--accent);
+  padding: 40px 32px;
+}
+.service-card.featured .tag{ color: rgba(247, 243, 236, .6); }
+.service-card.featured h3{ font-size: 23px; color: #f7f3ec; }
+.service-card.featured p{ color: rgba(247, 243, 236, .88); font-size: 15px; }
+.services-note{
+  margin-top: 20px;
+  color: var(--ink-faint);
+  font-size: 13.5px;
+}
+
+/* ---------- portfolio teaser (home) ---------- */
+.teaser-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+/* grade alinhada e uniforme: cada projeto ocupa uma célula do mesmo
+   tamanho (quadrada), com a foto preenchendo o espaço todo — 3 colunas
+   fixas no desktop (o conjunto da prévia é curado: 6 cartões, 2 linhas
+   de 3, sempre na mesma ordem). */
+.teaser-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.teaser-grid .card{
+  width: 100%;
+}
+.teaser-grid .card .thumb{
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.teaser-grid .card .thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.teaser-grid .card:hover .thumb img{ transform: scale(1.03); }
+.teaser-grid .card .thumb img{ transition: transform .3s ease; }
+
+/* ---------- about ---------- */
+.about-block{
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.about-mark{
+  width: 168px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.about-mark img{
+  width: 100%;
+  height: auto;
+}
+.about-block p{
+  color: var(--ink-soft);
+  font-size: 17.5px;
+  max-width: 60ch;
+}
+.about-block p + p{ margin-top: 18px; }
+.about-block strong{ color: var(--ink); font-weight: 600; }
+
+/* ---------- final CTA ---------- */
+.cta-final{
+  text-align: center;
+}
+.cta-final .section-head{
+  margin: 0 auto 34px;
+  text-align: center;
+}
+.cta-final .hero-actions{ justify-content: center; }
+
+/* ---------- formulário de contato ---------- */
+.contact-form{
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+/* ---------- par de campos lado a lado (usado no form completo da home) ---------- */
+.form-row-pair{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 640px){
+  .form-row-pair{ grid-template-columns: 1fr; }
+}
+
+/* ---------- bloco "pular formulário" (whatsapp direto) ---------- */
+.skip-form{
+  max-width: 520px;
+  margin: 0 auto 26px;
+  padding: 18px 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.skip-form p{ font-size: 14.5px; color: var(--ink-soft); margin-bottom: 12px; }
+.skip-form svg{ width: 16px; height: 16px; fill: currentColor; }
+
+.form-row{
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.form-row label,
+.form-row .choice-label{
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .03em;
+  color: var(--ink-soft);
+}
+.form-row input,
+.form-row textarea{
+  font-family: var(--sans);
+  font-size: 15.5px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  resize: vertical;
+  transition: border-color .2s ease;
+}
+.form-row input:focus,
+.form-row textarea:focus{
+  outline: none;
+  border-color: var(--accent);
+}
+.form-row .field-hint{
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  margin-top: -2px;
+}
+
+/* ---------- grupo de escolha única (pills) ---------- */
+.choice-options{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+.choice-pill{
+  position: relative;
+  cursor: pointer;
+}
+.choice-pill input{
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.choice-pill span{
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 16px;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+.choice-pill:hover span{ border-color: var(--accent-soft); }
+.choice-pill input:checked + span{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.choice-pill input:focus-visible + span{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.contact-form .btn{
+  align-self: flex-start;
+}
+.contact-form .form-status{
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent-soft);
+  min-height: 1em;
+}
+.contact-form .form-status.is-error{ color: var(--clay); }
+.contact-form-alt{
+  margin-top: 22px;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.contact-form-alt a{
+  color: var(--accent-soft);
+  border-bottom: 1px solid var(--line);
+}
+.contact-form-alt a:hover{ color: var(--clay); }
+
+/* ---------- botão flutuante do whatsapp ---------- */
+.whatsapp-float{
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 100;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 22px rgba(32,30,25,.28);
+  transition: transform .2s ease, background .2s ease;
+}
+.whatsapp-float:hover{
+  background: var(--accent-soft);
+  transform: translateY(-2px) scale(1.04);
+}
+.whatsapp-float svg{ width: 27px; height: 27px; fill: #f7f3ec; }
+
+@media (max-width: 680px){
+  .whatsapp-float{ right: 16px; bottom: 16px; width: 52px; height: 52px; }
+  .whatsapp-float svg{ width: 24px; height: 24px; }
+}
+
+/* ---------- footer ---------- */
+footer{
+  border-top: 1px solid var(--line);
+  padding: 46px 0 34px;
+}
+.footer-inner{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.footer-links{
+  display: flex;
+  gap: 26px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.footer-links a:hover{ color: var(--ink); }
+.footer-credit{
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+.footer-credit a{ color: var(--accent-soft); }
+.footer-credit a:hover{ color: var(--clay); }
+
+/* ==========================================================================
+   PORTFOLIO PAGE
+   ========================================================================== */
+.portfolio-head{
+  padding: 74px 0 40px;
+}
+.portfolio-head h1{
+  font-size: clamp(32px, 5vw, 52px);
+  margin-top: 16px;
+  max-width: 20ch;
+}
+.portfolio-head p{
+  margin-top: 18px;
+  color: var(--ink-soft);
+  font-size: 17px;
+  max-width: 56ch;
+}
+
+/* ---------- estudos de caso ---------- */
+.caso{
+  padding: 64px 0;
+  border-bottom: 1px solid var(--line);
+}
+.caso:last-of-type{ border-bottom: none; }
+.caso-head{
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 34px;
+}
+.caso-num{
+  font-family: var(--mono);
+  color: var(--clay);
+  font-size: 13px;
+  padding-top: 6px;
+}
+.caso-head h2{
+  margin-top: 12px;
+  font-size: clamp(26px, 3.4vw, 38px);
+}
+.caso-body{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 36px;
+  padding-left: 78px;
+}
+.caso-text h3{
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .04em;
+  text-transform: lowercase;
+  color: var(--ink-faint);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.caso-text p{
+  color: var(--ink-soft);
+  font-size: 16.5px;
+  line-height: 1.65;
+}
+/* mesma lógica da grade da home: célula quadrada e uniforme por foto,
+   imagem preenchendo o espaço todo (sem borda branca) — mesmo com fotos
+   de proporções bem diferentes na mesma galeria. */
+.caso-gallery{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding-left: 78px;
+}
+.caso-img{
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.caso-img{ cursor: zoom-in; }
+.caso-img img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .3s ease;
+}
+.caso-img:hover img{ transform: scale(1.03); }
+
+/* ---------- categorias "planas" (sites, redes sociais): intro geral +
+   galeria em grade, sem separar por marca e sem o recuo do número de
+   caso ---------- */
+.cat-intro{
+  max-width: 66ch;
+  color: var(--ink-soft);
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 44px;
+}
+.flat-gallery{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ---------- sites: uma peça grande por projeto (print da página
+   inteira), com título + etiqueta. A imagem fica num quadro com altura
+   fixa; rolar o mouse/trackpad em cima dela revela o resto da página no
+   ritmo da própria pessoa (js/catalog.js cuida da rolagem). ---------- */
+.showcase-list{
+  display: flex;
+  flex-direction: column;
+  gap: 90px;
+}
+.showcase-frame{
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-soft);
+  height: clamp(360px, 46vw, 620px);
+  background: var(--panel);
+  cursor: ns-resize;
+}
+.showcase-frame img{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  transform: translateY(0);
+  transition: transform 80ms ease-out;
+}
+.showcase-caption{
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 22px;
+}
+.showcase-num{
+  font-family: var(--mono);
+  color: var(--clay);
+  font-size: 13px;
+}
+.showcase-caption h3{
+  font-size: clamp(22px, 2.4vw, 30px);
+  margin: 0;
+}
+.showcase-tag{
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-left: auto;
+}
+
+/* ---------- outros: sem padrão de proporção — imagem inteira, largura
+   da página, uma embaixo da outra ---------- */
+.outros-list{
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.outros-list img{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-soft);
+  cursor: zoom-in;
+  transition: opacity .2s ease;
+}
+.outros-list img:hover{ opacity: .92; }
+
+.filters{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+  padding-bottom: 0;
+}
+.filter-btn{
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: .03em;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.filter-btn:hover{ border-color: var(--ink); color: var(--ink); }
+.filter-btn.active{
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.gallery{
+  padding-bottom: 100px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+.card{
+  cursor: pointer;
+  display: block;
+  transition: transform .3s ease;
+}
+.card:hover{ transform: translateY(-4px); }
+.card .thumb{
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-alt);
+  aspect-ratio: 4 / 5;
+  position: relative;
+}
+.card .thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+.card:hover .thumb img{ transform: scale(1.045); }
+.card .thumb .count{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(32,30,25,.72);
+  color: #f7f3ec;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+.card .meta{
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.card .meta .cat{
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: var(--clay);
+}
+.card .meta h3{
+  font-size: 18px;
+  font-weight: 500;
+  font-family: var(--sans);
+}
+
+.empty-state{
+  padding: 60px 0;
+  text-align: center;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 13.5px;
+  display: none;
+}
+
+/* ---------- lightbox ---------- */
+.lightbox{
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(24, 22, 18, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .3s ease;
+  padding: 32px;
+}
+.lightbox.open{ opacity: 1; visibility: visible; }
+.lightbox-inner{
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.lightbox-stage{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+.lightbox-stage img{
+  max-height: 68vh;
+  max-width: 100%;
+  border-radius: 10px;
+  object-fit: contain;
+  background: #100f0c;
+}
+.lightbox-nav{
+  background: rgba(247,243,236,.12);
+  border: 1px solid rgba(247,243,236,.3);
+  color: #f7f3ec;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: background .2s ease;
+}
+.lightbox-nav:hover{ background: rgba(247,243,236,.24); }
+.lightbox-stage-row{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.lightbox-close{
+  position: absolute;
+  top: 26px;
+  right: 32px;
+  background: none;
+  border: none;
+  color: #f7f3ec;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+}
+.lightbox-info{
+  color: #f7f3ec;
+  text-align: center;
+}
+.lightbox-info .cat{
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--clay-soft);
+  letter-spacing: .05em;
+}
+.lightbox-info h3{
+  font-family: var(--serif);
+  font-size: 24px;
+  margin-top: 8px;
+}
+.lightbox-info p{
+  margin-top: 8px;
+  color: #cfc9ba;
+  font-size: 14.5px;
+  max-width: 56ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.lightbox-info .count{
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: #8b8578;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 900px){
+  .services-grid{ grid-template-columns: 1fr; }
+  .gallery{ grid-template-columns: repeat(2, 1fr); }
+  .teaser-grid{ grid-template-columns: repeat(2, 1fr); }
+  .about-block{ grid-template-columns: 1fr; }
+  .about-mark{ width: 120px; }
+  .caso-body{ grid-template-columns: 1fr; gap: 24px; }
+}
+
+@media (max-width: 680px){
+  .header-inner{ padding: 16px 20px; }
+  nav.main-nav{
+    position: fixed;
+    top: 66px;
+    left: 0;
+    right: 0;
+    /* "bottom:0" não funciona aqui porque o header (ancestral) é
+       "position: sticky", e isso faz o próprio header virar a referência
+       de tamanho do menu fixo, em vez da tela inteira — por isso a altura
+       é calculada em "vh" (relativo à tela), não com "bottom". */
+    height: calc(100vh - 66px);
+    z-index: 60;
+    background: var(--bg);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 8px 20px 20px;
+    overflow-y: auto;
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+  }
+  nav.main-nav.open{
+    opacity: 1; visibility: visible; transform: none;
+  }
+  nav.main-nav a, nav.main-nav .btn{ width: 100%; padding: 14px 0; border-bottom: 1px solid var(--line-soft); border-radius: 0; }
+  nav.main-nav .btn{ border: none; justify-content: flex-start; }
+  .nav-toggle{ display: block; }
+  body.nav-open{ overflow: hidden; }
+
+  .hero{ padding: 56px 0 56px; }
+  section{ padding: 60px 0; }
+  .services-grid{ grid-template-columns: 1fr; }
+  /* no mobile, uma célula por linha — fica maior e continua alinhada;
+     a célula quadrada já resolve o alinhamento em qualquer proporção
+     de foto (a imagem preenche a célula toda, sem borda branca). */
+  .teaser-grid{ grid-template-columns: 1fr; gap: 20px; }
+  .gallery{ grid-template-columns: 1fr; }
+  .philosophy-item{ grid-template-columns: 1fr; gap: 8px; }
+  .footer-inner{ flex-direction: column; align-items: flex-start; }
+  .patch-row{ flex-direction: column; }
+  .patch-row .arrow{ transform: rotate(90deg); }
+  .caso{ padding: 44px 0; }
+  .caso-head{ grid-template-columns: 1fr; gap: 6px; }
+  .caso-num{ padding-top: 0; }
+  .caso-body{ padding-left: 0; }
+  .caso-gallery{ padding-left: 0; grid-template-columns: 1fr; gap: 14px; }
+  .flat-gallery{ grid-template-columns: 1fr; gap: 14px; }
+  .portfolio-head .filters{ margin-top: 24px; }
+  .outros-list{ gap: 22px; }
+}
