@@ -186,21 +186,21 @@ nav.main-nav a.active::after{
 
 /* ---------- hero ---------- */
 .hero{
-  padding: 96px 0 88px;
+  padding: 72px 0 64px;
 }
-.hero .eyebrow{ margin-bottom: 26px; }
+.hero .eyebrow{ margin-bottom: 20px; }
 .hero h1{
-  font-size: clamp(38px, 6vw, 68px);
-  max-width: 15ch;
+  font-size: clamp(28px, 4.2vw, 44px);
+  max-width: 18ch;
 }
 .hero .hero-sub{
-  margin-top: 26px;
-  max-width: 44ch;
-  font-size: 18px;
+  margin-top: 20px;
+  max-width: 46ch;
+  font-size: 16.5px;
   color: var(--ink-soft);
 }
 .hero .hero-actions{
-  margin-top: 40px;
+  margin-top: 32px;
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
