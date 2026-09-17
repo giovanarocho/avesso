@@ -3,774 +3,523 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnóstico de Posicionamento</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Diagnóstico de Posicionamento — Rocho Lab</title>
+<meta name="description" content="Um diagnóstico gratuito e conversacional pra descobrir seu posicionamento — quem você é, o que defende, e o que aproxima ou afasta o seu público.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/css/style.css">
 <style>
-  :root {
-    --paper: #F4EFE3;
-    --paper-2: #ECE4D3;
-    --ink: #24261F;
-    --ink-soft: #55564A;
-    --accent: #B8892A;
-    --accent-deep: #8C6A21;
-    --line: #D8CDB2;
-    --card: #FBF8F1;
-    --error: #A8432F;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Work Sans', sans-serif;
-    line-height: 1.55;
-    min-height: 100vh;
-    padding: 0 18px;
-  }
-  .wrap {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 40px 0 64px;
-  }
-  @media (min-width: 600px) {
-    .wrap { padding: 56px 0 80px; }
-    body { padding: 0 20px; }
-  }
-  .eyebrow {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-bottom: 10px;
-  }
-  h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: clamp(30px, 6vw, 42px);
-    line-height: 1.12;
-    margin: 0 0 16px;
-    max-width: 14ch;
-  }
-  .intro {
-    color: var(--ink-soft);
-    font-size: 16px;
-    max-width: 46ch;
-    margin: 0 0 40px;
-  }
+  /* ---------- só o que é específico do chat — cores e fontes vêm do style.css ---------- */
+  .diag-wrap { max-width: 680px; margin: 0 auto; padding: 64px 28px 80px; }
+  .diag-wrap .eyebrow { margin-bottom: 10px; }
+  .diag-wrap h1 { margin: 0 0 14px; max-width: 20ch; }
+  .diag-intro { color: var(--ink-soft); font-size: 15.5px; max-width: 52ch; margin: 0 0 32px; }
 
-  .progress {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 36px;
-  }
-  .progress .seg {
-    height: 3px;
-    flex: 1;
-    background: var(--line);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .progress .seg > span {
-    display: block;
-    height: 100%;
-    width: 0%;
-    background: var(--accent);
-    transition: width .4s ease;
-  }
-  .progress .seg.done > span { width: 100%; }
-  .progress .seg.current > span { width: 100%; }
-
-  .step { display: none; }
-  .step.active { display: block; }
-  .step.enter-fwd { animation: slideFromRight .38s cubic-bezier(.22,1,.36,1); }
-  .step.enter-back { animation: slideFromLeft .38s cubic-bezier(.22,1,.36,1); }
-  @keyframes slideFromRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
-  @keyframes slideFromLeft { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-  .step-label {
-    font-size: 13px;
-    color: var(--accent-deep);
-    font-weight: 600;
+  .prep-box {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 28px;
     margin-bottom: 8px;
   }
-  .step h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 24px;
-    margin: 0 0 10px;
-    max-width: 22ch;
-  }
-  .step .hint {
-    color: var(--ink-soft);
-    font-size: 15px;
-    margin: 0 0 20px;
-    max-width: 48ch;
-  }
-  .prompts {
-    margin: 0 0 18px;
-    padding: 0 0 0 18px;
-    color: var(--ink-soft);
-    font-size: 14px;
-  }
-  .prompts li { margin-bottom: 4px; }
+  .prep-box p { margin: 0 0 12px; font-size: 15px; color: var(--ink-soft); }
+  .prep-box p:last-child { margin-bottom: 0; }
+  .prep-box .stress { color: var(--accent-soft); font-weight: 600; }
+  .diag-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; gap: 12px; }
 
-  textarea {
-    width: 100%;
-    min-height: 140px;
-    background: var(--card);
+  /* ---------- chat ---------- */
+  #chatView { display: none; }
+  #chatMessages { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+  .msg { display: flex; }
+  .msg.assistant { justify-content: flex-start; }
+  .msg.user { justify-content: flex-end; }
+  .bubble {
+    max-width: 84%;
+    padding: 13px 16px;
+    border-radius: 12px;
+    font-size: 15.5px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    font-family: var(--sans);
+  }
+  .msg.assistant .bubble {
+    background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 14px 16px;
-    font-family: 'Work Sans', sans-serif;
+    color: var(--ink);
+    border-bottom-left-radius: 3px;
+  }
+  .msg.user .bubble {
+    background: var(--accent);
+    color: #f7f3ec;
+    border-bottom-right-radius: 3px;
+  }
+  .typing-dots { display: inline-flex; gap: 4px; padding: 4px 2px; }
+  .typing-dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ink-faint);
+    animation: diagBlink 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: .2s; }
+  .typing-dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes diagBlink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    position: sticky;
+    bottom: 0;
+    background: var(--bg);
+    padding: 10px 0 4px;
+  }
+  #chatInput {
+    flex: 1;
+    font-family: var(--sans);
     font-size: 16px;
     color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
     resize: none;
-    line-height: 1.5;
-    overflow: hidden;
-    transition: border-color .15s ease, box-shadow .15s ease;
+    min-height: 48px;
+    max-height: 160px;
+    line-height: 1.4;
   }
-  textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(184,137,42,0.12);
-  }
-  textarea::placeholder { color: #9C9683; }
-  .adjust-box textarea { min-height: 90px; }
-
-  .nav {
+  #chatInput:focus { outline: none; border-color: var(--accent); }
+  #sendBtn { min-width: 90px; }
+  .chat-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 26px;
-    gap: 12px;
-  }
-  button {
-    font-family: 'Work Sans', sans-serif;
-    font-weight: 500;
-    font-size: 15px;
-    border-radius: 5px;
-    padding: 14px 22px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: transform .12s ease, background .15s ease, box-shadow .15s ease;
-    min-height: 48px;
-  }
-  button:active { transform: scale(0.98); }
-  .btn-primary {
-    background: var(--ink);
-    color: var(--paper);
-    border-color: var(--ink);
-    flex: 1;
-  }
-  .btn-primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
-  .btn-primary:disabled {
-    opacity: .45;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-  .btn-ghost {
-    background: transparent;
-    color: var(--ink-soft);
-    border-color: transparent;
-    padding: 14px 4px;
-    flex-shrink: 0;
-  }
-  .btn-ghost:hover { color: var(--ink); }
-
-  @media (max-width: 480px) {
-    .nav { flex-direction: column-reverse; align-items: stretch; }
-    .btn-ghost { text-align: center; padding: 10px 4px; }
-    .step h2 { font-size: 21px; }
-    .intro { margin-bottom: 32px; }
-    .progress { margin-bottom: 28px; }
-    .reflection-actions { flex-direction: column-reverse; }
-  }
-
-  .prep-box {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 22px 24px;
-    margin-bottom: 8px;
-  }
-  .prep-box p { margin: 0 0 12px; font-size: 15.5px; }
-  .prep-box p:last-child { margin-bottom: 0; }
-  .prep-box .stress { color: var(--accent-deep); font-weight: 600; }
-
-  .reflection-panel {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 18px 20px;
-    margin-top: 20px;
-    animation: fadeUp .3s ease;
-  }
-  .reflection-panel .label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--accent-deep);
-    margin-bottom: 8px;
-  }
-  .reflection-panel .refl-text {
-    font-size: 15.5px;
-    line-height: 1.55;
-    white-space: pre-wrap;
-  }
-  .mini-loading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--ink-soft);
-    font-size: 14.5px;
-  }
-  .mini-spinner {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    border: 2px solid var(--line);
-    border-top-color: var(--accent);
-    animation: spin 0.8s linear infinite;
-    flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .reflection-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-  }
-  .edit-original-btn {
-    font-size: 13px;
-    color: var(--ink-soft);
-    background: none;
-    border: none;
-    padding: 0;
-    margin-top: 12px;
-    min-height: auto;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .edit-original-btn:hover { color: var(--ink); }
-
-  .adjust-box {
     margin-top: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chat-hint { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); }
+  #finishBtn { font-size: 13.5px; padding: 9px 16px; min-height: auto; white-space: normal; text-align: left; }
+
+  .diag-error-box {
     display: none;
-    animation: fadeUp .25s ease;
-  }
-
-  .loading-screen {
-    text-align: center;
-    padding: 60px 0;
-  }
-  .loading-screen .spinner {
-    width: 34px; height: 34px;
-    margin: 0 auto 22px;
-    border-radius: 50%;
-    border: 2px solid var(--line);
-    border-top-color: var(--accent);
-    animation: spin 0.9s linear infinite;
-  }
-  .loading-screen p {
-    color: var(--ink-soft);
-    font-size: 15px;
-  }
-
-  .result { display: none; }
-  .result.active { display: block; animation: fadeUp .5s ease; }
-  .result .eyebrow { margin-bottom: 6px; }
-  .result h1 { max-width: none; margin-bottom: 6px; }
-  .result .sub {
-    color: var(--ink-soft);
-    font-size: 15px;
-    margin-bottom: 36px;
-  }
-  .map-section {
-    border-top: 1px solid var(--line);
-    padding: 26px 0;
-  }
-  .map-section:first-of-type { border-top: none; padding-top: 0; }
-  .map-section h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 19px;
-    margin: 0 0 10px;
-    color: var(--accent-deep);
-  }
-  .map-section .body {
-    font-size: 15.5px;
+    background: var(--panel);
+    border: 1px solid var(--clay);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 14px;
+    margin-top: 14px;
     color: var(--ink);
   }
+  .diag-error-box.active { display: block; }
+  .diag-error-box strong { color: var(--clay); }
+
+  /* ---------- loading ---------- */
+  .loading-screen { text-align: center; padding: 60px 0; }
+  .loading-screen .spinner {
+    width: 34px; height: 34px; margin: 0 auto 22px;
+    border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent);
+    animation: diagSpin 0.9s linear infinite;
+  }
+  @keyframes diagSpin { to { transform: rotate(360deg); } }
+  .loading-screen p { color: var(--ink-soft); font-size: 15px; font-family: var(--mono); }
+
+  /* ---------- resultado ---------- */
+  .result { display: none; }
+  .result.active { display: block; animation: diagFadeUp .5s ease; }
+  @keyframes diagFadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .result h1 { max-width: none; margin-bottom: 4px; }
+  .result .subtitle { font-family: var(--mono); font-size: 13px; color: var(--accent-soft); margin-bottom: 32px; letter-spacing: .03em; }
+  .map-section { border-top: 1px solid var(--line); padding: 24px 0; }
+  .map-section:first-of-type { border-top: none; padding-top: 0; }
+  .map-section h3 {
+    font-family: var(--serif); font-weight: 500; font-size: 18px;
+    margin: 0 0 10px; color: var(--accent-soft);
+  }
+  .map-section .body { font-size: 15px; color: var(--ink); }
   .map-section .body p { margin: 0 0 10px; }
-  .map-section ul {
-    margin: 0;
-    padding-left: 20px;
-  }
+  .map-section ul { margin: 0; padding-left: 20px; }
   .map-section li { margin-bottom: 6px; }
-
-  .restart {
-    margin-top: 40px;
-    padding-top: 24px;
+  .result-actions {
+    margin-top: 36px;
+    padding-top: 22px;
     border-top: 1px solid var(--line);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
-  .error-box {
-    display: none;
-    background: var(--card);
-    border: 1px solid var(--error);
-    border-radius: 6px;
-    padding: 16px 18px;
-    font-size: 14.5px;
-    margin-top: 18px;
+  @media (max-width: 480px) {
+    .chat-input-row { flex-direction: column; align-items: stretch; }
+    #sendBtn { width: 100%; }
+    .diag-wrap { padding: 44px 20px 60px; }
   }
-  .error-box.active { display: block; }
-  .error-box strong { color: var(--error); }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div id="formView">
-    <div class="eyebrow">Rocholab · diagnóstico gratuito</div>
-    <h1>Pessoas compram de pessoas. Seja maior do que o seu nicho.</h1>
-    <p class="intro"><strong>Leia com atenção e responda com honestidade.</strong><br><br>No final, você recebe seu diagnóstico: quem você é, o que te destaca, e o que aproxima ou afasta o seu público.</p>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="/" class="logo">
+      <img class="mark" src="/assets/brand/logo-ro.png" alt="rocho.lab">
+    </a>
+    <nav class="main-nav">
+      <a href="/">Início</a>
+      <a href="/portfolio">Portfólio</a>
+      <a href="/#servicos">Serviços</a>
+      <a href="/#ferramentas">Ferramentas</a>
+      <a class="btn btn-solid" href="/conta">Login</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
 
-    <div id="prepBlock" class="step active">
-      <div class="prep-box">
-        <p>Isso não é uma prova. Não existe resposta bonita, existe resposta verdadeira.</p>
-        <p>O diagnóstico que você recebe no final é só o reflexo do que você escrever aqui. <span class="stress">Quanto mais honesta você for, mais ele vai te dar clareza.</span></p>
-        <p>Ninguém está te avaliando. Escreva pra você, não pra impressionar.</p>
-        <p>Só você tem acesso às suas respostas.</p>
-      </div>
-      <div class="nav">
-        <span></span>
-        <button type="button" class="btn-primary" id="startBtn">Começar</button>
-      </div>
+<div class="diag-wrap">
+
+  <div class="eyebrow">Rocholab · diagnóstico gratuito</div>
+  <h1 id="pageTitle">Pessoas compram de pessoas. Seja maior do que o seu nicho.</h1>
+  <p class="diag-intro" id="pageIntro"><strong>Leia com atenção e responda com honestidade.</strong><br><br>No final, você recebe seu diagnóstico: quem você é, o que te destaca, e o que aproxima ou afasta o seu público.</p>
+
+  <div id="prepBlock">
+    <div class="prep-box">
+      <p>Isso não é uma prova. Não existe resposta bonita, existe resposta verdadeira.</p>
+      <p>O diagnóstico que você recebe no final é só o reflexo do que você disser aqui. <span class="stress">Quanto mais honesta você for, mais ele vai te dar clareza.</span></p>
+      <p>Ninguém está te avaliando. Escreva pra você, não pra impressionar.</p>
+      <p>Só você tem acesso às suas respostas.</p>
     </div>
-
-    <div id="journey" style="display:none;">
-      <div class="progress" id="progressBar">
-        <div class="seg" data-i="0"><span></span></div>
-        <div class="seg" data-i="1"><span></span></div>
-        <div class="seg" data-i="2"><span></span></div>
-        <div class="seg" data-i="3"><span></span></div>
-      </div>
-
-      <form id="interviewForm">
-
-        <div class="step" data-step="0" data-field="bandeira" data-label="DIFERENCIAL" data-context="o que a torna maior que o próprio nicho, sua opinião ou forma de trabalhar">
-          <div class="step-label">Bloco 1 de 4</div>
-          <h2>Seu diferencial</h2>
-          <p class="hint">Pensa no que te torna maior que o seu nicho — uma forma sua de trabalhar que parte do seu público vai concordar de cara, e outra parte vai discordar ou se incomodar.</p>
-          <ul class="prompts">
-            <li>O que te fez escolher fazer esse trabalho do seu jeito, e não do jeito "padrão" do mercado?</li>
-            <li>Que conselho comum da sua área você acha raso ou errado?</li>
-            <li>O que você defenderia publicamente, mesmo sabendo que uma parte das pessoas vai discordar?</li>
-          </ul>
-
-          <div class="raw-mode">
-            <textarea name="bandeira" placeholder="Escreve livre, sem filtrar ainda..."></textarea>
-            <div class="nav">
-              <span></span>
-              <button type="button" class="btn-primary lapidar-btn">Lapidar comigo</button>
-            </div>
-            <div class="error-box"><strong>Não consegui lapidar agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-
-          <div class="reflection-mode" style="display:none;">
-            <div class="reflection-panel">
-              <div class="label">Como ficou, na leitura afiada</div>
-              <div class="mini-loading" style="display:none;"><span class="mini-spinner"></span> Lendo o que você escreveu...</div>
-              <div class="refl-text"></div>
-            </div>
-            <div class="adjust-box" style="display:block;">
-              <textarea class="adjust-textarea" placeholder="Quer responder à pergunta acima ou ajustar algo? Escreve aqui."></textarea>
-            </div>
-            <div class="reflection-actions">
-              <button type="button" class="btn-ghost send-adjust-btn">Ajustar resposta original</button>
-              <button type="button" class="btn-primary accept-btn">É isso, seguir</button>
-            </div>
-            <div class="error-box reflection-error-box"><strong>Não consegui lapidar o ajuste agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-        </div>
-
-        <div class="step" data-step="1" data-field="subtemas" data-label="TEMAS" data-context="assuntos que ela puxa naturalmente a partir do diferencial dela">
-          <div class="step-label">Bloco 2 de 4</div>
-          <h2>Seus temas</h2>
-          <p class="hint">Quando você fala sobre esse diferencial, quais assuntos você naturalmente puxa? Podem ser vários.</p>
-          <ul class="prompts">
-            <li>Do que você mais gosta de falar dentro do seu trabalho?</li>
-            <li>Que assuntos sempre voltam quando você fala sobre o que te diferencia?</li>
-            <li>Se você pudesse falar só de 3 a 5 temas pelo resto da vida, quais seriam?</li>
-          </ul>
-
-          <div class="raw-mode">
-            <textarea name="subtemas" placeholder="Ex.: rotina, ferramentas, saúde mental, autenticidade..."></textarea>
-            <div class="nav">
-              <button type="button" class="btn-ghost" data-back>Voltar</button>
-              <button type="button" class="btn-primary lapidar-btn">Lapidar comigo</button>
-            </div>
-            <div class="error-box"><strong>Não consegui lapidar agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-
-          <div class="reflection-mode" style="display:none;">
-            <div class="reflection-panel">
-              <div class="label">Como ficou, na leitura afiada</div>
-              <div class="mini-loading" style="display:none;"><span class="mini-spinner"></span> Lendo o que você escreveu...</div>
-              <div class="refl-text"></div>
-            </div>
-            <div class="adjust-box" style="display:block;">
-              <textarea class="adjust-textarea" placeholder="Quer responder à pergunta acima ou ajustar algo? Escreve aqui."></textarea>
-            </div>
-            <div class="reflection-actions">
-              <button type="button" class="btn-ghost send-adjust-btn">Ajustar resposta original</button>
-              <button type="button" class="btn-primary accept-btn">É isso, seguir</button>
-            </div>
-            <div class="error-box reflection-error-box"><strong>Não consegui lapidar o ajuste agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-        </div>
-
-        <div class="step" data-step="2" data-field="tom" data-label="VOZ" data-context="como a comunicação dela soa">
-          <div class="step-label">Bloco 3 de 4</div>
-          <h2>Sua voz</h2>
-          <p class="hint">Como essa mensagem soa quando sai da sua boca? Você provoca, acolhe, é direta, tem humor?</p>
-          <ul class="prompts">
-            <li>Como as pessoas que te conhecem descreveriam seu jeito de falar?</li>
-            <li>Você provoca de leve ou acolhe primeiro? É mais direta ou mais reflexiva?</li>
-            <li>Tem humor? Existe alguma frase ou jeito de fechar que já é "sua marca registrada"?</li>
-          </ul>
-
-          <div class="raw-mode">
-            <textarea name="tom" placeholder="Descreve como você fala, ou lembra de algo que você já falou assim..."></textarea>
-            <div class="nav">
-              <button type="button" class="btn-ghost" data-back>Voltar</button>
-              <button type="button" class="btn-primary lapidar-btn">Lapidar comigo</button>
-            </div>
-            <div class="error-box"><strong>Não consegui lapidar agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-
-          <div class="reflection-mode" style="display:none;">
-            <div class="reflection-panel">
-              <div class="label">Como ficou, na leitura afiada</div>
-              <div class="mini-loading" style="display:none;"><span class="mini-spinner"></span> Lendo o que você escreveu...</div>
-              <div class="refl-text"></div>
-            </div>
-            <div class="adjust-box" style="display:block;">
-              <textarea class="adjust-textarea" placeholder="Quer responder à pergunta acima ou ajustar algo? Escreve aqui."></textarea>
-            </div>
-            <div class="reflection-actions">
-              <button type="button" class="btn-ghost send-adjust-btn">Ajustar resposta original</button>
-              <button type="button" class="btn-primary accept-btn">É isso, seguir</button>
-            </div>
-            <div class="error-box reflection-error-box"><strong>Não consegui lapidar o ajuste agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-        </div>
-
-        <div class="step" data-step="3" data-field="publico" data-label="PÚBLICO" data-context="quem ela imagina lendo isso e em que momento essa pessoa está">
-          <div class="step-label">Bloco 4 de 4</div>
-          <h2>Seu público</h2>
-          <p class="hint">Quem você imagina lendo isso e pensando "é disso que eu precisava ouvir"? Que tipo de pessoa, em que momento ela está?</p>
-          <ul class="prompts">
-            <li>Quem você imagina lendo isso e pensando "é disso que eu precisava ouvir"?</li>
-            <li>Que tipo de pessoa é essa — autônoma, dona de negócio, profissional liberal, outro?</li>
-            <li>Em que momento da vida ou do trabalho ela está?</li>
-          </ul>
-
-          <div class="raw-mode">
-            <textarea name="publico" placeholder="Descreve essa pessoa..."></textarea>
-            <div class="nav">
-              <button type="button" class="btn-ghost" data-back>Voltar</button>
-              <button type="button" class="btn-primary lapidar-btn">Lapidar comigo</button>
-            </div>
-            <div class="error-box"><strong>Não consegui lapidar agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-
-          <div class="reflection-mode" style="display:none;">
-            <div class="reflection-panel">
-              <div class="label">Como ficou, na leitura afiada</div>
-              <div class="mini-loading" style="display:none;"><span class="mini-spinner"></span> Lendo o que você escreveu...</div>
-              <div class="refl-text"></div>
-            </div>
-            <div class="adjust-box" style="display:block;">
-              <textarea class="adjust-textarea" placeholder="Quer responder à pergunta acima ou ajustar algo? Escreve aqui."></textarea>
-            </div>
-            <div class="reflection-actions">
-              <button type="button" class="btn-ghost send-adjust-btn">Ajustar resposta original</button>
-              <button type="button" class="btn-primary accept-btn">Fechar e gerar meu diagnóstico</button>
-            </div>
-            <div class="error-box reflection-error-box"><strong>Não consegui lapidar o ajuste agora.</strong><br>Tenta de novo em alguns segundos.</div>
-            <div class="error-box final-error-box"><strong>Não consegui gerar o diagnóstico agora.</strong><br>Tenta de novo em alguns segundos.</div>
-          </div>
-        </div>
-
-      </form>
+    <div class="diag-nav">
+      <span></span>
+      <button type="button" class="btn btn-solid" id="startBtn">Começar a conversa</button>
     </div>
+  </div>
+
+  <div id="chatView">
+    <div id="chatMessages"></div>
+
+    <div class="chat-input-row">
+      <textarea id="chatInput" placeholder="Escreve sua resposta..." rows="1"></textarea>
+      <button type="button" class="btn btn-solid" id="sendBtn">Enviar</button>
+    </div>
+    <div class="chat-footer">
+      <span class="chat-hint" id="chatHint">responde com calma — não tem pressa nem número certo de perguntas</span>
+      <button type="button" class="btn btn-ghost" id="finishBtn" disabled>Já dei informações suficientes, gerar diagnóstico</button>
+    </div>
+    <div class="diag-error-box" id="chatErrorBox"><strong>Não consegui responder agora.</strong><br>Tenta enviar de novo em alguns segundos.</div>
   </div>
 
   <div class="loading-screen" id="loadingView" style="display:none;">
     <div class="spinner"></div>
-    <p id="loadingText">Lendo suas respostas...</p>
+    <p id="loadingText">Lendo a conversa inteira...</p>
   </div>
 
   <div class="result" id="resultView">
     <div class="eyebrow">Rocholab · seu diagnóstico</div>
-    <h1>Diagnóstico de Posicionamento</h1>
-    <p class="sub">Baseado no que você lapidou com a gente — sem fórmula, sem certo ou errado.</p>
-    <div id="resultContent"></div>
-    <div class="restart">
-      <button type="button" class="btn-ghost" id="restartBtn">← Refazer o diagnóstico</button>
+    <h1>Seu diagnóstico está pronto.</h1>
+    <p class="diag-intro">Ele já começou a baixar automaticamente, em PDF. Se não abriu, usa o botão abaixo.</p>
+    <div class="result-actions">
+      <button type="button" class="btn btn-solid" id="downloadBtn">Baixar diagnóstico como PDF</button>
+      <button type="button" class="btn btn-ghost" id="restartBtn">← Refazer do zero</button>
     </div>
   </div>
 
 </div>
 
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-links">
+      <a href="/">Início</a>
+      <a href="/portfolio">Portfólio</a>
+      <a href="https://instagram.com/rocho.lab" target="_blank" rel="noopener">Instagram</a>
+      <a href="/conta">Já é cliente? Entrar</a>
+    </div>
+    <span class="footer-credit">feito por <a href="https://instagram.com/rocho.lab" target="_blank" rel="noopener">@rocho.lab</a></span>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="https://wa.me/5548999936071?text=Oi%2C%20vim%20pelo%20site%20da%20Rocho%20Lab%20e%20queria%20conversar%20sobre%20um%20projeto." target="_blank" rel="noopener" aria-label="Chamar no WhatsApp">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.25.62 4.36 1.7 6.17L3 29l8-2.62a12.9 12.9 0 0 0 5.02 1.01h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.65 3 16.02 3zm0 21.98h-.01a10 10 0 0 1-5.1-1.4l-.37-.22-3.78 1.24 1.26-3.68-.24-.38a9.9 9.9 0 0 1-1.53-5.32c0-5.5 4.48-9.98 9.98-9.98 2.67 0 5.17 1.04 7.06 2.93a9.9 9.9 0 0 1 2.92 7.05c0 5.5-4.48 9.76-9.99 9.76zm5.47-7.44c-.3-.15-1.77-.87-2.05-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.48-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35z"/></svg>
+</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/js/main.js"></script>
 <script>
 (function () {
-  const steps = Array.from(document.querySelectorAll('.step[data-step]'));
-  const segs = Array.from(document.querySelectorAll('.progress .seg'));
-  let current = 0;
-  const finalText = {}; // lapidated text per field, keyed by field name
-  const adjustRounds = {}; // how many times each block's answer has been adjusted
 
-  const ROCHOLAB_VOICE = `Você está respondendo com a voz da Rocholab, um laboratório criativo de design e comunicação. A filosofia da Rocholab, que deve guiar seu olhar crítico: marketing não tem um jeito certo — tem o jeito que respeita a realidade, a rotina e os valores de quem faz; quem diz que só existe um caminho geralmente está vendendo um curso; marketing devia facilitar a vida, não virar uma segunda jornada de trabalho. Praticamente todo método funciona — a diferença é o preço que se paga por ele: uns exigem esforço dobrado e abrir mão da rotina, outros facilitam a vida, e a escolha é de cada um. O público típico já tentou de tudo, está frustrado, e carrega crenças disfuncionais como "preciso me esforçar muito", "preciso postar todo dia", "preciso virar blogueiro" ou "só existe um jeito certo de fazer isso" — sempre que essas crenças aparecerem na resposta da pessoa, seu papel é confrontá-las com honestidade, não validar. O tom Rocholab é acolhedor mas direto, sem rodeios, com humor leve sem forçar, elegante e sem clichê de guru ("desperte seu potencial", "transforme sua marca"). Você nunca apenas concorda com tudo que a pessoa escreve — você lê como alguém com posição própria seria capaz de fazer.`;
+  // ---------- a voz que conduz a entrevista: o próprio mapa de posicionamento da Rocholab ----------
+  const ROCHOLAB_POSITIONING = `Identidade de quem conduz esta entrevista (Rocholab): "a criativa estratégica que resolve sem perder a vida" — clareza · alma · leveza. É uma pessoa calma e convicta, que pensa antes de falar e entrega com substância; o trabalho existe pra servir a vida, não pra ocupar ela toda. Constrói marcas com alma e entrega clareza pra quem tá sufocado de confusão — o cliente dela não quer só design bonito, quer orgulho do que construiu sem virar escravo do próprio negócio. Valores: honestidade sem negociação · negócio que cabe dentro de uma vida grande. Vocabulário natural: negócio com alma · marca autêntica e potente · clareza · marketing que cabe na vida · entrega de verdade · sem enrolação. Tom: calmo, seguro, direto, sem floreio, com humor leve quando cabe — nunca clichê de guru, nunca hustle culture, nunca tom de professora.`;
 
-  function autosize(ta) {
+  const INTERVIEW_SYSTEM_PROMPT = `Você está conduzindo, ao vivo, uma entrevista de posicionamento com uma pessoa que topou responder no site da Rocholab. Sua voz e seu critério nessa conversa vêm deste mapa: ${ROCHOLAB_POSITIONING}
+
+Seu jeito de conduzir:
+- Uma pergunta por vez, curta e direta — nunca duas perguntas na mesma mensagem, nunca uma lista de perguntas.
+- Cada pergunta nasce da resposta anterior da pessoa. Não existe roteiro fixo: se a resposta foi rica, aprofunda nela ou muda pra outro ângulo que ainda falta explorar; se foi rasa ou genérica, faz UMA pergunta pra puxar mais — e se mesmo assim continuar rasa, deixa pra lá e segue pra outro assunto, sem insistir.
+- Ao longo da conversa (na ordem que fizer sentido, não necessariamente essa), cubra: quem essa pessoa é de verdade (personalidade, o que a diferencia); o núcleo do que ela entrega e o que o cliente realmente quer por trás do produto; os dois lados da identidade dela (ex: técnica e humana, calma e ambiciosa — descubra os dela); os valores inegociáveis dela; quem é o cliente ideal (frustração atual, o que ele já tentou, o que ele quer de verdade); o vocabulário que ela usaria naturalmente; referências de estilo, estética ou atitude que ressoam com ela; o ambiente/estética que combina com a marca dela (roupa, cenário, luz, tom, comportamento); o que aproxima e o que afasta o público dela; e a fase atual do negócio dela.
+- Nunca repete uma pergunta parecida com uma já feita nesta conversa.
+- Pode reconhecer brevemente o que a pessoa disse antes de perguntar de novo (uma frase, no máximo), mas o grosso da mensagem é a próxima pergunta.
+- Sem clichê de guru, sem emoji, tom direto e caloroso — como conversa entre pessoas que se respeitam.
+- Responda sempre em português do Brasil, texto simples, sem markdown.`;
+
+  const REPORT_SYSTEM_PROMPT = `${INTERVIEW_SYSTEM_PROMPT}
+
+Agora, em vez de perguntar mais alguma coisa, sua tarefa é gerar o Diagnóstico de Posicionamento final da pessoa, com base em tudo que ela disse na conversa acima.
+
+Formato exato (texto simples, ## pra títulos de seção, - pra listas, **palavra** pra negrito dentro de frases, SEM markdown de código, SEM \`\`\`):
+
+# [uma frase de 4 a 8 palavras que descreva a identidade dela de forma objetiva e concreta — use as palavras dela, não invente jargão nem poesia]
+[3 palavras dela separadas por · que resumem a essência]
+
+## Perfil
+(2-4 frases descrevendo a personalidade e o jeito de trabalhar dela, na segunda pessoa, com base no que ela disse — tom descritivo, não poético)
+
+## Essência do negócio
+(1-2 frases sobre o que ela entrega de fato e o que o cliente realmente busca por trás do produto)
+
+## Duas forças que convivem
+- **[nome da força 1, tirado da conversa]:** descrição em uma frase
+- **[nome da força 2, tirado da conversa]:** descrição em uma frase
+
+## Princípios não negociáveis
+(2-4 princípios curtos dela, separados por ·)
+
+## Para quem isso é
+(2-3 frases sobre quem é o cliente ideal dela e a situação atual dele)
+- **O que ele busca:** frase
+- **O que ela oferece:** frase
+
+## Palavras que funcionam
+(6-8 expressões que ela usaria naturalmente, separadas por ·)
+
+## Referências de estilo
+- até 4 nomes/marcas/pessoas como referência de estética ou atitude que combinam com o que ela disse, cada um com uma frase curta de por quê
+- uma última linha: "Termos de busca: " seguido de 4 a 6 termos em inglês, separados por vírgula
+
+## Estética e comportamento
+- **roupa:** frase
+- **palavras:** frase
+- **cenário:** frase
+- **luz:** frase
+- **tom:** frase
+- **comportamento:** frase
+
+## O que aproxima
+(lista com 3-5 itens, com base no que ela disse)
+
+## O que afasta
+(lista com 3-5 itens, com base no que ela disse)
+
+## Momento atual
+(2-3 frases sobre a fase atual do negócio dela e o que fazer com isso — só se ela deu material sobre isso na conversa; senão, seja honesta e breve aqui)
+
+Regra mais importante: use só o que ela realmente disse na conversa. Se algum tópico não foi coberto de jeito nenhum, faça a melhor inferência possível a partir do que foi dito — nunca invente fatos específicos que contradigam a conversa. Nada de clichê de guru, nada de emoji, frases curtas, tom direto e objetivo — evite linguagem poética ou excessivamente subjetiva.`;
+
+  let transcript = []; // { role: 'user' | 'assistant', content: string }
+  let userTurns = 0;
+  const MIN_TURNS_TO_FINISH = 3;
+  let lastReportText = '';
+
+  const OPENING_MESSAGE = 'Pra começar: o que te fez escolher fazer esse trabalho do seu jeito, e não do jeito "padrão" do mercado?';
+
+  function stripMdBold(str) {
+    return str.replace(/\*\*(.+?)\*\*/g, '$1');
+  }
+
+  function autosizeInput() {
+    const ta = document.getElementById('chatInput');
     ta.style.height = 'auto';
-    ta.style.height = Math.max(ta.classList.contains('adjust-textarea') ? 90 : 140, ta.scrollHeight) + 'px';
-  }
-  function wireTextarea(ta) {
-    autosize(ta);
-    ta.addEventListener('input', () => autosize(ta));
-  }
-  document.querySelectorAll('textarea').forEach(wireTextarea);
-
-  function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
+    ta.style.height = Math.min(160, Math.max(48, ta.scrollHeight)) + 'px';
   }
 
-  function showStep(direction) {
-    steps.forEach((s, i) => {
-      const isActive = i === current;
-      s.classList.remove('enter-fwd', 'enter-back');
-      s.classList.toggle('active', isActive);
-      if (isActive && direction) {
-        s.classList.add(direction === 'fwd' ? 'enter-fwd' : 'enter-back');
-      }
-    });
-    segs.forEach((s, i) => {
-      s.classList.toggle('done', i < current);
-      s.classList.toggle('current', i === current);
-    });
+  function scrollToBottom() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
 
-    const stepEl = steps[current];
-    const field = stepEl.dataset.field;
-    const rawMode = stepEl.querySelector('.raw-mode');
-    const reflMode = stepEl.querySelector('.reflection-mode');
-
-    if (finalText[field]) {
-      // already lapidated once: show the accepted reflection, ready to confirm or adjust again
-      rawMode.style.display = 'none';
-      reflMode.style.display = 'block';
-      stepEl.querySelector('.adjust-box').style.display = 'block';
-      stepEl.querySelector('.refl-text').textContent = finalText[field];
+  function renderMessage(role, text, isTyping) {
+    const container = document.getElementById('chatMessages');
+    const row = document.createElement('div');
+    row.className = 'msg ' + role;
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    if (isTyping) {
+      bubble.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+      bubble.dataset.typing = '1';
     } else {
-      rawMode.style.display = 'block';
-      reflMode.style.display = 'none';
-      const ta = stepEl.querySelector('.raw-mode textarea');
-      if (ta) setTimeout(() => ta.focus(), direction ? 200 : 0);
+      bubble.textContent = text;
     }
+    row.appendChild(bubble);
+    container.appendChild(row);
+    scrollToBottom();
+    return row;
   }
 
-  document.getElementById('startBtn').addEventListener('click', () => {
-    document.getElementById('prepBlock').classList.remove('active');
-    document.getElementById('journey').style.display = 'block';
-    showStep();
-    window.scrollTo({top:0, behavior:'smooth'});
-  });
+  function removeTypingIndicator() {
+    const typingBubble = document.querySelector('.bubble[data-typing="1"]');
+    if (typingBubble) typingBubble.closest('.msg').remove();
+  }
 
-  document.querySelectorAll('[data-back]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (current > 0) { current--; showStep('back'); window.scrollTo({top:0, behavior:'smooth'}); }
-    });
-  });
-
-  async function callSample(prompt) {
+  async function callDiagnostico(system, messages, maxTokens) {
     const res = await fetch('/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'diagnostico', prompt: prompt })
+      body: JSON.stringify({ action: 'diagnostico', system: system, messages: messages, max_tokens: maxTokens })
     });
     if (!res.ok) throw new Error('api_error');
     const data = await res.json();
     if (!data.text) throw new Error('empty_response');
-    return { text: data.text };
+    return data.text.trim();
   }
 
-  function buildReflectionPrompt(stepEl, rawText, adjustmentText, priorReflection, round) {
-    const label = stepEl.dataset.label;
-    const context = stepEl.dataset.context;
+  document.getElementById('startBtn').addEventListener('click', () => {
+    document.getElementById('prepBlock').style.display = 'none';
+    document.getElementById('chatView').style.display = 'block';
+    transcript.push({ role: 'assistant', content: OPENING_MESSAGE });
+    renderMessage('assistant', OPENING_MESSAGE, false);
+    document.getElementById('chatInput').focus();
+  });
 
-    let questionRule;
-    if (round === 0) {
-      questionRule = `Essa é a primeira leitura desse bloco. Se a resposta for vaga, genérica ou muito curta, você pode terminar apontando UMA pergunta específica que ajudaria a aprofundar. Se a resposta já for rica, feche com uma síntese, sem precisar perguntar nada.`;
-    } else if (round === 1) {
-      questionRule = `A pessoa já respondeu a um ajuste uma vez. Se o que ela escreveu nesse ajuste for um avanço real (mesmo que pequeno), FECHE com uma síntese — não faça outra pergunta. Só é permitido manter UMA pergunta, mais simples e direta, se o ajuste dela for claramente um não-avanço (tipo "não sei", "sei lá", "não faço ideia" ou equivalente).`;
-    } else {
-      questionRule = `A pessoa já ajustou essa resposta ${round} vezes. É PROIBIDO fazer qualquer nova pergunta agora — feche com uma síntese usando o que você tem, mesmo que o material ainda não esteja perfeito. Trabalhar com o que existe é melhor do que travar a pessoa num loop de perguntas.`;
+  async function sendUserMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    document.getElementById('chatErrorBox').classList.remove('active');
+    input.value = '';
+    autosizeInput();
+    renderMessage('user', text, false);
+    transcript.push({ role: 'user', content: text });
+    userTurns++;
+    if (userTurns >= MIN_TURNS_TO_FINISH) {
+      document.getElementById('finishBtn').disabled = false;
     }
 
-    return `${ROCHOLAB_VOICE}
-
-Você está conduzindo uma pessoa por um diagnóstico de posicionamento, bloco a bloco, ajudando a lapidar cada resposta antes de seguir pro próximo bloco.
-
-Bloco atual: ${label} (${context}).
-
-Resposta original da pessoa:
-"""${rawText || '(em branco)'}"""
-${adjustmentText ? `\nAjuste que a pessoa quer incorporar agora:\n"""${adjustmentText}"""\n\nSua leitura anterior, que a pessoa quer refinar:\n"""${priorReflection}"""` : ''}
-
-Devolva uma leitura afiada dessa resposta, em português do Brasil, entre 2 e 4 frases curtas, texto simples (sem markdown, sem emoji).
-
-Regras:
-- Se a resposta for rica, sintetize o que há de mais forte nela, reaproveitando as palavras da pessoa quando fizer sentido — isso não é um resumo genérico, é uma devolutiva que mostra que você leu de verdade e tem posição própria sobre o assunto.
-- Nunca apenas repita, copie ou concorde automaticamente com a resposta da pessoa — questione clichês de mercado quando eles aparecerem, e agregue alguma sacada, conexão ou reformulação.
-- ${questionRule}
-- Não elogie demais nem seja dura demais: seja direta e precisa.`;
-  }
-
-  function setLoading(stepEl, isLoading) {
-    stepEl.querySelector('.mini-loading').style.display = isLoading ? 'flex' : 'none';
-    stepEl.querySelector('.refl-text').style.display = isLoading ? 'none' : 'block';
-  }
-
-  async function runReflection(stepEl, rawText, adjustmentText, priorReflection, round) {
-    const rawMode = stepEl.querySelector('.raw-mode');
-    const reflMode = stepEl.querySelector('.reflection-mode');
-    const rawErrorBox = rawMode.querySelector('.error-box');
-    const reflErrorBox = stepEl.querySelector('.reflection-error-box');
-    rawErrorBox.classList.remove('active');
-    reflErrorBox.classList.remove('active');
-
-    rawMode.style.display = 'none';
-    reflMode.style.display = 'block';
-    stepEl.querySelector('.adjust-box').style.display = 'none';
-    setLoading(stepEl, true);
+    setSending(true);
+    renderMessage('assistant', '', true);
 
     try {
-      const prompt = buildReflectionPrompt(stepEl, rawText, adjustmentText, priorReflection, round);
-      const result = await callSample(prompt);
-      setLoading(stepEl, false);
-      stepEl.querySelector('.refl-text').textContent = result.text.trim();
-      stepEl.querySelector('.adjust-box').style.display = 'block';
-      return result.text.trim();
+      const reply = await callDiagnostico(INTERVIEW_SYSTEM_PROMPT, transcript, 220);
+      removeTypingIndicator();
+      renderMessage('assistant', reply, false);
+      transcript.push({ role: 'assistant', content: reply });
     } catch (err) {
-      console.error('Erro ao lapidar:', err);
-      setLoading(stepEl, false);
-      if (round === 0) {
-        reflMode.style.display = 'none';
-        rawMode.style.display = 'block';
-        rawErrorBox.classList.add('active');
-      } else {
-        stepEl.querySelector('.adjust-box').style.display = 'block';
-        reflErrorBox.classList.add('active');
-      }
-      return null;
+      console.error('erro na conversa:', err);
+      removeTypingIndicator();
+      document.getElementById('chatErrorBox').classList.add('active');
+      input.value = text;
+      transcript.pop();
+      userTurns--;
+      autosizeInput();
+    } finally {
+      setSending(false);
     }
   }
 
-  document.querySelectorAll('.lapidar-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const stepEl = btn.closest('.step');
-      const field = stepEl.dataset.field;
-      const rawText = stepEl.querySelector(`textarea[name="${field}"]`).value.trim();
-      if (!rawText) {
-        const errorBox = stepEl.querySelector('.raw-mode .error-box');
-        errorBox.querySelector('strong').textContent = 'Escreve algo antes de continuar.';
-        errorBox.classList.add('active');
-        return;
-      }
-      adjustRounds[field] = 0;
-      const text = await runReflection(stepEl, rawText, null, null, 0);
-      if (text) finalText[field] = text; // tentative; only truly locked on accept
-    });
+  function setSending(isSending) {
+    document.getElementById('sendBtn').disabled = isSending;
+    document.getElementById('chatInput').disabled = isSending;
+    document.getElementById('finishBtn').disabled = isSending || userTurns < MIN_TURNS_TO_FINISH;
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', sendUserMessage);
+  document.getElementById('chatInput').addEventListener('input', autosizeInput);
+  document.getElementById('chatInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendUserMessage();
+    }
   });
 
-  document.querySelectorAll('.send-adjust-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const stepEl = btn.closest('.step');
-      const field = stepEl.dataset.field;
-      const adjustTa = stepEl.querySelector('.adjust-textarea');
-      const adjustmentText = adjustTa.value.trim();
-      if (!adjustmentText) { adjustTa.focus(); return; }
-      const rawText = stepEl.querySelector(`textarea[name="${field}"]`).value.trim();
-      const priorReflection = stepEl.querySelector('.refl-text').textContent;
-      adjustRounds[field] = (adjustRounds[field] || 0) + 1;
-      const text = await runReflection(stepEl, rawText, adjustmentText, priorReflection, adjustRounds[field]);
-      if (text) {
-        finalText[field] = text;
-        adjustTa.value = '';
-        autosize(adjustTa);
-      }
-    });
-  });
-
-  document.querySelectorAll('.accept-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const stepEl = btn.closest('.step');
-      const field = stepEl.dataset.field;
-      const text = stepEl.querySelector('.refl-text').textContent.trim();
-      if (!text) return;
-      finalText[field] = text;
-      const adjustTa = stepEl.querySelector('.adjust-textarea');
-      adjustTa.value = '';
-      autosize(adjustTa);
-
-      if (current < steps.length - 1) {
-        current++;
-        showStep('fwd');
-        window.scrollTo({top:0, behavior:'smooth'});
-      } else {
-        generateFinalMap();
-      }
-    });
+  document.getElementById('finishBtn').addEventListener('click', generateFinalMap);
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    if (lastReportText) downloadPdf(lastReportText);
   });
 
   const loadingMsgs = [
-    'Juntando os fios lapidados...',
+    'Lendo a conversa inteira...',
+    'Juntando os dois lados da sua identidade...',
     'Desenhando o que aproxima e o que afasta...',
-    'Quase lá...'
+    'Montando o PDF...'
   ];
 
-  function renderMap(text) {
-    const container = document.getElementById('resultContent');
-    const lines = text.split('\n');
-    let html = '';
-    let inList = false;
-    for (let raw of lines) {
-      const line = raw.trim();
-      if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
-      if (line.startsWith('## ')) {
-        if (inList) { html += '</ul>'; inList = false; }
-        html += `<div class="map-section"><h3>${escapeHtml(line.slice(3))}</h3><div class="body">`;
-      } else if (line.startsWith('# ')) {
-        continue;
-      } else if (line.startsWith('- ') || line.startsWith('* ')) {
-        if (!inList) { html += '<ul>'; inList = true; }
-        html += `<li>${escapeHtml(line.slice(2))}</li>`;
-      } else {
-        if (inList) { html += '</ul>'; inList = false; }
-        html += `<p>${escapeHtml(line)}</p>`;
+  function downloadPdf(text) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const marginX = 56;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const maxWidth = pageWidth - marginX * 2;
+    let y = 70;
+
+    function ensureSpace(lineHeight) {
+      if (y + lineHeight > pageHeight - 56) {
+        doc.addPage();
+        y = 70;
       }
     }
-    if (inList) html += '</ul>';
-    const opens = (html.match(/<div class="map-section">/g) || []).length;
-    for (let i = 0; i < opens; i++) html += '</div></div>';
-    container.innerHTML = html;
+    function addTitle(str) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(19);
+      doc.splitTextToSize(str, maxWidth).forEach((line) => {
+        ensureSpace(24);
+        doc.text(line, marginX, y);
+        y += 24;
+      });
+      y += 4;
+    }
+    function addSubtitle(str) {
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(11);
+      ensureSpace(20);
+      doc.text(str, marginX, y);
+      y += 30;
+    }
+    function addHeading(str) {
+      y += 8;
+      ensureSpace(20);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.text(str, marginX, y);
+      y += 16;
+      doc.setDrawColor(210);
+      doc.line(marginX, y - 10, marginX + maxWidth, y - 10);
+    }
+    function addParagraph(str) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.splitTextToSize(stripMdBold(str), maxWidth).forEach((line) => {
+        ensureSpace(15);
+        doc.text(line, marginX, y);
+        y += 15;
+      });
+      y += 3;
+    }
+    function addBullet(str) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      const lines = doc.splitTextToSize(stripMdBold(str), maxWidth - 14);
+      lines.forEach((line, i) => {
+        ensureSpace(15);
+        doc.text((i === 0 ? '•  ' : '   ') + line, marginX, y);
+        y += 15;
+      });
+    }
+
+    const lines = text.split('\n');
+    let titleSet = false;
+    let subtitleSet = false;
+    for (let raw of lines) {
+      const line = raw.trim();
+      if (!titleSet && line.startsWith('# ')) { addTitle(line.slice(2)); titleSet = true; continue; }
+      if (titleSet && !subtitleSet && line) { addSubtitle(line); subtitleSet = true; continue; }
+      if (!line) continue;
+      if (line.startsWith('## ')) { addHeading(line.slice(3)); continue; }
+      if (line.startsWith('- ') || line.startsWith('* ')) { addBullet(line.slice(2)); continue; }
+      addParagraph(line);
+    }
+
+    doc.save('diagnostico-de-posicionamento.pdf');
   }
 
   async function generateFinalMap() {
-    document.getElementById('formView').style.display = 'none';
+    document.getElementById('chatView').style.display = 'none';
+    document.getElementById('prepBlock').style.display = 'none';
     document.getElementById('loadingView').style.display = 'block';
 
     let msgIdx = 0;
@@ -782,76 +531,39 @@ Regras:
     }, 2200);
 
     try {
-      const prompt = `${ROCHOLAB_VOICE}
-
-Você conduziu uma pessoa por um "Diagnóstico de Posicionamento", bloco a bloco. O texto abaixo NÃO é resposta bruta, já é material lapidado numa conversa com você — a pessoa já refinou e aceitou cada trecho. Sua tarefa agora é montar o diagnóstico final juntando esse material com coerência, sem simplesmente colar um bloco embaixo do outro: aponte a linha que conecta tudo, a partir da sua leitura crítica (Rocholab), não de uma concordância genérica.
-
-BLOCO 1 - DIFERENCIAL (lapidado):
-"""${finalText.bandeira || '(não respondeu)'}"""
-
-BLOCO 2 - TEMAS (lapidado):
-"""${finalText.subtemas || '(não respondeu)'}"""
-
-BLOCO 3 - VOZ (lapidado):
-"""${finalText.tom || '(não respondeu)'}"""
-
-BLOCO 4 - PÚBLICO (lapidado):
-"""${finalText.publico || '(não respondeu)'}"""
-
-Gere o diagnóstico final no seguinte formato exato, em português do Brasil, sem markdown de código (só texto simples com ## para títulos de seção e - para listas):
-
-## Seu diferencial
-(1-2 frases afiadas e citáveis, usando o material lapidado)
-
-## Seus temas
-(lista com 2-5 itens)
-
-## Sua voz
-(2-4 frases)
-
-## Seu público
-(2-3 frases)
-
-## O que aproxima
-(lista com 2-4 itens)
-
-## O que afasta
-(lista com 2-4 itens)
-
-Regras: nada de clichê de guru, nada de emoji, tom claro e direto, frases curtas. Mostre a costura entre os blocos — como o diferencial explica os temas, o tom e o público — em vez de tratá-los como peças soltas. Se algum bloco reproduzir uma crença de mercado limitante (esforço como preço do sucesso, fórmula única, postar todo dia), aponte isso na seção correspondente em vez de deixar passar.`;
-
-      const result = await callSample(prompt);
+      const reportMessages = transcript.concat([
+        { role: 'user', content: 'Já respondi bastante. Pode gerar meu diagnóstico agora, no formato combinado.' }
+      ]);
+      const text = await callDiagnostico(REPORT_SYSTEM_PROMPT, reportMessages, 1400);
       clearInterval(msgInterval);
+      lastReportText = text;
+      downloadPdf(text);
       document.getElementById('loadingView').style.display = 'none';
-      renderMap(result.text);
       document.getElementById('resultView').classList.add('active');
-
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       clearInterval(msgInterval);
+      console.error('erro ao gerar mapa final:', err);
       document.getElementById('loadingView').style.display = 'none';
-      document.getElementById('formView').style.display = 'block';
-      const lastStep = steps[steps.length - 1];
-      lastStep.querySelector('.final-error-box').classList.add('active');
-      console.error('Erro ao gerar mapa:', err);
+      document.getElementById('chatView').style.display = 'block';
+      document.getElementById('chatErrorBox').classList.add('active');
     }
   }
 
   document.getElementById('restartBtn').addEventListener('click', () => {
-    document.getElementById('interviewForm').reset();
-    document.querySelectorAll('.adjust-textarea').forEach(ta => { ta.value = ''; });
-    document.querySelectorAll('textarea').forEach(ta => autosize(ta));
-    Object.keys(finalText).forEach(k => delete finalText[k]);
-    Object.keys(adjustRounds).forEach(k => delete adjustRounds[k]);
-    document.querySelectorAll('.error-box').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll('.adjust-box').forEach(b => b.style.display = 'none');
-    current = 0;
-    document.getElementById('journey').style.display = 'none';
-    document.getElementById('prepBlock').classList.add('active');
-    showStep();
+    transcript = [];
+    userTurns = 0;
+    lastReportText = '';
+    document.getElementById('chatMessages').innerHTML = '';
+    document.getElementById('chatInput').value = '';
+    document.getElementById('chatErrorBox').classList.remove('active');
     document.getElementById('resultView').classList.remove('active');
-    document.getElementById('formView').style.display = 'block';
-    window.scrollTo({top:0, behavior:'smooth'});
+    document.getElementById('finishBtn').disabled = true;
+    document.getElementById('chatView').style.display = 'none';
+    document.getElementById('prepBlock').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+
 })();
 </script>
 </body>
