@@ -1,13 +1,16 @@
 import { resolvePrices } from '../lib/services.js';
 
-const MAX_PROMPT_LENGTH = 8000;
+const MAX_TOTAL_LENGTH = 20000;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   // ação extra encaixada aqui pra não estourar o limite de 12 funções
   // serverless do plano hobby da vercel (mesma solução do molda-auth.js).
-  // gera as leituras do diagnóstico de posicionamento (página /diagnostico).
+  // conduz a conversa do diagnóstico de posicionamento (página /diagnostico).
+  // recebe { action: "diagnostico", system, messages, max_tokens } — uma
+  // conversa de verdade (histórico crescente), não um prompt único, porque
+  // a entrevista é adaptativa: cada pergunta depende do que já foi dito.
   if (req.method === 'POST' && req.body && req.body.action === 'diagnostico') {
     const API_KEY = process.env.ANTHROPIC_API_KEY;
     if (!API_KEY) {
@@ -15,11 +18,26 @@ export default async function handler(req, res) {
       return;
     }
 
-    const prompt = (req.body.prompt || '').toString();
-    if (!prompt || prompt.length > MAX_PROMPT_LENGTH) {
-      res.status(400).json({ error: 'prompt inválido ou muito longo' });
+    const system = (req.body.system || '').toString();
+    const messages = Array.isArray(req.body.messages) ? req.body.messages : null;
+    const maxTokens = Math.min(Number(req.body.max_tokens) || 400, 1500);
+
+    if (!messages || !messages.length) {
+      res.status(400).json({ error: 'conversa inválida' });
       return;
     }
+
+    const totalLength = system.length + messages.reduce(function (sum, m) {
+      return sum + String(m.content || '').length;
+    }, 0);
+    if (totalLength > MAX_TOTAL_LENGTH) {
+      res.status(400).json({ error: 'conversa muito longa' });
+      return;
+    }
+    // sanitiza: só role/content, só user/assistant, nada além disso passa pra api.
+    const cleanMessages = messages
+      .filter(function (m) { return m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'; })
+      .map(function (m) { return { role: m.role, content: m.content.slice(0, 4000) }; });
 
     try {
       const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -31,8 +49,9 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: 700,
-          messages: [{ role: 'user', content: prompt }]
+          max_tokens: maxTokens,
+          system: system || undefined,
+          messages: cleanMessages
         })
       });
 
