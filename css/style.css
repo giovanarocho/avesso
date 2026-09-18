@@ -714,6 +714,26 @@ section.alt{ background: var(--bg-alt); }
 }
 .whatsapp-float svg{ width: 27px; height: 27px; fill: #f7f3ec; }
 
+/* ---------- recado acima do botão do whatsapp ---------- */
+.whatsapp-note{
+  position: fixed;
+  right: 22px;
+  bottom: 90px;
+  z-index: 100;
+  max-width: 200px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  box-shadow: 0 6px 18px rgba(32,30,25,.12);
+  text-align: right;
+}
+@media (max-width: 480px){
+  .whatsapp-note{ max-width: 160px; font-size: 12px; right: 16px; bottom: 82px; padding: 8px 12px; }
+}
+
 @media (max-width: 680px){
   .whatsapp-float{ right: 16px; bottom: 16px; width: 52px; height: 52px; }
   .whatsapp-float svg{ width: 24px; height: 24px; }
@@ -726,7 +746,7 @@ footer{
 }
 .footer-inner{
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 18px;

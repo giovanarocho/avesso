@@ -218,6 +218,11 @@
         label: "Outros",
         intro: cfg.outros_intro || (fallback ? fallback.outros.intro : ""),
         images: projRows ? buildProjetos(projRows, "outros") : (fallback ? fallback.outros.images : [])
+      },
+      audiovisual: {
+        label: "Audiovisual",
+        intro: cfg.audiovisual_intro || (fallback ? fallback.audiovisual.intro : ""),
+        images: projRows ? buildProjetos(projRows, "audiovisual") : (fallback ? fallback.audiovisual.images : [])
       }
     };
 
@@ -229,6 +234,7 @@
       if (!PORTFOLIO.sites.items.length) PORTFOLIO.sites.items = fallback.sites.items;
       if (!PORTFOLIO.social.images.length) PORTFOLIO.social.images = fallback.social.images;
       if (!PORTFOLIO.outros.images.length) PORTFOLIO.outros.images = fallback.outros.images;
+      if (!PORTFOLIO.audiovisual.images.length) PORTFOLIO.audiovisual.images = fallback.audiovisual.images;
     }
 
     let TEASER_COVERS = capasRows ? buildCapas(capasRows) : fallbackCovers;

@@ -7,7 +7,8 @@
     identidade: document.querySelector('[data-panel="identidade"]'),
     sites: document.querySelector('[data-panel="sites"]'),
     social: document.querySelector('[data-panel="social"]'),
-    outros: document.querySelector('[data-panel="outros"]')
+    outros: document.querySelector('[data-panel="outros"]'),
+    audiovisual: document.querySelector('[data-panel="audiovisual"]')
   };
   if (!panels.identidade || typeof window.loadCatalog !== 'function') return;
 
@@ -163,6 +164,7 @@
     `;
   }
   renderFlat('social');
+  renderFlat('audiovisual');
 
   // ---------- outros: imagem grande, uma embaixo da outra, sem proporção fixa ----------
   const outros = PORTFOLIO.outros;

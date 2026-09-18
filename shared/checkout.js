@@ -258,7 +258,7 @@
       attempts++;
       if (attempts > maxAttempts) {
         clearInterval(pollTimer);
-        document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a avesso.';
+        document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a rocho lab.';
         return;
       }
       fetch('/api/payment?action=status&payment_id=' + encodeURIComponent(paymentId))

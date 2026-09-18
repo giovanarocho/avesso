@@ -1,4 +1,4 @@
-// gate de acesso compartilhado por qualquer ferramenta da avesso.
+// gate de acesso compartilhado por qualquer ferramenta da rocho lab.
 //
 // pra usar numa página nova: coloca isso logo antes do fechamento do
 // <body>, com o slug do produto (o mesmo que está em lib/products.js):
@@ -16,12 +16,12 @@
 
   var overlay = document.createElement('div');
   overlay.id = 'avesso-gate-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#3D2A1E;color:#F4ECDD;' +
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#201E19;color:#F7F3EC;' +
     'display:flex;align-items:center;justify-content:center;padding:24px;' +
-    'font-family:Georgia,serif;text-align:center;';
+    'font-family:"Fraunces",Georgia,serif;text-align:center;';
   overlay.innerHTML =
     '<div style="max-width:380px;width:100%;">' +
-    '<p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin:0 0 14px;">estúdio avesso</p>' +
+    '<p style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin:0 0 14px;">rocho lab</p>' +
     '<p id="avesso-gate-msg" style="font-size:15px;line-height:1.6;margin:0 0 20px;opacity:.9;">verificando seu acesso…</p>' +
     '<div id="avesso-gate-actions"></div>' +
     '</div>';
@@ -47,9 +47,9 @@
   function showBlocked(nome, vendaPath) {
     msg.textContent = 'sua conta ainda não tem acesso a ' + (nome || 'essa ferramenta') + '.';
     actions.innerHTML =
-      '<a href="' + vendaPath + '" style="background:#E8CE9A;color:#3D2A1E;text-decoration:none;font-weight:600;' +
+      '<a href="' + vendaPath + '" style="background:#333F2D;color:#F7F3EC;text-decoration:none;font-weight:600;' +
       'padding:14px 26px;border-radius:999px;display:inline-block;margin-bottom:14px;">saiba mais e comprar</a>' +
-      '<p style="font-size:12.5px;margin:0;"><a id="avesso-gate-trocar" style="color:#E8CE9A;cursor:pointer;">entrar com outra conta</a></p>';
+      '<p style="font-size:12.5px;margin:0;"><a id="avesso-gate-trocar" style="color:#8FA382;cursor:pointer;">entrar com outra conta</a></p>';
     overlay.querySelector('#avesso-gate-trocar').addEventListener('click', function () {
       try { localStorage.removeItem(KEY); } catch (e) {}
       goToConta();

@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>minha conta — estúdio avesso</title>
+<title>minha conta — rocho lab</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{ --sand:#F3EADA; --cream:#E8CE9A; --coffee:#3D2A1E; }
+  :root{ --sand:#f7f3ec; --cream:#eee7d9; --coffee:#201e19; --accent:#333f2d; --accent-soft:#4c5a44; }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
-    font-family:'Work Sans',sans-serif;font-weight:400;line-height:1.6;
+    font-family:'Inter',sans-serif;font-weight:400;line-height:1.6;
     -webkit-font-smoothing:antialiased;background:var(--sand);color:var(--coffee);
     min-height:100vh;
   }
@@ -27,28 +27,28 @@
   .brand-tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.6;}
 
   .btn{
-    display:inline-block;font-family:'Work Sans',sans-serif;font-size:14px;font-weight:500;
+    display:inline-block;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
     letter-spacing:0.02em;padding:14px 28px;border-radius:999px;text-decoration:none;
     border:none;cursor:pointer;transition:opacity .2s ease, transform .2s ease;
     width:100%;text-align:center;box-sizing:border-box;
   }
   .btn:hover{opacity:.92;}
   .btn:disabled{opacity:.5;cursor:default;}
-  .btn-gold{background:var(--cream);color:var(--coffee);}
+  .btn-gold{background:var(--accent);color:var(--sand);}
   .btn-primary{background:var(--coffee);color:var(--sand);}
-  .btn-outline{background:none;color:var(--coffee);border:1px solid rgba(61,42,30,.35);}
+  .btn-outline{background:none;color:var(--coffee);border:1px solid rgba(32,30,25,.35);}
 
   /* ---------- login / criar senha / redefinir ---------- */
   #auth-view{padding:24px 0 80px;}
   .auth-card{
-    max-width:400px;margin:24px auto 0;background:#fff;border:1px solid rgba(61,42,30,.14);
+    max-width:400px;margin:24px auto 0;background:#fff;border:1px solid rgba(32,30,25,.14);
     border-radius:20px;padding:32px 28px;text-align:center;
   }
   .auth-eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin-bottom:14px;}
   .auth-lede{font-size:14px;margin-bottom:22px;opacity:.85;line-height:1.55;}
   .auth-card input{
     width:100%;box-sizing:border-box;padding:13px 15px;border-radius:10px;
-    border:1px solid rgba(61,42,30,.22);font-size:14.5px;margin-bottom:12px;font-family:inherit;color:var(--coffee);
+    border:1px solid rgba(32,30,25,.22);font-size:14.5px;margin-bottom:12px;font-family:inherit;color:var(--coffee);
   }
   .auth-msg{font-size:12.5px;margin-top:14px;min-height:16px;opacity:.85;}
   .auth-switch{font-size:12.5px;margin-top:18px;opacity:.8;}
@@ -68,11 +68,11 @@
   .prod-grid{display:grid;grid-template-columns:1fr;gap:18px;}
   @media(min-width:600px){.prod-grid{grid-template-columns:1fr 1fr;}}
   .prod-card{
-    border:1px solid rgba(61,42,30,.14);border-radius:16px;padding:24px;
-    background:rgba(61,42,30,.02);display:flex;flex-direction:column;
+    border:1px solid rgba(32,30,25,.14);border-radius:16px;padding:24px;
+    background:rgba(32,30,25,.02);display:flex;flex-direction:column;
   }
   .prod-card.owned{background:#fff;}
-  .prod-card .tag{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a6a1f;font-weight:600;margin-bottom:8px;}
+  .prod-card .tag{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent-soft);font-weight:600;margin-bottom:8px;}
   .prod-card h3{font-size:18px;margin-bottom:6px;}
   .prod-card p{font-size:13.5px;opacity:.78;margin-bottom:16px;}
   .prod-card .prod-price{font-family:'Fraunces',serif;font-size:20px;margin-bottom:14px;}
@@ -81,7 +81,7 @@
 
   /* ---------- checkout modal (compra pelas ferramentas ainda não compradas) ---------- */
   .checkout-overlay{
-    display:none;position:fixed;inset:0;background:rgba(20,13,9,.72);
+    display:none;position:fixed;inset:0;background:rgba(20,19,16,.72);
     z-index:999;align-items:center;justify-content:center;padding:20px;
   }
   .checkout-overlay.open{display:flex;}
@@ -93,26 +93,26 @@
   .checkout-panel h3{font-family:'Fraunces',serif;font-size:19px;font-weight:400;margin-bottom:8px;}
   .checkout-panel .cp-sub{font-size:13px;opacity:.75;margin-bottom:22px;}
   .checkout-panel input[type="email"]{
-    width:100%;padding:13px 15px;border:1px solid rgba(61,42,30,.25);
+    width:100%;padding:13px 15px;border:1px solid rgba(32,30,25,.25);
     border-radius:10px;font-size:14.5px;margin-bottom:14px;background:#fff;color:var(--coffee);font-family:inherit;
   }
   .qr-box{margin:16px 0;}
   .qr-box img{width:190px;height:190px;margin:0 auto 12px;display:block;border-radius:12px;}
   .pix-code{
     font-family:monospace;font-size:11px;word-break:break-all;
-    background:#fff;border:1px solid rgba(61,42,30,.15);border-radius:10px;
+    background:#fff;border:1px solid rgba(32,30,25,.15);border-radius:10px;
     padding:12px;max-height:64px;overflow-y:auto;margin-bottom:12px;text-align:left;
   }
   .cp-close{display:inline-block;margin-top:16px;font-size:12px;text-decoration:underline;opacity:.7;background:none;border:none;cursor:pointer;color:var(--coffee);}
   .cp-method-tabs{display:flex;gap:8px;margin-bottom:14px;}
   .cp-method-btn{
-    flex:1;padding:10px;border-radius:10px;border:1px solid rgba(61,42,30,.2);
-    background:transparent;color:var(--coffee);font-family:'Work Sans',sans-serif;
+    flex:1;padding:10px;border-radius:10px;border:1px solid rgba(32,30,25,.2);
+    background:transparent;color:var(--coffee);font-family:'Inter',sans-serif;
     font-size:13.5px;font-weight:500;cursor:pointer;transition:background .15s ease,color .15s ease;
   }
   .cp-method-btn.active{background:var(--coffee);color:var(--sand);border-color:var(--coffee);}
   #cp-card-brick{margin-top:4px;min-height:40px;text-align:left;}
-  .cp-spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(61,42,30,.2);border-top-color:var(--cream);margin:8px auto;animation:spin .8s linear infinite;}
+  .cp-spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(32,30,25,.2);border-top-color:var(--accent);margin:8px auto;animation:spin .8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .cp-msg{font-size:12.5px;margin-top:12px;opacity:.85;min-height:16px;}
   .cp-success{font-size:15px;margin-bottom:8px;}
@@ -123,15 +123,15 @@
   <div class="top-nav">
     <div class="wrap">
       <a class="back" href="/">← voltar pro site</a>
-      <span class="brand-tag">estúdio avesso</span>
+      <span class="brand-tag">rocho lab</span>
     </div>
   </div>
 
   <!-- ---------- login / criar senha / esqueci / redefinir ---------- -->
   <div id="auth-view">
     <div class="wrap">
-      <h1 class="page-title">sua conta avesso</h1>
-      <p class="page-sub">um e-mail e uma senha só — servem pra qualquer ferramenta que você comprar da avesso.</p>
+      <h1 class="page-title">sua conta rocho lab</h1>
+      <p class="page-sub">um e-mail e uma senha só — servem pra qualquer ferramenta que você comprar da rocho lab.</p>
 
       <div class="auth-card">
         <div class="auth-step active" id="step-login">
@@ -146,7 +146,7 @@
 
         <div class="auth-step" id="step-setup">
           <p class="auth-eyebrow">criar sua senha</p>
-          <p class="auth-lede">pagamento confirmado! escolha uma senha — ela vai servir pra qualquer ferramenta que você comprar da avesso depois.</p>
+          <p class="auth-lede">pagamento confirmado! escolha uma senha — ela vai servir pra qualquer ferramenta que você comprar da rocho lab depois.</p>
           <input id="setup-email" type="email" placeholder="seu e-mail" autocomplete="username">
           <input id="setup-password" type="password" placeholder="nova senha (mín. 8 caracteres)" autocomplete="new-password">
           <input id="setup-password2" type="password" placeholder="confirmar senha" autocomplete="new-password">
@@ -584,7 +584,7 @@
       attempts++;
       if(attempts > maxAttempts){
         clearInterval(pollTimer);
-        document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a avesso.';
+        document.getElementById('cp-status-msg').textContent = 'tempo esgotado. se já pagou, feche e abra de novo, ou fale com a rocho lab.';
         return;
       }
       fetch('/api/payment?action=status&payment_id=' + encodeURIComponent(paymentId))

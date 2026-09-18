@@ -136,6 +136,12 @@ const FALLBACK_PORTFOLIO = {
       "/assets/portfolio2/outros/0.webp",
       "/assets/portfolio2/outros/1.webp"
     ]
+  },
+
+  audiovisual: {
+    label: "Audiovisual",
+    intro: "Vídeo também é identidade — direção de arte, ritmo e som seguem a mesma linha visual do resto da marca. Alguns materiais audiovisuais que já saíram do laboratório:",
+    images: []
   }
 
 };

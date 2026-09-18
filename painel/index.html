@@ -2,22 +2,24 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>painel — estúdio avesso</title>
+<title>painel — rocho lab</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,450&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --sand:#F3EADA;
-    --cream:#E8CE9A;
-    --coffee:#3D2A1E;
+    --sand:#f7f3ec;
+    --cream:#eee7d9;
+    --coffee:#201e19;
+    --accent:#333f2d;
+    --accent-soft:#4c5a44;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;background:var(--sand);color:var(--coffee);
-    font-family:'Work Sans',sans-serif;
+    font-family:'Inter',sans-serif;
   }
   h1,h2{font-family:'Fraunces',serif;font-weight:400;}
   .wrap{max-width:880px;margin:0 auto;padding:48px 24px 80px;}
@@ -31,12 +33,12 @@
   #gate p.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin:0 0 14px;}
   #gate input{
     width:100%;box-sizing:border-box;padding:14px 16px;border-radius:10px;
-    border:1px solid rgba(244,236,221,.3);background:rgba(244,236,221,.08);
+    border:1px solid rgba(247,243,236,.3);background:rgba(247,243,236,.08);
     color:var(--sand);font-size:15px;margin-bottom:12px;font-family:inherit;
   }
   #gate button{
     width:100%;padding:14px 16px;border-radius:999px;border:none;
-    background:var(--cream);color:var(--coffee);font-weight:600;font-size:15px;
+    background:var(--accent);color:var(--sand);font-weight:600;font-size:15px;
     cursor:pointer;font-family:inherit;
   }
   #gate-msg{font-size:12.5px;margin-top:14px;min-height:16px;opacity:.85;}
@@ -54,14 +56,14 @@
   section h2{font-size:19px;margin-bottom:18px;}
 
   .card{
-    background:#fff;border:1px solid rgba(61,42,30,.14);border-radius:16px;padding:24px;
+    background:#fff;border:1px solid rgba(32,30,25,.14);border-radius:16px;padding:24px;
   }
   .field-row{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:18px;}
   @media(min-width:640px){.field-row{grid-template-columns:1fr 1fr;}}
   .field label{display:block;font-size:12.5px;opacity:.7;margin-bottom:6px;}
   .field input, .field textarea{
     width:100%;box-sizing:border-box;padding:11px 13px;border-radius:8px;
-    border:1px solid rgba(61,42,30,.2);font-size:14.5px;font-family:inherit;color:var(--coffee);
+    border:1px solid rgba(32,30,25,.2);font-size:14.5px;font-family:inherit;color:var(--coffee);
   }
   .field textarea{min-height:60px;resize:vertical;}
   .save-btn{
@@ -76,14 +78,14 @@
     text-align:left;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
     opacity:.6;padding:0 10px 10px;font-weight:500;
   }
-  tbody td{padding:10px;border-top:1px solid rgba(61,42,30,.1);vertical-align:top;}
-  tbody tr:hover{background:rgba(61,42,30,.03);}
+  tbody td{padding:10px;border-top:1px solid rgba(32,30,25,.1);vertical-align:top;}
+  tbody tr:hover{background:rgba(32,30,25,.03);}
   .tag{
     display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;
-    background:rgba(61,42,30,.08);
+    background:rgba(32,30,25,.08);
   }
   .tag.ok{background:rgba(76,140,90,.15);color:#2f6b3f;}
-  .tag.pending{background:rgba(150,120,40,.15);color:#8a6a1f;}
+  .tag.pending{background:rgba(76,90,68,.15);color:var(--accent-soft);}
   .empty-msg, .error-msg{font-size:14px;opacity:.75;padding:20px 0;}
   .error-msg{color:#a33;}
   .table-scroll{overflow-x:auto;}
@@ -93,7 +95,7 @@
 
   <div id="gate">
     <div class="box">
-      <p class="eyebrow">painel avesso</p>
+      <p class="eyebrow">painel rocho lab</p>
       <input id="gate-password" type="password" placeholder="senha" autocomplete="off">
       <button id="gate-btn" type="button">entrar</button>
       <p id="gate-msg"></p>
@@ -103,7 +105,7 @@
   <div id="app">
     <div class="wrap">
       <header class="top">
-        <span class="brand">estúdio avesso</span>
+        <span class="brand">rocho lab</span>
         <button id="logout-btn" type="button">sair</button>
       </header>
       <h1>painel</h1>
