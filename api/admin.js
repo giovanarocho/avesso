@@ -7,7 +7,10 @@ import {
   dbSetPrecoProduto,
   dbSetTutoriais,
   issueAdminToken,
-  verifyAdminToken
+  verifyAdminToken,
+  listProducts,
+  dbUpsertProduto,
+  dbDeleteProduto
 } from '../lib/services.js';
 
 // login, lista de vendas e edição de preços do painel, juntos num arquivo
@@ -119,6 +122,107 @@ async function actionUpdateConfig(req, res, body) {
   res.status(200).json({ ok: true });
 }
 
+async function actionListProducts(req, res) {
+  if (!verifyAdminToken(getToken(req))) {
+    res.status(401).json({ error: 'não autorizado' });
+    return;
+  }
+  const produtos = await listProducts();
+  res.status(200).json({ produtos: produtos });
+}
+
+// cria ou atualiza uma ferramenta do catálogo (editor completo do painel).
+// pra guia/molda, isso só sobrescreve o conteúdo (nome, tagline, hero,
+// confiança, funcionalidades, passos, faq, depoimentos) — os campos
+// sensíveis a pagamento continuam fixos em lib/products.js e são
+// ignorados aqui mesmo se vierem no body. uma ferramenta nova (slug que
+// não é guia/molda) grava tudo, inclusive mp_description/app_path/venda_path.
+async function actionSaveProduct(req, res, body) {
+  if (!verifyAdminToken(getToken(req))) {
+    res.status(401).json({ error: 'não autorizado' });
+    return;
+  }
+  if (!dbConfigured()) {
+    res.status(500).json({ error: 'banco de dados (supabase) não configurado no servidor' });
+    return;
+  }
+
+  const slug = String(body.slug || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  const nome = String(body.nome || '').trim();
+  if (!slug || !nome) {
+    res.status(400).json({ error: 'slug e nome são obrigatórios' });
+    return;
+  }
+
+  const preco = body.preco !== undefined && body.preco !== '' ? parseFloat(body.preco) : null;
+  if (preco !== null && (isNaN(preco) || preco < 0)) {
+    res.status(400).json({ error: 'preço inválido' });
+    return;
+  }
+
+  const isFixo = slug === 'guia' || slug === 'molda';
+
+  const record = {
+    slug: slug,
+    nome: nome,
+    tagline: String(body.tagline || ''),
+    ativo: body.ativo !== false,
+    hero_titulo: String(body.heroTitulo || ''),
+    hero_subtitulo: String(body.heroSubtitulo || ''),
+    hero_positioning: String(body.heroPositioning || ''),
+    trust_items: Array.isArray(body.trustItems) ? body.trustItems : [],
+    features: Array.isArray(body.features) ? body.features : [],
+    passos: Array.isArray(body.passos) ? body.passos : [],
+    faq: Array.isArray(body.faq) ? body.faq : [],
+    depoimentos: Array.isArray(body.depoimentos) ? body.depoimentos : []
+  };
+
+  // ferramenta nova (fora do catálogo fixo): grava também preço e os
+  // campos de rota/pagamento, direto do formulário do painel.
+  if (!isFixo) {
+    record.preco = preco;
+    record.mp_description = String(body.mpDescription || (nome + ' - estúdio avesso'));
+    record.app_path = String(body.appPath || '');
+    record.venda_path = String(body.vendaPath || '');
+  }
+
+  const ok = await dbUpsertProduto(record);
+  if (!ok) {
+    res.status(502).json({ error: 'falha ao salvar ferramenta no banco' });
+    return;
+  }
+
+  // preço de guia/molda mora em `config` (colunas próprias), não em
+  // `produtos` — grava pelo mesmo caminho já usado na tela de preços.
+  if (isFixo && preco !== null) {
+    await dbSetPrecoProduto(slug, preco);
+  }
+
+  res.status(200).json({ ok: true, slug: slug });
+}
+
+async function actionDeleteProduct(req, res, body) {
+  if (!verifyAdminToken(getToken(req))) {
+    res.status(401).json({ error: 'não autorizado' });
+    return;
+  }
+  const slug = String((req.query.slug || body.slug || '')).trim();
+  if (!slug) {
+    res.status(400).json({ error: 'slug obrigatório' });
+    return;
+  }
+  if (slug === 'guia' || slug === 'molda') {
+    res.status(400).json({ error: 'guia e molda não podem ser removidas — desative em vez de excluir' });
+    return;
+  }
+  const ok = await dbDeleteProduto(slug);
+  if (!ok) {
+    res.status(502).json({ error: 'falha ao remover ferramenta no banco' });
+    return;
+  }
+  res.status(200).json({ ok: true });
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -132,6 +236,16 @@ export default async function handler(req, res) {
   try {
     if (req.method === 'GET' && req.query.action === 'sales') {
       await actionSales(req, res);
+      return;
+    }
+
+    if (req.method === 'GET' && req.query.action === 'list-products') {
+      await actionListProducts(req, res);
+      return;
+    }
+
+    if (req.method === 'DELETE' || (req.method === 'GET' && req.query.action === 'delete-product')) {
+      await actionDeleteProduct(req, res, {});
       return;
     }
 
@@ -149,6 +263,8 @@ export default async function handler(req, res) {
     const action = req.query.action || body.action;
     if (action === 'login') return actionLogin(req, res, body);
     if (action === 'update-config') return actionUpdateConfig(req, res, body);
+    if (action === 'save-product') return actionSaveProduct(req, res, body);
+    if (action === 'delete-product') return actionDeleteProduct(req, res, body);
 
     res.status(400).json({ error: 'ação inválida' });
   } catch (err) {

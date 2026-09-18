@@ -89,6 +89,39 @@
   .empty-msg, .error-msg{font-size:14px;opacity:.75;padding:20px 0;}
   .error-msg{color:#a33;}
   .table-scroll{overflow-x:auto;}
+
+  /* ---------- ferramentas: lista + editor ---------- */
+  .ferramenta-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 16px;border:1px solid rgba(32,30,25,.14);border-radius:12px;
+    background:#fff;margin-bottom:10px;
+  }
+  .ferramenta-row .info{display:flex;flex-direction:column;gap:2px;}
+  .ferramenta-row .info strong{font-size:14.5px;}
+  .ferramenta-row .info span{font-size:12.5px;opacity:.65;}
+  .ferramenta-row .actions{display:flex;gap:10px;align-items:center;}
+  .ferramenta-row button{
+    background:none;border:none;text-decoration:underline;font-size:13px;
+    color:var(--coffee);opacity:.75;cursor:pointer;font-family:inherit;
+  }
+  .list-editor{margin-top:26px;}
+  .list-editor > p.hint{font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.6;margin:0 0 10px;}
+  .list-editor .item{
+    border:1px solid rgba(32,30,25,.14);border-radius:10px;padding:14px;margin-bottom:10px;position:relative;
+  }
+  .list-editor .item input, .list-editor .item textarea{
+    width:100%;box-sizing:border-box;padding:9px 11px;border-radius:7px;
+    border:1px solid rgba(32,30,25,.2);font-size:14px;font-family:inherit;color:var(--coffee);margin-bottom:8px;
+  }
+  .list-editor .item textarea{min-height:48px;resize:vertical;}
+  .list-editor .item .remove-item{
+    background:none;border:none;font-size:12px;text-decoration:underline;color:#a33;opacity:.8;
+    cursor:pointer;font-family:inherit;padding:0;
+  }
+  .list-editor .add-item{
+    background:none;border:1px dashed rgba(32,30,25,.3);border-radius:8px;padding:9px 14px;
+    font-size:13px;color:var(--coffee);opacity:.8;cursor:pointer;font-family:inherit;width:100%;
+  }
 </style>
 </head>
 <body>
@@ -139,7 +172,6 @@
               <textarea id="f-vagas"></textarea>
             </div>
           </div>
-          <div class="field-row" id="f-outras-ferramentas"></div>
           <button class="save-btn" id="save-precos-btn" type="button">salvar preços</button>
           <p id="precos-msg"></p>
         </div>
@@ -156,6 +188,89 @@
           <div id="f-tutoriais"></div>
           <button class="save-btn" id="save-tutoriais-btn" type="button">salvar links de tutorial</button>
           <p id="tutoriais-msg"></p>
+        </div>
+      </section>
+
+      <section>
+        <h2 style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span>ferramentas</span>
+          <button class="save-btn" id="nova-ferramenta-btn" type="button" style="padding:8px 18px;font-size:13px;">+ nova ferramenta</button>
+        </h2>
+        <div id="ferramentas-lista"><p class="empty-msg">carregando…</p></div>
+
+        <div id="ferramenta-editor" style="display:none;margin-top:22px;">
+          <div class="card">
+            <h3 id="editor-titulo" style="margin:0 0 18px;font-family:'Fraunces',serif;font-weight:400;font-size:17px;"></h3>
+
+            <p class="hint" style="font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.6;margin:0 0 10px;">informações básicas</p>
+            <div class="field-row">
+              <div class="field">
+                <label for="ed-nome">nome</label>
+                <input id="ed-nome" type="text">
+              </div>
+              <div class="field">
+                <label for="ed-slug">slug (identificador único, sem espaços)</label>
+                <input id="ed-slug" type="text" placeholder="ex: minha-ferramenta">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="ed-tagline">tagline (frase curta)</label>
+                <input id="ed-tagline" type="text">
+              </div>
+              <div class="field">
+                <label for="ed-preco">preço (R$)</label>
+                <input id="ed-preco" type="number" step="0.01" min="0">
+              </div>
+            </div>
+            <div class="field-row" id="ed-fixo-fields">
+              <div class="field">
+                <label for="ed-app-path">caminho do app (ex: /minha-ferramenta/app.html)</label>
+                <input id="ed-app-path" type="text">
+              </div>
+              <div class="field">
+                <label for="ed-venda-path">caminho da página de venda (ex: /minha-ferramenta)</label>
+                <input id="ed-venda-path" type="text">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field" style="display:flex;align-items:center;gap:10px;flex-direction:row;">
+                <input id="ed-ativo" type="checkbox" style="width:auto;">
+                <label for="ed-ativo" style="margin:0;">ativa (aparece na /conta e pode ser comprada)</label>
+              </div>
+            </div>
+
+            <p class="hint" style="font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.6;margin:26px 0 10px;">hero da página de venda</p>
+            <div class="field-row">
+              <div class="field">
+                <label for="ed-hero-titulo">título</label>
+                <input id="ed-hero-titulo" type="text">
+              </div>
+              <div class="field">
+                <label for="ed-hero-subtitulo">subtítulo</label>
+                <input id="ed-hero-subtitulo" type="text">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="ed-hero-positioning">texto de posicionamento (parágrafo)</label>
+                <textarea id="ed-hero-positioning"></textarea>
+              </div>
+            </div>
+
+            <div id="ed-lista-trust"></div>
+            <div id="ed-lista-features"></div>
+            <div id="ed-lista-passos"></div>
+            <div id="ed-lista-faq"></div>
+            <div id="ed-lista-depoimentos"></div>
+
+            <div style="display:flex;gap:12px;align-items:center;margin-top:28px;">
+              <button class="save-btn" id="salvar-ferramenta-btn" type="button">salvar ferramenta</button>
+              <button id="cancelar-ferramenta-btn" type="button" style="background:none;border:none;text-decoration:underline;font-size:13px;color:var(--coffee);opacity:.7;cursor:pointer;font-family:inherit;">cancelar</button>
+              <button id="excluir-ferramenta-btn" type="button" style="background:none;border:none;text-decoration:underline;font-size:13px;color:#a33;opacity:.8;cursor:pointer;font-family:inherit;margin-left:auto;display:none;">excluir ferramenta</button>
+            </div>
+            <p id="ferramenta-msg" style="font-size:13px;margin-top:14px;min-height:16px;"></p>
+          </div>
         </div>
       </section>
 
@@ -185,6 +300,7 @@
     app.style.display = 'block';
     loadPrecos();
     loadTutoriais();
+    loadFerramentas();
     loadVendas();
   }
   function showGate(msg){
@@ -246,11 +362,9 @@
   }
 
   // ---------- preços ----------
-  // "outrasFerramentas" guarda o slug de qualquer produto do catálogo além
-  // de guia/molda (que têm campo fixo) — assim, se uma ferramenta nova for
-  // adicionada no catálogo (lib/products.js), o campo pra editar o preço
-  // dela aparece aqui sozinho, sem precisar mexer neste arquivo.
-  var outrasFerramentas = [];
+  // guia e molda têm campo fixo aqui; o preço de qualquer ferramenta nova
+  // (criada pelo painel, seção "ferramentas") é editado junto com o resto
+  // do conteúdo dela, no editor completo — não aparece mais aqui.
 
   function loadPrecos(){
     fetch('/api/config').then(function(r){ return r.json(); }).then(function(cfg){
@@ -259,15 +373,6 @@
       document.getElementById('f-manutencao').value = cfg.manutencaoPrice;
       document.getElementById('f-molda').value = cfg.moldaPrice;
       document.getElementById('f-vagas').value = cfg.manutencaoVagas;
-
-      outrasFerramentas = Object.keys(cfg.precos || {}).filter(function(slug){
-        return slug !== 'guia' && slug !== 'molda';
-      });
-      var container = document.getElementById('f-outras-ferramentas');
-      container.innerHTML = outrasFerramentas.map(function(slug){
-        return '<div class="field"><label for="f-outra-' + slug + '">' + slug + ' (R$)</label>' +
-          '<input id="f-outra-' + slug + '" type="number" step="0.01" min="0" value="' + cfg.precos[slug] + '"></div>';
-      }).join('');
     }).catch(function(){});
   }
 
@@ -281,10 +386,6 @@
       guia: document.getElementById('f-guia').value,
       molda: document.getElementById('f-molda').value
     };
-    outrasFerramentas.forEach(function(slug){
-      var el = document.getElementById('f-outra-' + slug);
-      if(el) precos[slug] = el.value;
-    });
 
     authFetch('/api/admin?action=update-config', {
       method: 'POST',
@@ -369,6 +470,225 @@
       }).catch(function(e){
         btn.disabled = false;
         if(e.message !== 'unauthorized') msg.textContent = 'não consegui salvar. tenta de novo.';
+      });
+  });
+
+  // ---------- ferramentas (editor completo) ----------
+  var ferramentasCache = [];
+  var editorSlugAtual = null; // null = criando uma nova
+
+  // cada lista (confiança, funcionalidades, passo a passo, faq,
+  // depoimentos) usa o mesmo padrão de renderização: uma linha de campos
+  // por item, com "+ adicionar" no fim e "remover" em cada item.
+  var LIST_EDITORS = [
+    { key: 'trustItems',   containerId: 'ed-lista-trust',       titulo: 'confiança (chips curtos, ex: "garantia de 7 dias")',
+      fields: [{ name: 'texto', label: 'texto', tag: 'input' }],
+      empty: function(){ return { texto: '' }; } },
+    { key: 'features',     containerId: 'ed-lista-features',    titulo: 'funcionalidades',
+      fields: [{ name: 'titulo', label: 'título', tag: 'input' }, { name: 'texto', label: 'descrição', tag: 'textarea' }],
+      empty: function(){ return { titulo: '', texto: '' }; } },
+    { key: 'passos',       containerId: 'ed-lista-passos',      titulo: 'passo a passo',
+      fields: [{ name: 'titulo', label: 'título do passo', tag: 'input' }, { name: 'texto', label: 'descrição', tag: 'textarea' }],
+      empty: function(){ return { titulo: '', texto: '' }; } },
+    { key: 'faq',          containerId: 'ed-lista-faq',         titulo: 'perguntas frequentes',
+      fields: [{ name: 'pergunta', label: 'pergunta', tag: 'input' }, { name: 'resposta', label: 'resposta', tag: 'textarea' }],
+      empty: function(){ return { pergunta: '', resposta: '' }; } },
+    { key: 'depoimentos',  containerId: 'ed-lista-depoimentos', titulo: 'depoimentos',
+      fields: [{ name: 'nome', label: 'nome' , tag: 'input' }, { name: 'texto', label: 'depoimento', tag: 'textarea' }],
+      empty: function(){ return { nome: '', texto: '' }; } }
+  ];
+  var editorListState = {}; // key -> array de objetos, enquanto o editor está aberto
+
+  function renderListEditor(def){
+    var container = document.getElementById(def.containerId);
+    var items = editorListState[def.key] || [];
+    var html = '<div class="list-editor"><p class="hint">' + def.titulo + '</p>';
+    items.forEach(function(item, i){
+      html += '<div class="item" data-list="' + def.key + '" data-idx="' + i + '">';
+      def.fields.forEach(function(f){
+        var val = String(item[f.name] || '').replace(/"/g, '&quot;');
+        if(f.tag === 'textarea'){
+          html += '<textarea data-field="' + f.name + '" placeholder="' + f.label + '">' + val + '</textarea>';
+        } else {
+          html += '<input type="text" data-field="' + f.name + '" placeholder="' + f.label + '" value="' + val + '">';
+        }
+      });
+      html += '<button type="button" class="remove-item" data-list="' + def.key + '" data-idx="' + i + '">remover</button>';
+      html += '</div>';
+    });
+    html += '<button type="button" class="add-item" data-list="' + def.key + '">+ adicionar</button></div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('.item input, .item textarea').forEach(function(el){
+      el.addEventListener('input', function(){
+        var item = el.closest('.item');
+        var idx = parseInt(item.getAttribute('data-idx'), 10);
+        editorListState[def.key][idx][el.getAttribute('data-field')] = el.value;
+      });
+    });
+    container.querySelectorAll('.remove-item').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = parseInt(btn.getAttribute('data-idx'), 10);
+        editorListState[def.key].splice(idx, 1);
+        renderListEditor(def);
+      });
+    });
+    container.querySelector('.add-item').addEventListener('click', function(){
+      editorListState[def.key].push(def.empty());
+      renderListEditor(def);
+    });
+  }
+
+  function renderAllListEditors(){
+    LIST_EDITORS.forEach(renderListEditor);
+  }
+
+  function renderFerramentasLista(){
+    var area = document.getElementById('ferramentas-lista');
+    if(ferramentasCache.length === 0){
+      area.innerHTML = '<p class="empty-msg">nenhuma ferramenta cadastrada ainda.</p>';
+      return;
+    }
+    area.innerHTML = ferramentasCache.map(function(p){
+      var status = p.ativo === false ? '<span class="tag">rascunho</span>' : '<span class="tag ok">ativa</span>';
+      return '<div class="ferramenta-row">' +
+        '<div class="info"><strong>' + p.nome + '</strong>' +
+        '<span>' + p.slug + ' · ' + (p.preco != null ? fmtMoney(p.preco) : 'sem preço') + '</span></div>' +
+        '<div class="actions">' + status +
+        '<button type="button" class="editar-ferramenta-btn" data-slug="' + p.slug + '">editar</button></div>' +
+        '</div>';
+    }).join('');
+    area.querySelectorAll('.editar-ferramenta-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var slug = btn.getAttribute('data-slug');
+        var produto = ferramentasCache.find(function(p){ return p.slug === slug; });
+        if(produto) openEditor(produto);
+      });
+    });
+  }
+
+  function loadFerramentas(){
+    authFetch('/api/admin?action=list-products').then(function(r){ return r.json(); }).then(function(data){
+      ferramentasCache = data.produtos || [];
+      renderFerramentasLista();
+    }).catch(function(e){
+      if(e.message !== 'unauthorized'){
+        document.getElementById('ferramentas-lista').innerHTML = '<p class="error-msg">não consegui carregar as ferramentas agora.</p>';
+      }
+    });
+  }
+
+  function openEditor(produto){
+    editorSlugAtual = produto ? produto.slug : null;
+    var isFixo = editorSlugAtual === 'guia' || editorSlugAtual === 'molda';
+    document.getElementById('editor-titulo').textContent = produto ? ('editando: ' + produto.nome) : 'nova ferramenta';
+    document.getElementById('ed-nome').value = produto ? produto.nome : '';
+    document.getElementById('ed-slug').value = produto ? produto.slug : '';
+    document.getElementById('ed-slug').disabled = !!produto; // slug não muda depois de criado
+    document.getElementById('ed-tagline').value = produto ? produto.tagline : '';
+    document.getElementById('ed-preco').value = produto && produto.preco != null ? produto.preco : '';
+    document.getElementById('ed-app-path').value = produto ? (produto.appPath || '') : '';
+    document.getElementById('ed-venda-path').value = produto ? (produto.vendaPath || '') : '';
+    document.getElementById('ed-ativo').checked = !produto || produto.ativo !== false;
+    document.getElementById('ed-hero-titulo').value = produto ? (produto.heroTitulo || '') : '';
+    document.getElementById('ed-hero-subtitulo').value = produto ? (produto.heroSubtitulo || '') : '';
+    document.getElementById('ed-hero-positioning').value = produto ? (produto.heroPositioning || '') : '';
+
+    // guia e molda têm o caminho do app/venda fixo por segurança — não dá
+    // pra editar por aqui (evita redirecionar o pagamento delas sem querer).
+    document.getElementById('ed-fixo-fields').style.display = isFixo ? 'none' : '';
+    document.getElementById('excluir-ferramenta-btn').style.display = (produto && !isFixo) ? '' : 'none';
+
+    editorListState = {
+      trustItems: (produto && produto.trustItems ? produto.trustItems.map(function(t){ return typeof t === 'string' ? { texto: t } : t; }) : []),
+      features: produto && produto.features ? produto.features.slice() : [],
+      passos: produto && produto.passos ? produto.passos.slice() : [],
+      faq: produto && produto.faq ? produto.faq.slice() : [],
+      depoimentos: produto && produto.depoimentos ? produto.depoimentos.slice() : []
+    };
+    renderAllListEditors();
+
+    document.getElementById('ferramenta-msg').textContent = '';
+    document.getElementById('ferramenta-editor').style.display = 'block';
+    document.getElementById('ferramenta-editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('nova-ferramenta-btn').addEventListener('click', function(){ openEditor(null); });
+  document.getElementById('cancelar-ferramenta-btn').addEventListener('click', function(){
+    document.getElementById('ferramenta-editor').style.display = 'none';
+  });
+
+  document.getElementById('salvar-ferramenta-btn').addEventListener('click', function(){
+    var btn = this;
+    var msg = document.getElementById('ferramenta-msg');
+    var slug = document.getElementById('ed-slug').value.trim();
+    var nome = document.getElementById('ed-nome').value.trim();
+    if(!slug || !nome){
+      msg.textContent = 'preencha pelo menos nome e slug.';
+      return;
+    }
+
+    var body = {
+      slug: slug,
+      nome: nome,
+      tagline: document.getElementById('ed-tagline').value.trim(),
+      preco: document.getElementById('ed-preco').value,
+      appPath: document.getElementById('ed-app-path').value.trim(),
+      vendaPath: document.getElementById('ed-venda-path').value.trim(),
+      ativo: document.getElementById('ed-ativo').checked,
+      heroTitulo: document.getElementById('ed-hero-titulo').value.trim(),
+      heroSubtitulo: document.getElementById('ed-hero-subtitulo').value.trim(),
+      heroPositioning: document.getElementById('ed-hero-positioning').value.trim(),
+      trustItems: (editorListState.trustItems || []).map(function(i){ return i.texto; }).filter(Boolean),
+      features: (editorListState.features || []).filter(function(i){ return i.titulo || i.texto; }),
+      passos: (editorListState.passos || []).filter(function(i){ return i.titulo || i.texto; }),
+      faq: (editorListState.faq || []).filter(function(i){ return i.pergunta || i.resposta; }),
+      depoimentos: (editorListState.depoimentos || []).filter(function(i){ return i.nome || i.texto; })
+    };
+
+    btn.disabled = true;
+    msg.textContent = 'salvando…';
+    authFetch('/api/admin?action=save-product', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if(!res.ok){
+          msg.textContent = (res.data && res.data.error) || 'não consegui salvar. tenta de novo.';
+          return;
+        }
+        msg.textContent = 'salvo!';
+        loadFerramentas();
+        setTimeout(function(){
+          document.getElementById('ferramenta-editor').style.display = 'none';
+        }, 700);
+      }).catch(function(e){
+        btn.disabled = false;
+        if(e.message !== 'unauthorized') msg.textContent = 'não consegui salvar. tenta de novo.';
+      });
+  });
+
+  document.getElementById('excluir-ferramenta-btn').addEventListener('click', function(){
+    if(!editorSlugAtual) return;
+    if(!confirm('excluir esta ferramenta? isso não pode ser desfeito.')) return;
+    var msg = document.getElementById('ferramenta-msg');
+    msg.textContent = 'excluindo…';
+    authFetch('/api/admin?action=delete-product', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ slug: editorSlugAtual })
+    }).then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+      .then(function(res){
+        if(!res.ok){
+          msg.textContent = (res.data && res.data.error) || 'não consegui excluir. tenta de novo.';
+          return;
+        }
+        document.getElementById('ferramenta-editor').style.display = 'none';
+        loadFerramentas();
+      }).catch(function(e){
+        if(e.message !== 'unauthorized') msg.textContent = 'não consegui excluir. tenta de novo.';
       });
   });
 

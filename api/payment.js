@@ -1,5 +1,4 @@
-import { dbUpsertPagamento, resolveProductPrice, confirmarPagamento } from '../lib/services.js';
-import { getProduct } from '../lib/products.js';
+import { dbUpsertPagamento, resolveProductPrice, confirmarPagamento, getProductBySlug } from '../lib/services.js';
 
 // cria e confere pagamentos pix pra qualquer ferramenta do catálogo
 // (lib/products.js) — um endpoint só, ação por ?action=create|status e
@@ -16,8 +15,8 @@ async function actionCreate(req, res, body) {
   }
 
   const produtoSlug = String(req.query.produto || body.produto || '').trim();
-  const produto = getProduct(produtoSlug);
-  if (!produto) {
+  const produto = await getProductBySlug(produtoSlug);
+  if (!produto || produto.ativo === false) {
     res.status(400).json({ error: 'produto inválido' });
     return;
   }

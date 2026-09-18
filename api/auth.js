@@ -11,9 +11,9 @@ import {
   sendResetEmail,
   verifyContaToken,
   verifyResetToken,
-  verifyPassword
+  verifyPassword,
+  getProductByMpDescription
 } from '../lib/services.js';
-import { getProductByMpDescription } from '../lib/products.js';
 
 // login e conta da avesso — uma conta só, serve qualquer ferramenta
 // comprada (guia, molda, e as próximas). ações por ?action= (GET, pra
@@ -95,7 +95,7 @@ async function actionSetPassword(req, res, body) {
     return;
   }
   const data = await mpRes.json();
-  const produto = getProductByMpDescription(data.description);
+  const produto = await getProductByMpDescription(data.description);
   if (data.status !== 'approved' || !produto) {
     res.status(400).json({ error: 'esse pagamento não confere ou ainda não foi aprovado' });
     return;
