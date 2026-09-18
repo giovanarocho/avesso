@@ -149,9 +149,20 @@
   initShowcaseScroll();
 
   // ---------- social: lista simples, sem separar por marca ----------
+  // (também usado por audiovisual) — quando ainda não tem nenhuma imagem
+  // nessa categoria, mostra "em breve" no lugar de uma galeria vazia.
   function renderFlat(panelKey) {
     const data = PORTFOLIO[panelKey];
     const panel = panels[panelKey];
+    if (!data.images.length) {
+      panel.innerHTML = `
+        <div class="wrap">
+          <p class="cat-intro reveal">${data.intro}</p>
+          <p class="cat-empty reveal">em breve</p>
+        </div>
+      `;
+      return;
+    }
     panel.innerHTML = `
       <div class="wrap">
         <p class="cat-intro reveal">${data.intro}</p>
@@ -168,16 +179,23 @@
 
   // ---------- outros: imagem grande, uma embaixo da outra, sem proporção fixa ----------
   const outros = PORTFOLIO.outros;
-  panels.outros.innerHTML = `
-    <div class="wrap">
-      <p class="cat-intro reveal">${outros.intro}</p>
-      <div class="outros-list">
-        ${outros.images.map((src, i) => `
-          <img class="lb-img reveal" data-group="outros" src="${src}" alt="Outros materiais ${i + 1}" loading="lazy">
-        `).join('')}
+  panels.outros.innerHTML = outros.images.length
+    ? `
+      <div class="wrap">
+        <p class="cat-intro reveal">${outros.intro}</p>
+        <div class="outros-list">
+          ${outros.images.map((src, i) => `
+            <img class="lb-img reveal" data-group="outros" src="${src}" alt="Outros materiais ${i + 1}" loading="lazy">
+          `).join('')}
+        </div>
       </div>
-    </div>
-  `;
+    `
+    : `
+      <div class="wrap">
+        <p class="cat-intro reveal">${outros.intro}</p>
+        <p class="cat-empty reveal">em breve</p>
+      </div>
+    `;
 
   Object.values(panels).forEach(p => observeReveals(p));
 

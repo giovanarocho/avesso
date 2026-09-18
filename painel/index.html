@@ -168,6 +168,16 @@
           </div>
           <div class="field-row">
             <div class="field">
+              <label for="f-acompanhamento">acompanhamento — R$/mês (mentoria guiada)</label>
+              <input id="f-acompanhamento" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+              <label for="f-suporte">suporte avulso do guia (R$)</label>
+              <input id="f-suporte" type="number" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
               <label for="f-vagas">texto de vagas (base pronta + manutenção)</label>
               <textarea id="f-vagas"></textarea>
             </div>
@@ -229,8 +239,8 @@
                 <input id="ed-app-path" type="text">
               </div>
               <div class="field">
-                <label for="ed-venda-path">caminho da página de venda (ex: /minha-ferramenta)</label>
-                <input id="ed-venda-path" type="text">
+                <label for="ed-venda-path">caminho da página de venda (deixe em branco pra usar a página automática)</label>
+                <input id="ed-venda-path" type="text" placeholder="/loja?p=seu-slug">
               </div>
             </div>
             <div class="field-row">
@@ -372,6 +382,8 @@
       document.getElementById('f-base').value = cfg.basePrice;
       document.getElementById('f-manutencao').value = cfg.manutencaoPrice;
       document.getElementById('f-molda').value = cfg.moldaPrice;
+      document.getElementById('f-acompanhamento').value = cfg.acompanhamentoPrice;
+      document.getElementById('f-suporte').value = cfg.supportPrice;
       document.getElementById('f-vagas').value = cfg.manutencaoVagas;
     }).catch(function(){});
   }
@@ -393,6 +405,8 @@
       body: JSON.stringify({
         basePrice: document.getElementById('f-base').value,
         manutencaoPrice: document.getElementById('f-manutencao').value,
+        acompanhamentoPrice: document.getElementById('f-acompanhamento').value,
+        supportPrice: document.getElementById('f-suporte').value,
         manutencaoVagas: document.getElementById('f-vagas').value,
         precos: precos
       })
@@ -417,13 +431,8 @@
   // um vídeo por marco do guia — a chave aqui precisa bater com a usada em
   // guia/index.html (TUTORIAIS_MARCO) pra cada link cair no marco certo.
   var TUTORIAL_MARCOS = [
-    {key:'escopo',            label:'marco 0 — escopo da marca'},
-    {key:'identidade-visual', label:'marco 1 — identidade visual'},
     {key:'google',            label:'marco 2 — perfil no google'},
     {key:'whatsapp',          label:'marco 3 — whatsapp business'},
-    {key:'site',              label:'marco 4 — site / landing page'},
-    {key:'redes',             label:'marco 5 — redes sociais'},
-    {key:'manutencao',        label:'marco 6 — manutenção'},
     {key:'trafego-pago',      label:'marco 7 — tráfego pago'}
   ];
 

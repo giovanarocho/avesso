@@ -901,6 +901,13 @@ footer{
   line-height: 1.7;
   margin-bottom: 44px;
 }
+/* mensagem de categoria ainda sem nenhum material publicado */
+.cat-empty{
+  color: var(--ink-soft);
+  opacity: .6;
+  font-size: 15px;
+  padding: 20px 0 60px;
+}
 .flat-gallery{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

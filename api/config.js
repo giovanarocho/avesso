@@ -1,9 +1,25 @@
-import { resolvePrices } from '../lib/services.js';
+import { resolvePrices, getProductBySlug } from '../lib/services.js';
 
 const MAX_TOTAL_LENGTH = 20000;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // ação extra encaixada aqui (em vez de uma função nova) pra não estourar
+  // o limite de 12 funções serverless do plano hobby da vercel: devolve o
+  // conteúdo completo de uma ferramenta do catálogo, usado pela página de
+  // venda genérica (/loja?p=slug) — assim uma ferramenta nova, criada só
+  // pelo painel, já nasce com uma página pra divulgar, sem precisar de
+  // nenhum html novo por ferramenta.
+  if (req.method === 'GET' && req.query.produto) {
+    const produto = await getProductBySlug(String(req.query.produto));
+    if (!produto || produto.ativo === false) {
+      res.status(404).json({ error: 'ferramenta não encontrada' });
+      return;
+    }
+    res.status(200).json({ produto: produto });
+    return;
+  }
 
   // ação extra encaixada aqui pra não estourar o limite de 12 funções
   // serverless do plano hobby da vercel (mesma solução do molda-auth.js).

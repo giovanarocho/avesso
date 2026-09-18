@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ferramenta | rocho lab</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/venda.css">
+</head>
+<body>
+
+  <!-- página de venda genérica: serve qualquer ferramenta cadastrada pelo
+       painel (/painel → ferramentas) que não tenha uma página própria — o
+       conteúdo inteiro (título, preço, seções) vem de /api/config?produto=slug,
+       preenchido no editor completo do painel. isso é o que faz uma
+       ferramenta nova já nascer com um link pra divulgar, sem precisar de
+       nenhum html novo por ferramenta. -->
+
+  <div class="top-nav">
+    <div class="wrap">
+      <a class="back" href="/">← rocho lab</a>
+      <div class="top-nav-right">
+        <span class="brand-tag">ferramenta da rocho lab</span>
+        <a class="conta-link" href="/conta">login</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="loja-carregando" class="loja-status">
+    <div class="wrap"><p>carregando…</p></div>
+  </div>
+
+  <div id="loja-nao-encontrada" class="loja-status" style="display:none;">
+    <div class="wrap"><p>essa ferramenta não foi encontrada ou ainda não está disponível.</p></div>
+  </div>
+
+  <div id="loja-conteudo" style="display:none;">
+
+    <section class="hero">
+      <div class="wrap">
+        <span class="eyebrow" id="lj-eyebrow"></span>
+        <h1 id="lj-titulo"></h1>
+        <p class="positioning" id="lj-positioning" style="display:none;"></p>
+        <p class="lede" id="lj-lede" style="display:none;"></p>
+
+        <div class="price-box">
+          <span class="fp"><span id="lj-preco"></span></span>
+          <small> · pagamento único, acesso liberado na hora</small>
+        </div>
+
+        <div class="cta">
+          <button class="btn btn-gold" id="btn-abrir-checkout">quero acesso</button>
+        </div>
+        <p class="fineprint">pagamento confirmado automaticamente. o acesso libera na hora, aqui mesmo na tela.</p>
+        <div class="trust-row" id="lj-trust" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section class="features bg-coffee" id="lj-secao-features" style="display:none;">
+      <div class="wrap">
+        <span class="eyebrow-section">o que você recebe</span>
+        <h2 id="lj-features-titulo">funcionalidades</h2>
+        <div class="feat-list" id="lj-features"></div>
+        <div class="section-cta">
+          <button class="btn btn-gold btn-sm js-cta-checkout">quero acesso</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="passos" id="lj-secao-passos" style="display:none;">
+      <div class="wrap">
+        <span class="eyebrow-section">como funciona</span>
+        <h2>passo a passo</h2>
+        <div class="passo-list" id="lj-passos"></div>
+        <div class="section-cta">
+          <button class="btn btn-gold btn-sm js-cta-checkout">quero acesso</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq bg-cream" id="lj-secao-faq" style="display:none;">
+      <div class="wrap">
+        <span class="eyebrow-section">perguntas rápidas</span>
+        <h2>antes de decidir</h2>
+        <div id="lj-faq"></div>
+      </div>
+    </section>
+
+    <section class="depoimentos" id="lj-secao-depoimentos" style="display:none;">
+      <div class="wrap">
+        <span class="eyebrow-section">quem já usou</span>
+        <h2>depoimentos</h2>
+        <div class="depo-list" id="lj-depoimentos"></div>
+      </div>
+    </section>
+
+    <section class="cta-final bg-coffee">
+      <div class="wrap">
+        <h2 id="lj-cta-final-titulo">pronto pra começar?</h2>
+        <p class="lede">pague uma vez, acesso liberado na hora.</p>
+        <button class="btn btn-gold" id="btn-abrir-checkout-2">quero acesso</button>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">rocho lab — laboratório criativo</div>
+    </footer>
+
+  </div>
+
+  <!-- checkout (mesmo modal de qualquer ferramenta) -->
+  <div class="checkout-overlay" id="checkout-overlay">
+    <div class="checkout-panel">
+
+      <div id="cp-step-email">
+        <h3 id="cp-titulo">ferramenta</h3>
+        <p class="cp-sub"><span id="cp-preco"></span> · pagamento único, pix ou cartão</p>
+        <input type="email" id="cp-email" placeholder="seu e-mail">
+        <div class="cp-method-tabs">
+          <button type="button" class="cp-method-btn active" id="cp-method-pix">pix</button>
+          <button type="button" class="cp-method-btn" id="cp-method-cartao">cartão</button>
+        </div>
+        <button class="btn btn-primary" id="cp-gerar-pix">gerar pix</button>
+        <div id="cp-card-brick" style="display:none;"></div>
+        <p class="cp-msg" id="cp-email-msg"></p>
+      </div>
+
+      <div id="cp-step-pix" style="display:none;">
+        <h3>confirmando seu pagamento</h3>
+        <p class="cp-sub">assim que confirmar, o link de acesso aparece aqui automaticamente.</p>
+        <div class="qr-box" id="cp-qr-box">
+          <img id="cp-qr-img" src="" alt="qr code pix">
+          <div class="pix-code" id="cp-pix-code"></div>
+          <button class="btn btn-primary" id="cp-copiar">copiar código pix</button>
+        </div>
+        <div class="cp-spinner" id="cp-spinner"></div>
+        <p class="cp-msg" id="cp-status-msg">aguardando confirmação do pagamento…</p>
+      </div>
+
+      <div id="cp-step-sucesso" style="display:none;">
+        <p class="cp-success">pagamento confirmado 🎉</p>
+        <p class="cp-sub" id="cp-sucesso-sub">seu acesso está liberado.</p>
+        <a class="btn btn-primary" id="cp-link-conta" href="/conta">abrir minha conta</a>
+      </div>
+
+      <button class="cp-close" id="cp-close">fechar</button>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    function fmtMoney(v){
+      v = Number(v) || 0;
+      var hasCents = Math.round(v * 100) % 100 !== 0;
+      return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits: hasCents ? 2 : 0, maximumFractionDigits:2});
+    }
+    function esc(s){
+      var d = document.createElement('div');
+      d.textContent = s || '';
+      return d.innerHTML;
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var slug = params.get('p') || params.get('produto') || params.get('slug') || '';
+
+    var carregando = document.getElementById('loja-carregando');
+    var naoEncontrada = document.getElementById('loja-nao-encontrada');
+    var conteudo = document.getElementById('loja-conteudo');
+
+    if(!slug){
+      carregando.style.display = 'none';
+      naoEncontrada.style.display = 'block';
+    } else {
+      fetch('/api/config?produto=' + encodeURIComponent(slug))
+        .then(function(r){ return r.json().then(function(data){ return {ok:r.ok, data:data}; }); })
+        .then(function(res){
+          if(!res.ok || !res.data.produto){
+            carregando.style.display = 'none';
+            naoEncontrada.style.display = 'block';
+            return;
+          }
+          render(res.data.produto);
+        }).catch(function(){
+          carregando.style.display = 'none';
+          naoEncontrada.style.display = 'block';
+        });
+    }
+
+    function render(p){
+      document.title = p.nome + ' | rocho lab';
+      var descMeta = document.createElement('meta');
+      descMeta.name = 'description';
+      descMeta.content = p.tagline || p.heroPositioning || p.nome;
+      document.head.appendChild(descMeta);
+
+      document.getElementById('lj-eyebrow').textContent = p.nome;
+      document.getElementById('lj-titulo').textContent = p.heroTitulo || p.nome;
+
+      if(p.heroPositioning){
+        var posEl = document.getElementById('lj-positioning');
+        posEl.textContent = p.heroPositioning;
+        posEl.style.display = 'block';
+      }
+      if(p.heroSubtitulo || p.tagline){
+        var ledeEl = document.getElementById('lj-lede');
+        ledeEl.textContent = p.heroSubtitulo || p.tagline;
+        ledeEl.style.display = 'block';
+      }
+
+      var precoTxt = p.preco != null ? fmtMoney(p.preco) : 'sob consulta';
+      document.getElementById('lj-preco').textContent = precoTxt;
+      document.getElementById('cp-titulo').textContent = p.nome;
+      document.getElementById('cp-preco').textContent = precoTxt;
+
+      if(p.trustItems && p.trustItems.length){
+        var trustEl = document.getElementById('lj-trust');
+        trustEl.innerHTML = p.trustItems.map(function(t){
+          var texto = typeof t === 'string' ? t : (t.texto || '');
+          return '<span>' + esc(texto) + '</span>';
+        }).join('');
+        trustEl.style.display = 'flex';
+      }
+
+      if(p.features && p.features.length){
+        document.getElementById('lj-features-titulo').textContent = 'o que ' + p.nome + ' te dá';
+        document.getElementById('lj-features').innerHTML = p.features.map(function(f){
+          return '<div class="feat-item"><span class="ico">—</span><p><strong>' + esc(f.titulo) + '</strong>' +
+            (f.texto ? ' — ' + esc(f.texto) : '') + '</p></div>';
+        }).join('');
+        document.getElementById('lj-secao-features').style.display = 'block';
+      }
+
+      if(p.passos && p.passos.length){
+        document.getElementById('lj-passos').innerHTML = p.passos.map(function(s, i){
+          var num = String(i + 1).padStart(2, '0');
+          return '<div class="passo-item"><span class="num">' + num + '</span><div>' +
+            '<h3>' + esc(s.titulo) + '</h3>' +
+            (s.texto ? '<p>' + esc(s.texto) + '</p>' : '') +
+            '</div></div>';
+        }).join('');
+        document.getElementById('lj-secao-passos').style.display = 'block';
+      }
+
+      if(p.faq && p.faq.length){
+        document.getElementById('lj-faq').innerHTML = p.faq.map(function(f){
+          return '<div class="faq-item"><h3>' + esc(f.pergunta) + '</h3><p>' + esc(f.resposta) + '</p></div>';
+        }).join('');
+        document.getElementById('lj-secao-faq').style.display = 'block';
+      }
+
+      if(p.depoimentos && p.depoimentos.length){
+        document.getElementById('lj-depoimentos').innerHTML = p.depoimentos.map(function(d){
+          return '<div class="depo-item"><p>"' + esc(d.texto) + '"</p><strong>' + esc(d.nome) + '</strong></div>';
+        }).join('');
+        document.getElementById('lj-secao-depoimentos').style.display = 'block';
+      }
+
+      document.getElementById('lj-cta-final-titulo').textContent = 'pronto pra começar com ' + p.nome + '?';
+
+      document.querySelectorAll('#btn-abrir-checkout-2, .js-cta-checkout').forEach(function(btn){
+        btn.addEventListener('click', function(){ document.getElementById('btn-abrir-checkout').click(); });
+      });
+
+      // o checkout.js lê o slug do produto no atributo data-produto do
+      // próprio <script> que o carrega — como aqui o slug só existe depois
+      // da resposta da api, o script é criado e inserido dinamicamente
+      // (em vez de já vir fixo no html), com o slug certo já no atributo.
+      var s = document.createElement('script');
+      s.src = '/shared/checkout.js';
+      s.setAttribute('data-produto', p.slug);
+      document.body.appendChild(s);
+
+      carregando.style.display = 'none';
+      conteudo.style.display = 'block';
+    }
+  })();
+  </script>
+
+</body>
+</html>

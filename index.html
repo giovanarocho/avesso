@@ -64,21 +64,21 @@
           <span class="tag">passo a passo</span>
           <h3>Marketing Essencial</h3>
           <p>Organize Google, WhatsApp, redes e conteúdo — sozinha, no seu ritmo, com um dossiê da sua marca pronto no final.</p>
-          <div class="tool-price">R$ 39,90 <small>· pagamento único</small></div>
+          <div class="tool-price"><span id="preco-guia">R$ 39,90</span> <small>· pagamento único</small></div>
           <span class="tool-link">Saiba mais →</span>
         </a>
         <a href="/molda" class="tool-card">
           <span class="tag">gerador de conteúdo</span>
           <h3>Molda</h3>
           <p>Crie conteúdo pro seu lançamento — escolha o formato, escreva o conteúdo e gere as imagens já na sua identidade.</p>
-          <div class="tool-price">R$ 29,90 <small>· pagamento único</small></div>
+          <div class="tool-price"><span id="preco-molda">R$ 29,90</span> <small>· pagamento único</small></div>
           <span class="tool-link">Saiba mais →</span>
         </a>
         <a href="#lista-espera" class="tool-card">
           <span class="tag">mentoria guiada</span>
           <h3>Acompanhamento</h3>
           <p>Você faz, eu direciono. Um mês de acompanhamento com dois encontros semanais — depois disso, você segue sozinha, sem depender de mim.</p>
-          <div class="tool-price">R$ 2.500 <small>· acompanhamento de 1 mês</small></div>
+          <div class="tool-price"><span id="preco-acompanhamento">R$ 2.500</span> <small>· acompanhamento de 1 mês</small></div>
           <span class="tool-link">Entrar na lista de espera →</span>
         </a>
       </div>
@@ -224,5 +224,22 @@
 </a>
 
 <script src="/js/main.js"></script>
+<script>
+  // preços mostrados aqui vêm sempre do que está definido no /painel —
+  // nunca ficam hardcoded, pra nunca desatualizar quando o preço mudar lá.
+  fetch('/api/config').then(function (r) { return r.json(); }).then(function (data) {
+    var fmt = function (n) {
+      n = Number(n) || 0;
+      var hasCents = Math.round(n * 100) % 100 !== 0;
+      return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: hasCents ? 2 : 0, maximumFractionDigits: 2 });
+    };
+    var guiaEl = document.getElementById('preco-guia');
+    var moldaEl = document.getElementById('preco-molda');
+    var acompEl = document.getElementById('preco-acompanhamento');
+    if (guiaEl && data.guiaPrice != null) guiaEl.textContent = fmt(data.guiaPrice);
+    if (moldaEl && data.moldaPrice != null) moldaEl.textContent = fmt(data.moldaPrice);
+    if (acompEl && data.acompanhamentoPrice != null) acompEl.textContent = fmt(data.acompanhamentoPrice);
+  }).catch(function () { /* mantém o preço padrão do html se a chamada falhar */ });
+</script>
 </body>
 </html>

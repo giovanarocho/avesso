@@ -22,22 +22,9 @@
   --paper-rgb:247,243,236;
   --logo-chip:#F7F3EC;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#201E19; --paper-deep:#2A2822; --paper-deeper:#34312A;
-    --ink:#F7F3EC; --brown:#F7F3EC; --brown-soft:#CFC9BA;
-    --brass:#8FA382; --brass-ink:#C9D4C2;
-    --line:rgba(247,243,236,0.14); --line-strong:rgba(247,243,236,0.28);
-    --paper-rgb:32,30,25;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#201E19; --paper-deep:#2A2822; --paper-deeper:#34312A;
-  --ink:#F7F3EC; --brown:#F7F3EC; --brown-soft:#CFC9BA;
-  --brass:#8FA382; --brass-ink:#C9D4C2;
-  --line:rgba(247,243,236,0.14); --line-strong:rgba(247,243,236,0.28);
-  --paper-rgb:32,30,25;
-}
+/* o caderno sempre fica no tema claro (mesma identidade da home) — antes
+   ele trocava sozinho pra escuro quando o sistema da pessoa estava em modo
+   escuro, o que destoava do resto do site. */
 
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -205,6 +192,7 @@ td.dropzone.drag-over input{border-color:var(--brass);background:var(--paper-dee
 
 /* tutorial link (um por marco, editável no painel) */
 .tutorial-link{margin-top:2px;}
+.diagnostico-cta{margin:18px 0;}
 .tutorial-btn{
   display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;
   font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;
@@ -353,10 +341,11 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     <div class="section-head">
       <span class="section-num">Marco 0</span>
       <h2>Escopo da marca</h2>
-      <div class="tutorial-link" data-tutorial="escopo"></div>
     </div>
     <div class="prose">
-      <p>Antes de criar perfis e postar conteúdo, você precisa saber com clareza quem é a sua marca. Sem isso, qualquer post — por mais bonito que seja — vai parecer genérico.</p>
+      <p>Antes de criar perfis e postar conteúdo, te convido a refletir. O seu negócio tem algo único, diferente de qualquer outro: você! Por isso, acreditamos que você é maior do que seu nicho — afinal, as pessoas confiam em pessoas. Te convido a realizar o diagnóstico abaixo antes de seguir com o guia.</p>
+      <div class="diagnostico-cta"><a class="tutorial-btn" href="/diagnostico" target="_blank" rel="noopener">▸ realizar diagnóstico</a></div>
+      <p>Espero que responder o diagnóstico tenha te trazido mais clareza — agora sim você está pronta para responder as perguntas essenciais para conhecer a sua marca.</p>
       <h3>Perguntas essenciais para conhecer a sua marca</h3>
       <p>Responda com calma. Não existe resposta certa — existe a resposta que é verdadeira para o seu negócio.</p>
     </div>
@@ -422,7 +411,6 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     <div class="section-head">
       <span class="section-num">Marco 1</span>
       <h2>Identidade visual</h2>
-      <div class="tutorial-link" data-tutorial="identidade-visual"></div>
     </div>
     <div class="prose">
       <p>Aqui, uma coisa importa mais do que qualquer dica deste guia: <b>nada substitui um bom design.</b></p>
@@ -502,7 +490,6 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     <div class="section-head">
       <span class="section-num">Marco 4</span>
       <h2>Site / landing page</h2>
-      <div class="tutorial-link" data-tutorial="site"></div>
     </div>
     <div class="prose">
       <p>Com o Google e o WhatsApp configurados, falta um lugar central que reúne tudo — um link só, que você pode colocar em qualquer bio, cartão de visita ou perfil, sem depender de nenhuma rede social pra existir.</p>
@@ -520,7 +507,6 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     <div class="section-head">
       <span class="section-num">Marco 5</span>
       <h2>Redes sociais</h2>
-      <div class="tutorial-link" data-tutorial="redes"></div>
     </div>
     <div class="prose">
       <p>Você não precisa estar em todas as redes sociais. Precisa estar onde o seu público está — e presente de verdade, não só com o perfil criado.</p>
@@ -547,12 +533,11 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
     <div class="section-head">
       <span class="section-num">Marco 6</span>
       <h2>Manutenção</h2>
-      <div class="tutorial-link" data-tutorial="manutencao"></div>
     </div>
     <div class="prose">
       <p>Ter um perfil bem montado é só o começo. O que mantém ele vivo é a manutenção — e ela não precisa ser diária nem exaustiva.</p>
       <h3>Plano de conteúdo simples</h3>
-      <p>1 a 2 conteúdos por semana no feed — não é preciso postar vídeo todos os dias. 1 a 3 stories por dia — isso é indispensável. Pense nos stories como a placa de "aberto" da sua empresa: eles mostram que você está ativa, mesmo sem um conteúdo elaborado. Um story pode ser simples: um bastidor do trabalho, uma dúvida respondida, um resultado entregue, uma repostagem de um cliente marcando você. O que importa é a constância, não a produção.</p>
+      <p>1 a 2 conteúdos por semana no feed — não é preciso postar vídeo todos os dias. 1 a 3 stories por dia — isso é indispensável. Pense nos stories como a placa de "aberto" da sua empresa: eles mostram que você está ativa (não precisa ser todos os dias!), mesmo sem um conteúdo elaborado. Um story pode ser simples: um bastidor do trabalho, uma dúvida respondida, um resultado entregue, uma repostagem de um cliente marcando você. O que importa é a constância, não a produção. No feed, mostre sua rotina e seu dia a dia. Você pode sim criar conteúdos planejados e elaborados quando fizer sentido, mas pra manter a constância é muito mais assertivo você ligar a câmera e simplesmente documentar o que você já faz.</p>
     </div>
     <div class="field">
       <label>Ideias de conteúdo — arraste (ou clique e depois clique no campo) pra organizar sua semana</label>
@@ -633,10 +618,10 @@ footer{text-align:center;padding:40px 20px 60px;font-family:'IBM Plex Mono',mono
 
 <div class="toast" id="toast"></div>
 
-<a class="whatsapp-support-float" target="_blank" rel="noopener"
+<a class="whatsapp-support-float" id="whatsapp-support-link" target="_blank" rel="noopener"
    href="https://wa.me/5548999936071?text=Oi%21%20estou%20usando%20o%20guia%20marketing%20essencial%20e%20quero%20solicitar%20suporte%20%28R%24%2019%2C90%29.">
   <svg viewBox="0 0 32 32"><path d="M16.004 3C9.376 3 4 8.373 4 15c0 2.386.703 4.61 1.912 6.484L4 29l7.702-1.876A11.93 11.93 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3zm0 21.75c-1.996 0-3.86-.557-5.45-1.523l-.39-.232-4.573 1.115 1.147-4.457-.255-.406A9.71 9.71 0 0 1 5.25 15c0-5.93 4.824-10.75 10.754-10.75S26.75 9.07 26.75 15 21.934 24.75 16.004 24.75zm5.86-8.05c-.32-.16-1.9-.938-2.194-1.045-.294-.107-.508-.16-.722.16-.213.32-.827 1.045-1.014 1.258-.187.213-.373.24-.694.08-.32-.16-1.352-.498-2.575-1.588-.952-.85-1.595-1.9-1.782-2.22-.187-.32-.02-.493.14-.652.144-.144.32-.373.48-.56.16-.187.213-.32.32-.533.107-.213.053-.4-.027-.56-.08-.16-.722-1.74-.99-2.383-.26-.626-.526-.54-.722-.55-.187-.008-.4-.01-.614-.01-.213 0-.56.08-.854.4-.294.32-1.12 1.095-1.12 2.67 0 1.575 1.147 3.096 1.307 3.31.16.213 2.257 3.446 5.468 4.833.764.33 1.36.527 1.826.674.767.244 1.464.21 2.016.127.615-.092 1.9-.777 2.168-1.527.267-.75.267-1.393.187-1.527-.08-.133-.294-.213-.614-.373z"/></svg>
-  <span>solicitar suporte por apenas R$ 19,90</span>
+  <span id="whatsapp-support-label">solicitar suporte por apenas R$ 19,90</span>
 </a>
 
 <script>
@@ -1342,8 +1327,25 @@ function renderTutorialLinks(tutoriais){
     }
   });
 }
+// preço do suporte avulso via whatsapp — vem do painel, nunca fica
+// hardcoded (nem no texto visível, nem no link do whatsapp).
+function renderSupportPrice(price){
+  if(price == null) return;
+  var n = Number(price) || 0;
+  var hasCents = Math.round(n * 100) % 100 !== 0;
+  var txt = "R$ " + n.toLocaleString("pt-BR", {minimumFractionDigits: hasCents ? 2 : 0, maximumFractionDigits: 2});
+  var label = document.getElementById("whatsapp-support-label");
+  var link = document.getElementById("whatsapp-support-link");
+  if(label) label.textContent = "solicitar suporte por apenas " + txt;
+  if(link){
+    link.href = "https://wa.me/5548999936071?text=" + encodeURIComponent(
+      "Oi! estou usando o guia marketing essencial e quero solicitar suporte (" + txt + ")."
+    );
+  }
+}
 fetch("/api/config").then(function(r){ return r.json(); }).then(function(cfg){
   renderTutorialLinks(cfg.tutoriais || {});
+  renderSupportPrice(cfg.supportPrice);
 }).catch(function(){ renderTutorialLinks({}); });
 
 })();

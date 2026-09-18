@@ -63,9 +63,15 @@ async function actionUpdateConfig(req, res, body) {
   if (body.manutencaoPrice !== undefined && body.manutencaoPrice !== '') {
     fields.manutencao_price = parseFloat(body.manutencaoPrice);
   }
+  if (body.acompanhamentoPrice !== undefined && body.acompanhamentoPrice !== '') {
+    fields.acompanhamento_price = parseFloat(body.acompanhamentoPrice);
+  }
+  if (body.supportPrice !== undefined && body.supportPrice !== '') {
+    fields.support_price = parseFloat(body.supportPrice);
+  }
   if (body.manutencaoVagas !== undefined) fields.manutencao_vagas = String(body.manutencaoVagas);
 
-  for (const key of ['base_price', 'manutencao_price']) {
+  for (const key of ['base_price', 'manutencao_price', 'acompanhamento_price', 'support_price']) {
     if (key in fields && (isNaN(fields[key]) || fields[key] < 0)) {
       res.status(400).json({ error: 'preço inválido' });
       return;
@@ -183,7 +189,11 @@ async function actionSaveProduct(req, res, body) {
     record.preco = preco;
     record.mp_description = String(body.mpDescription || (nome + ' - estúdio avesso'));
     record.app_path = String(body.appPath || '');
-    record.venda_path = String(body.vendaPath || '');
+    // sem página de venda própria informada, usa a página genérica
+    // (/loja?p=slug), que já existe pronta e lê o conteúdo direto do que
+    // for preenchido aqui — assim toda ferramenta nova já nasce com um
+    // link pra divulgar, sem precisar de um html novo pra cada uma.
+    record.venda_path = String(body.vendaPath || '').trim() || ('/loja?p=' + slug);
   }
 
   const ok = await dbUpsertProduto(record);
