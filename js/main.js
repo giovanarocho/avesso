@@ -3,12 +3,16 @@ const navToggle = document.querySelector('.nav-toggle');
 const mainNav = document.querySelector('.main-nav');
 if (navToggle && mainNav) {
   navToggle.addEventListener('click', () => {
-    mainNav.classList.toggle('open');
-    document.body.classList.toggle('nav-open', mainNav.classList.contains('open'));
+    const isOpen = mainNav.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    document.body.classList.toggle('nav-open', isOpen);
   });
   mainNav.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       mainNav.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('nav-open');
     });
   });
