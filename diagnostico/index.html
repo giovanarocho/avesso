@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Diagnóstico de Posicionamento — Rocho Lab</title>
-<meta name="description" content="Um diagnóstico gratuito e conversacional pra descobrir seu posicionamento — quem você é, o que defende, e o que aproxima ou afasta o seu público.">
+<meta name="description" content="Um diagnóstico conversacional pra descobrir seu posicionamento — quem você é, o que defende, e o que aproxima ou afasta o seu público. R$ 19,90, resultado na hora.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="/css/style.css">
 <style>
@@ -151,6 +151,62 @@
     #sendBtn { width: 100%; }
     .diag-wrap { padding: 44px 20px 60px; }
   }
+
+  /* ---------- paywall (antes de desbloquear a conversa) ---------- */
+  .paywall-price { font-family: var(--serif); font-size: 30px; color: var(--ink); margin: 4px 0 2px; }
+  .paywall-price small { font-family: var(--sans); font-size: 13px; color: var(--ink-soft); font-weight: 400; }
+  .paywall-trust { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .paywall-trust li { font-size: 13.5px; color: var(--ink-soft); display: flex; gap: 8px; align-items: baseline; }
+  .paywall-trust li::before { content: "✓"; color: var(--accent-soft); font-weight: 600; }
+  .paywall-login { margin-top: 18px; font-size: 12.5px; color: var(--ink-faint); }
+  .paywall-login a { color: var(--ink-soft); text-decoration: underline; }
+
+  /* ---------- checkout (pix / cartão) ---------- */
+  .checkout-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(20,19,16,.72);
+    z-index: 999; align-items: center; justify-content: center; padding: 20px;
+  }
+  .checkout-overlay.open { display: flex; }
+  .checkout-panel {
+    background: var(--bg); color: var(--ink); max-width: 420px; width: 100%;
+    max-height: 90vh; overflow-y: auto; border-radius: 16px; padding: 30px 26px;
+    text-align: center; box-shadow: 0 24px 60px rgba(20,19,16,.35);
+    font-family: var(--sans);
+  }
+  .checkout-panel h3 { font-family: var(--serif); font-size: 19px; font-weight: 500; margin-bottom: 6px; }
+  .checkout-panel .cp-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; }
+  .checkout-panel input[type="email"] {
+    width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px;
+    font-family: var(--sans); font-size: 15px; margin-bottom: 12px; background: var(--panel); color: var(--ink);
+    box-sizing: border-box;
+  }
+  .checkout-panel .btn { width: 100%; text-align: center; box-sizing: border-box; }
+  .checkout-panel .cp-msg { font-size: 12.5px; margin-top: 12px; color: var(--ink-soft); min-height: 16px; }
+  .cp-method-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .cp-method-btn {
+    flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--line);
+    background: transparent; color: var(--ink); font-family: var(--sans);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+  }
+  .cp-method-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  #cp-card-brick { margin-top: 4px; min-height: 40px; text-align: left; }
+  .checkout-panel .qr-box { margin: 16px 0; }
+  .checkout-panel .qr-box img { width: 180px; height: 180px; margin: 0 auto 12px; display: block; border-radius: 10px; }
+  .checkout-panel .pix-code {
+    font-family: monospace; font-size: 10.5px; word-break: break-all;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px; max-height: 64px; overflow-y: auto; margin-bottom: 10px; text-align: left;
+  }
+  .checkout-panel .cp-close {
+    display: inline-block; margin-top: 14px; font-size: 12px;
+    text-decoration: underline; color: var(--ink-soft); background: none; border: none; cursor: pointer;
+  }
+  .cp-spinner {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid var(--line); border-top-color: var(--accent);
+    margin: 10px auto; animation: diagSpin 0.8s linear infinite;
+  }
+  .cp-success { font-size: 15px; margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -175,11 +231,30 @@
 
 <div class="diag-wrap">
 
-  <div class="eyebrow">Rocholab · diagnóstico gratuito</div>
+  <div class="eyebrow">Rocholab · diagnóstico de posicionamento</div>
   <h1 id="pageTitle">Sua marca como um ecossistema, não peças soltas.</h1>
   <p class="diag-intro" id="pageIntro"><strong>Leia com atenção e responda com honestidade.</strong><br><br>No final, você recebe seu diagnóstico: quem você é, o que te destaca, e o que aproxima ou afasta o seu público.</p>
 
-  <div id="prepBlock">
+  <!-- pagamento — mostrado por padrão; a conversa só libera depois de pagar
+       (ou, pra quem volta depois, se a conta já for dona do diagnóstico). -->
+  <div id="paywallBlock">
+    <div class="prep-box">
+      <p class="paywall-price"><span id="paywallPrice">R$ 19,90</span> <small>· pagamento único, pix ou cartão</small></p>
+      <p>Um diagnóstico de verdade, não uma validação vazia — construído a partir do que você responder, sem modelo pronto.</p>
+      <ul class="paywall-trust">
+        <li>Resultado liberado na hora, aqui mesmo</li>
+        <li>Baixa em PDF pra guardar e reler</li>
+        <li>Sem assinatura — paga uma vez só</li>
+      </ul>
+    </div>
+    <div class="diag-nav">
+      <span></span>
+      <button type="button" class="btn btn-solid" id="btn-abrir-checkout">Comprar diagnóstico</button>
+    </div>
+    <p class="paywall-login">Já comprou antes? <a href="/conta">entra na sua conta</a> pra continuar sem pagar de novo.</p>
+  </div>
+
+  <div id="prepBlock" style="display:none;">
     <div class="prep-box">
       <p>Isso não é uma prova. Não existe resposta bonita, existe resposta verdadeira.</p>
       <p>O diagnóstico que você recebe no final é só o reflexo do que você disser aqui. <span class="stress">Quanto mais honesta você for, mais ele vai te dar clareza.</span></p>
@@ -223,6 +298,45 @@
 
 </div>
 
+<!-- checkout do diagnóstico (mesmo padrão pix/cartão das outras ferramentas) -->
+<div class="checkout-overlay" id="checkout-overlay">
+  <div class="checkout-panel">
+
+    <div id="cp-step-email">
+      <h3>Diagnóstico de Posicionamento</h3>
+      <p class="cp-sub"><span id="cpPrice">R$ 19,90</span> · pagamento único, pix ou cartão</p>
+      <input type="email" id="cp-email" placeholder="seu e-mail">
+      <div class="cp-method-tabs">
+        <button type="button" class="cp-method-btn active" id="cp-method-pix">pix</button>
+        <button type="button" class="cp-method-btn" id="cp-method-cartao">cartão</button>
+      </div>
+      <button class="btn btn-solid" id="cp-gerar-pix">gerar pix</button>
+      <div id="cp-card-brick" style="display:none;"></div>
+      <p class="cp-msg" id="cp-email-msg"></p>
+    </div>
+
+    <div id="cp-step-pix" style="display:none;">
+      <h3>Confirmando seu pagamento</h3>
+      <p class="cp-sub">assim que confirmar, a conversa libera aqui na hora.</p>
+      <div class="qr-box" id="cp-qr-box">
+        <img id="cp-qr-img" src="" alt="qr code pix">
+        <div class="pix-code" id="cp-pix-code"></div>
+        <button class="btn btn-solid" id="cp-copiar">copiar código pix</button>
+      </div>
+      <div class="cp-spinner" id="cp-spinner"></div>
+      <p class="cp-msg" id="cp-status-msg">aguardando confirmação do pagamento…</p>
+    </div>
+
+    <div id="cp-step-sucesso" style="display:none;">
+      <p class="cp-success">pagamento confirmado 🎉</p>
+      <p class="cp-sub" id="cp-sucesso-sub">liberando sua conversa…</p>
+      <a class="btn btn-solid" id="cp-link-conta" href="/conta">abrir minha conta</a>
+    </div>
+
+    <button class="cp-close" id="cp-close">fechar</button>
+  </div>
+</div>
+
 <footer>
   <div class="wrap footer-inner">
     <span class="footer-credit">feito por <a href="https://instagram.com/rocho.lab" target="_blank" rel="noopener">@rocho.lab</a></span>
@@ -236,6 +350,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="/js/main.js"></script>
+<script src="/shared/checkout.js" data-produto="diagnostico"></script>
 <script>
 (function () {
 
@@ -311,6 +426,60 @@ Regra mais importante: use só o que ela realmente disse na conversa. Se algum t
   const MIN_TURNS_TO_FINISH = 3;
   let lastReportText = '';
 
+  // ---------- pagamento: desbloqueia a conversa ----------
+  // o diagnóstico é pago — a prova de pagamento é o payment_id (guardado só
+  // nesta aba, pra quem acabou de pagar) ou a conta (pra quem volta depois
+  // de já ter criado senha). o servidor confere de novo em cada mensagem —
+  // isso aqui só decide o que mostrar na tela.
+  var DIAG_PAY_KEY = 'rocholab_diag_payment_id';
+  var CONTA_TOKEN_KEY = 'avesso_conta_token';
+
+  function getDiagPaymentId() { try { return sessionStorage.getItem(DIAG_PAY_KEY); } catch (e) { return null; } }
+  function setDiagPaymentId(id) { try { sessionStorage.setItem(DIAG_PAY_KEY, id); } catch (e) {} }
+  function getContaToken() { try { return localStorage.getItem(CONTA_TOKEN_KEY); } catch (e) { return null; } }
+
+  function unlockDiagnostico() {
+    document.getElementById('paywallBlock').style.display = 'none';
+    document.getElementById('prepBlock').style.display = 'block';
+  }
+
+  // preço mostrado no paywall e no checkout — vem sempre do /painel.
+  fetch('/api/config').then(function (r) { return r.json(); }).then(function (cfg) {
+    if (cfg.diagnosticoPrice == null) return;
+    var txt = 'R$ ' + Number(cfg.diagnosticoPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    var a = document.getElementById('paywallPrice'); if (a) a.textContent = txt;
+    var b = document.getElementById('cpPrice'); if (b) b.textContent = txt;
+  }).catch(function () {});
+
+  // já pagou nesta aba (acabou de comprar) — libera direto, sem checar mais nada.
+  if (getDiagPaymentId()) {
+    unlockDiagnostico();
+  } else {
+    // não pagou nesta aba ainda — se estiver logada numa conta que já é
+    // dona do diagnóstico (comprou antes, já criou senha), libera também.
+    var contaToken = getContaToken();
+    if (contaToken) {
+      fetch('/api/account', { headers: { Authorization: 'Bearer ' + contaToken } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var produtos = data.produtos || [];
+          var owns = produtos.some(function (p) { return p.slug === 'diagnostico' && p.owned; });
+          if (owns) unlockDiagnostico();
+        }).catch(function () {});
+    }
+  }
+
+  // o pagamento aprova aqui mesmo na página (evento disparado pelo
+  // shared/checkout.js) — sem precisar ir pra /conta primeiro.
+  window.addEventListener('rocholab:checkout-approved', function (e) {
+    if (!e.detail || e.detail.produto !== 'diagnostico') return;
+    setDiagPaymentId(e.detail.paymentId);
+    var overlay = document.getElementById('checkout-overlay');
+    if (overlay) { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+    unlockDiagnostico();
+    window.scrollTo({ top: document.getElementById('prepBlock').offsetTop - 20, behavior: 'smooth' });
+  });
+
   const OPENING_MESSAGE = 'Pra começar: o que te fez escolher fazer esse trabalho do seu jeito, e não do jeito "padrão" do mercado?';
 
   function stripMdBold(str) {
@@ -351,11 +520,18 @@ Regra mais importante: use só o que ela realmente disse na conversa. Se algum t
   }
 
   async function callDiagnostico(system, messages, maxTokens) {
+    const headers = { 'Content-Type': 'application/json' };
+    const contaToken = getContaToken();
+    if (contaToken) headers['Authorization'] = 'Bearer ' + contaToken;
     const res = await fetch('/api/config', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'diagnostico', system: system, messages: messages, max_tokens: maxTokens })
+      headers: headers,
+      body: JSON.stringify({
+        action: 'diagnostico', system: system, messages: messages, max_tokens: maxTokens,
+        payment_id: getDiagPaymentId() || undefined
+      })
     });
+    if (res.status === 402) throw new Error('payment_required');
     if (!res.ok) throw new Error('api_error');
     const data = await res.json();
     if (!data.text) throw new Error('empty_response');

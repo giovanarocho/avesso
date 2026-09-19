@@ -54,10 +54,10 @@
       </div>
       <div class="tools-grid reveal">
         <a href="/diagnostico" class="tool-card">
-          <span class="tag">diagnóstico gratuito</span>
+          <span class="tag">infoproduto de entrada</span>
           <h3>Diagnóstico de Posicionamento</h3>
           <p>Descubra seu diferencial, seus temas, sua voz e seu público — em poucos minutos, com uma leitura crítica de verdade, não só validação.</p>
-          <div class="tool-price">Grátis</div>
+          <div class="tool-price"><span id="preco-diagnostico">R$ 19,90</span> <small>· pagamento único</small></div>
           <span class="tool-link">Fazer o diagnóstico →</span>
         </a>
         <a href="/guia-venda" class="tool-card">
@@ -236,9 +236,11 @@
     var guiaEl = document.getElementById('preco-guia');
     var moldaEl = document.getElementById('preco-molda');
     var acompEl = document.getElementById('preco-acompanhamento');
+    var diagEl = document.getElementById('preco-diagnostico');
     if (guiaEl && data.guiaPrice != null) guiaEl.textContent = fmt(data.guiaPrice);
     if (moldaEl && data.moldaPrice != null) moldaEl.textContent = fmt(data.moldaPrice);
     if (acompEl && data.acompanhamentoPrice != null) acompEl.textContent = fmt(data.acompanhamentoPrice);
+    if (diagEl && data.diagnosticoPrice != null) diagEl.textContent = fmt(data.diagnosticoPrice);
   }).catch(function () { /* mantém o preço padrão do html se a chamada falhar */ });
 </script>
 </body>

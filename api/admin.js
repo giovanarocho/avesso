@@ -3,8 +3,8 @@ import {
   checkAdminPassword,
   dbConfigured,
   dbListPagamentos,
-  dbSetConfig,
-  dbSetPrecoProduto,
+  dbSetConfigDetailed,
+  dbSetPrecoProdutoDetailed,
   dbSetTutoriais,
   issueAdminToken,
   verifyAdminToken,
@@ -81,8 +81,11 @@ async function actionUpdateConfig(req, res, body) {
   // preços das ferramentas do catálogo (guia, molda, e qualquer uma nova)
   // vêm num objeto único { guia: 39.9, molda: 29.9, ... } — cada um grava
   // no lugar certo (coluna fixa pras duas de sempre, campo genérico pro
-  // resto) via dbSetPrecoProduto.
+  // resto) via dbSetPrecoProdutoDetailed. se uma falhar (ex.: coluna que
+  // ainda não existe porque falta rodar uma migração), não trava as
+  // outras — só avisa qual foi e por quê na resposta.
   const precos = body.precos && typeof body.precos === 'object' ? body.precos : {};
+  const precosFalhados = [];
   for (const slug of Object.keys(precos)) {
     const valor = parseFloat(precos[slug]);
     if (precos[slug] === '' || precos[slug] === undefined) continue;
@@ -90,7 +93,8 @@ async function actionUpdateConfig(req, res, body) {
       res.status(400).json({ error: 'preço inválido' });
       return;
     }
-    await dbSetPrecoProduto(slug, valor);
+    const r = await dbSetPrecoProdutoDetailed(slug, valor);
+    if (!r.ok) precosFalhados.push({ slug: slug, error: r.error });
   }
 
   // links dos vídeos-tutorial de cada marco do guia — objeto único
@@ -118,14 +122,14 @@ async function actionUpdateConfig(req, res, body) {
 
   if (Object.keys(fields).length > 0) {
     fields.updated_at = new Date().toISOString();
-    const ok = await dbSetConfig(fields);
-    if (!ok) {
-      res.status(502).json({ error: 'falha ao salvar no banco' });
+    const r = await dbSetConfigDetailed(fields);
+    if (!r.ok) {
+      res.status(502).json({ error: 'falha ao salvar no banco', detail: r.error });
       return;
     }
   }
 
-  res.status(200).json({ ok: true });
+  res.status(200).json({ ok: true, warnings: precosFalhados.length > 0 ? precosFalhados : undefined });
 }
 
 async function actionListProducts(req, res) {
@@ -166,7 +170,7 @@ async function actionSaveProduct(req, res, body) {
     return;
   }
 
-  const isFixo = slug === 'guia' || slug === 'molda';
+  const isFixo = slug === 'guia' || slug === 'molda' || slug === 'diagnostico';
 
   const record = {
     slug: slug,
@@ -205,7 +209,7 @@ async function actionSaveProduct(req, res, body) {
   // preço de guia/molda mora em `config` (colunas próprias), não em
   // `produtos` — grava pelo mesmo caminho já usado na tela de preços.
   if (isFixo && preco !== null) {
-    await dbSetPrecoProduto(slug, preco);
+    await dbSetPrecoProdutoDetailed(slug, preco);
   }
 
   res.status(200).json({ ok: true, slug: slug });
@@ -221,8 +225,8 @@ async function actionDeleteProduct(req, res, body) {
     res.status(400).json({ error: 'slug obrigatório' });
     return;
   }
-  if (slug === 'guia' || slug === 'molda') {
-    res.status(400).json({ error: 'guia e molda não podem ser removidas — desative em vez de excluir' });
+  if (slug === 'guia' || slug === 'molda' || slug === 'diagnostico') {
+    res.status(400).json({ error: 'guia, molda e diagnóstico não podem ser removidos — desative em vez de excluir' });
     return;
   }
   const ok = await dbDeleteProduto(slug);

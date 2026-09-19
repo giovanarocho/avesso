@@ -119,6 +119,23 @@
     return v;
   }
 
+  // extrai o ID de um arquivo do Google Drive de qualquer link comum
+  // (/d/ID/view, ?id=ID...) — usado pra vídeo, que embeda pelo player
+  // próprio do Drive (/preview), diferente da imagem direta acima.
+  function resolveDriveFileId(raw) {
+    const v = (raw || "").trim();
+    const m = v.match(/\/d\/([a-zA-Z0-9_-]{15,})/) || v.match(/[?&]id=([a-zA-Z0-9_-]{15,})/);
+    return m ? m[1] : null;
+  }
+
+  // extrai o ID de um vídeo do youtube de qualquer formato comum de link
+  // (watch?v=, youtu.be/, shorts/, embed/).
+  function resolveYoutubeId(raw) {
+    const v = (raw || "").trim();
+    const m = v.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+    return m ? m[1] : null;
+  }
+
   function buildIdentidade(rows) {
     return rows
       .filter(rowIsAtivo)
@@ -159,6 +176,35 @@
         tag: r.tag || ""
       }))
       .filter(it => it.image);
+  }
+
+  // audiovisual: cada linha é um vídeo — "tipo" define o formato:
+  //   "story"   — vídeo vertical (proporção 9:16, tipo story do instagram),
+  //               hospedado no Drive; embeda pelo player do próprio Drive.
+  //   "youtube" — vídeo do youtube (qualquer link: watch, youtu.be, shorts),
+  //               embeda pelo player do youtube (16:9).
+  // a coluna "video" leva o link (do Drive ou do youtube, conforme o tipo);
+  // se a planilha ainda usa a coluna antiga "imagem" pra isso, também funciona.
+  function buildAudiovisual(rows) {
+    return rows
+      .filter(rowIsAtivo)
+      .filter(r => (r.categoria || "").trim().toLowerCase() === "audiovisual")
+      .sort(byOrdem)
+      .map(r => {
+        const tipo = (r.tipo || "").trim().toLowerCase() === "youtube" ? "youtube" : "story";
+        const raw = (r.video || r.imagem || "").trim();
+        let embed = null;
+        if (tipo === "youtube") {
+          const yid = resolveYoutubeId(raw);
+          if (yid) embed = `https://www.youtube.com/embed/${yid}`;
+        } else {
+          const did = resolveDriveFileId(raw);
+          if (did) embed = `https://drive.google.com/file/d/${did}/preview`;
+          else if (/^https?:\/\//.test(raw)) embed = raw;
+        }
+        return { tipo, embed, title: r.titulo || "" };
+      })
+      .filter(it => it.embed);
   }
 
   function buildCapas(rows) {
@@ -222,7 +268,7 @@
       audiovisual: {
         label: "Audiovisual",
         intro: cfg.audiovisual_intro || (fallback ? fallback.audiovisual.intro : ""),
-        images: projRows ? buildProjetos(projRows, "audiovisual") : (fallback ? fallback.audiovisual.images : [])
+        items: projRows ? buildAudiovisual(projRows) : (fallback ? fallback.audiovisual.items : [])
       }
     };
 
@@ -234,7 +280,7 @@
       if (!PORTFOLIO.sites.items.length) PORTFOLIO.sites.items = fallback.sites.items;
       if (!PORTFOLIO.social.images.length) PORTFOLIO.social.images = fallback.social.images;
       if (!PORTFOLIO.outros.images.length) PORTFOLIO.outros.images = fallback.outros.images;
-      if (!PORTFOLIO.audiovisual.images.length) PORTFOLIO.audiovisual.images = fallback.audiovisual.images;
+      if (!PORTFOLIO.audiovisual.items.length) PORTFOLIO.audiovisual.items = fallback.audiovisual.items;
     }
 
     let TEASER_COVERS = capasRows ? buildCapas(capasRows) : fallbackCovers;

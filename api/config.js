@@ -1,4 +1,10 @@
-import { resolvePrices, getProductBySlug } from '../lib/services.js';
+import {
+  resolvePrices,
+  getProductBySlug,
+  dbGetPagamento,
+  verifyContaToken,
+  dbListComprasAprovadas
+} from '../lib/services.js';
 
 const MAX_TOTAL_LENGTH = 20000;
 
@@ -31,6 +37,33 @@ export default async function handler(req, res) {
     const API_KEY = process.env.ANTHROPIC_API_KEY;
     if (!API_KEY) {
       res.status(500).json({ error: 'ANTHROPIC_API_KEY não configurada no servidor' });
+      return;
+    }
+
+    // o diagnóstico é pago — cada mensagem aqui chama a api da anthropic (custo
+    // de verdade), então confere de verdade que quem está chamando pagou,
+    // aceitando duas provas: 1) o payment_id de uma compra aprovada de
+    // "diagnostico" (fluxo normal, logo depois de pagar, sem precisar logar) ou
+    // 2) uma sessão de conta que já é dona de "diagnostico" (quem volta depois
+    // de já ter criado a senha). sem nenhuma das duas, recusa.
+    const paymentId = String(req.body.payment_id || '').trim();
+    const auth = req.headers.authorization || '';
+    const contaToken = auth.indexOf('Bearer ') === 0 ? auth.slice(7) : '';
+
+    let autorizado = false;
+    if (paymentId) {
+      const pagamento = await dbGetPagamento(paymentId);
+      if (pagamento && pagamento.status === 'approved' && pagamento.produto === 'diagnostico') autorizado = true;
+    }
+    if (!autorizado && contaToken) {
+      const email = verifyContaToken(contaToken);
+      if (email) {
+        const compras = await dbListComprasAprovadas(email);
+        if (compras.indexOf('diagnostico') !== -1) autorizado = true;
+      }
+    }
+    if (!autorizado) {
+      res.status(402).json({ error: 'é preciso comprar o diagnóstico antes de continuar a conversa' });
       return;
     }
 

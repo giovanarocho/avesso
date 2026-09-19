@@ -277,6 +277,12 @@
                 ? 'já está liberado na sua conta — entra com o e-mail e a senha de sempre.'
                 : 'falta só um passo: criar sua senha de acesso.';
             }
+            // avisa a página (fora deste arquivo) que o pagamento foi
+            // aprovado — usado por páginas que desbloqueiam a ferramenta na
+            // hora, sem precisar ir pra /conta primeiro (ex: /diagnostico).
+            window.dispatchEvent(new CustomEvent('rocholab:checkout-approved', {
+              detail: { produto: produto, paymentId: paymentId, contaLink: data.contaLink, hasAccount: data.hasAccount }
+            }));
           } else if (data.status === 'rejected' || data.status === 'cancelled') {
             clearInterval(pollTimer);
             pollTimer = null;

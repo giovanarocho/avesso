@@ -175,7 +175,39 @@
     `;
   }
   renderFlat('social');
-  renderFlat('audiovisual');
+
+  // ---------- audiovisual: vídeos (story vertical ou youtube), não imagens ----------
+  function renderAudiovisual() {
+    const data = PORTFOLIO.audiovisual;
+    const panel = panels.audiovisual;
+    if (!data.items.length) {
+      panel.innerHTML = `
+        <div class="wrap">
+          <p class="cat-intro reveal">${data.intro}</p>
+          <p class="cat-empty reveal">em breve</p>
+        </div>
+      `;
+      return;
+    }
+    panel.innerHTML = `
+      <div class="wrap">
+        <p class="cat-intro reveal">${data.intro}</p>
+        <div class="av-grid">
+          ${data.items.map(it => `
+            <div class="av-item av-${it.tipo} reveal">
+              <div class="av-frame">
+                <iframe src="${it.embed}" title="${it.title || 'vídeo'}" loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+              </div>
+              ${it.title ? `<p class="av-caption">${it.title}</p>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+  renderAudiovisual();
 
   // ---------- outros: imagem grande, uma embaixo da outra, sem proporção fixa ----------
   const outros = PORTFOLIO.outros;

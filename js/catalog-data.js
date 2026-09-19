@@ -141,7 +141,8 @@ const FALLBACK_PORTFOLIO = {
   audiovisual: {
     label: "Audiovisual",
     intro: "Vídeo também é identidade — direção de arte, ritmo e som seguem a mesma linha visual do resto da marca. Alguns materiais audiovisuais que já saíram do laboratório:",
-    images: []
+    // cada item é { tipo: "story"|"youtube", embed: "URL do player já pronta pra iframe", title: "" }
+    items: []
   }
 
 };
