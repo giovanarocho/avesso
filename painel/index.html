@@ -168,10 +168,6 @@
           </div>
           <div class="field-row">
             <div class="field">
-              <label for="f-acompanhamento">acompanhamento — R$/mês (mentoria guiada)</label>
-              <input id="f-acompanhamento" type="number" step="0.01" min="0">
-            </div>
-            <div class="field">
               <label for="f-suporte">suporte avulso do guia (R$)</label>
               <input id="f-suporte" type="number" step="0.01" min="0">
             </div>
@@ -388,7 +384,6 @@
       document.getElementById('f-base').value = cfg.basePrice;
       document.getElementById('f-manutencao').value = cfg.manutencaoPrice;
       document.getElementById('f-molda').value = cfg.moldaPrice;
-      document.getElementById('f-acompanhamento').value = cfg.acompanhamentoPrice;
       document.getElementById('f-suporte').value = cfg.supportPrice;
       document.getElementById('f-diagnostico').value = cfg.diagnosticoPrice;
       document.getElementById('f-vagas').value = cfg.manutencaoVagas;
@@ -413,7 +408,6 @@
       body: JSON.stringify({
         basePrice: document.getElementById('f-base').value,
         manutencaoPrice: document.getElementById('f-manutencao').value,
-        acompanhamentoPrice: document.getElementById('f-acompanhamento').value,
         supportPrice: document.getElementById('f-suporte').value,
         manutencaoVagas: document.getElementById('f-vagas').value,
         precos: precos

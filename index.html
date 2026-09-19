@@ -74,13 +74,6 @@
           <div class="tool-price"><span id="preco-molda">R$ 29,90</span> <small>· pagamento único</small></div>
           <span class="tool-link">Saiba mais →</span>
         </a>
-        <a href="#lista-espera" class="tool-card">
-          <span class="tag">mentoria guiada</span>
-          <h3>Acompanhamento</h3>
-          <p>Você faz, eu direciono. Um mês de acompanhamento com dois encontros semanais — depois disso, você segue sozinha, sem depender de mim.</p>
-          <div class="tool-price"><span id="preco-acompanhamento">R$ 2.500</span> <small>· acompanhamento de 1 mês</small></div>
-          <span class="tool-link">Entrar na lista de espera →</span>
-        </a>
       </div>
     </div>
   </section>
@@ -167,48 +160,6 @@
     </div>
   </section>
 
-  <!-- LISTA DE ESPERA — ACOMPANHAMENTO -->
-  <section class="alt" id="lista-espera">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="eyebrow reveal">acompanhamento · vagas limitadas</span>
-        <h2 class="reveal">Lista de espera — Acompanhamento</h2>
-        <p class="reveal" style="margin-top:12px;">Um mês de acompanhamento guiado, com dois encontros semanais — você faz, eu direciono, e depois você segue sozinha. Entra na lista e eu chamo você quando abrir a próxima turma.</p>
-      </div>
-
-      <form class="contact-form reveal" action="https://formspree.io/f/xbgrznvb" method="POST" style="max-width:560px;">
-        <input type="hidden" name="_subject" value="Lista de espera — Acompanhamento">
-        <div class="form-row-pair">
-          <div class="form-row">
-            <label for="le-nome">seu nome*</label>
-            <input type="text" id="le-nome" name="seu nome" required>
-          </div>
-          <div class="form-row">
-            <label for="le-marca">nome da sua marca*</label>
-            <input type="text" id="le-marca" name="nome da marca" required>
-          </div>
-        </div>
-
-        <div class="form-row-pair">
-          <div class="form-row">
-            <label for="le-email">seu e-mail*</label>
-            <input type="email" id="le-email" name="email" required>
-          </div>
-          <div class="form-row">
-            <label for="le-whats">seu whatsapp*</label>
-            <input type="tel" id="le-whats" name="whatsapp" placeholder="(48) 99999-9999" required>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <label for="le-contexto">me conte o que eu preciso saber antes de entrar em contato</label>
-          <textarea id="le-contexto" name="contexto" rows="3"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-solid">Entrar na lista de espera</button>
-      </form>
-    </div>
-  </section>
 
 </main>
 
@@ -235,11 +186,9 @@
     };
     var guiaEl = document.getElementById('preco-guia');
     var moldaEl = document.getElementById('preco-molda');
-    var acompEl = document.getElementById('preco-acompanhamento');
     var diagEl = document.getElementById('preco-diagnostico');
     if (guiaEl && data.guiaPrice != null) guiaEl.textContent = fmt(data.guiaPrice);
     if (moldaEl && data.moldaPrice != null) moldaEl.textContent = fmt(data.moldaPrice);
-    if (acompEl && data.acompanhamentoPrice != null) acompEl.textContent = fmt(data.acompanhamentoPrice);
     if (diagEl && data.diagnosticoPrice != null) diagEl.textContent = fmt(data.diagnosticoPrice);
   }).catch(function () { /* mantém o preço padrão do html se a chamada falhar */ });
 </script>

@@ -369,7 +369,7 @@ section.alt{ background: var(--bg-alt); }
 /* ---------- cards de ferramentas (self-serve) ---------- */
 .tools-grid{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-top: 40px;
 }
@@ -408,6 +408,9 @@ section.alt{ background: var(--bg-alt); }
   border-bottom: 1px solid var(--line);
 }
 .tool-card:hover .tool-link{ color: var(--clay); }
+@media (max-width: 900px){
+  .tools-grid{ grid-template-columns: 1fr 1fr; }
+}
 @media (max-width: 640px){
   .tools-grid{ grid-template-columns: 1fr; }
 }
@@ -619,7 +622,7 @@ section.alt{ background: var(--bg-alt); }
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  text-align: left;
+  text-align: center;
 }
 .skip-form p{ font-size: 14.5px; color: var(--ink-soft); margin-bottom: 12px; }
 .skip-form svg{ width: 16px; height: 16px; fill: currentColor; }
