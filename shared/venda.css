@@ -210,3 +210,24 @@ footer{text-align:center;padding:40px 20px 60px;font-size:12px;opacity:.6;}
 @media (max-width:520px){
   section{padding:clamp(44px,12vw,72px) 0;}
 }
+
+/* ---------- botão flutuante do whatsapp ---------- */
+.whatsapp-note{
+  position:fixed;right:22px;bottom:90px;z-index:970;max-width:200px;
+  background:#fff;border:1px solid rgba(32,30,25,.12);border-radius:10px;padding:10px 14px;
+  font-size:13px;color:var(--coffee);opacity:.85;box-shadow:0 6px 18px rgba(32,30,25,.12);text-align:right;
+}
+.whatsapp-float{
+  position:fixed;right:22px;bottom:22px;z-index:970;width:58px;height:58px;border-radius:50%;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 22px rgba(32,30,25,.28);transition:transform .2s ease, background .2s ease;
+}
+.whatsapp-float:hover{background:var(--accent-soft);transform:translateY(-2px) scale(1.04);}
+.whatsapp-float svg{width:27px;height:27px;fill:#f7f3ec;}
+@media(max-width:680px){
+  .whatsapp-float{right:16px;bottom:16px;width:52px;height:52px;}
+  .whatsapp-float svg{width:24px;height:24px;}
+}
+@media(max-width:480px){
+  .whatsapp-note{max-width:160px;font-size:12px;right:16px;bottom:82px;padding:8px 12px;}
+}

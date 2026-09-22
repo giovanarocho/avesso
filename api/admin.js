@@ -66,12 +66,9 @@ async function actionUpdateConfig(req, res, body) {
   if (body.acompanhamentoPrice !== undefined && body.acompanhamentoPrice !== '') {
     fields.acompanhamento_price = parseFloat(body.acompanhamentoPrice);
   }
-  if (body.supportPrice !== undefined && body.supportPrice !== '') {
-    fields.support_price = parseFloat(body.supportPrice);
-  }
   if (body.manutencaoVagas !== undefined) fields.manutencao_vagas = String(body.manutencaoVagas);
 
-  for (const key of ['base_price', 'manutencao_price', 'acompanhamento_price', 'support_price']) {
+  for (const key of ['base_price', 'manutencao_price', 'acompanhamento_price']) {
     if (key in fields && (isNaN(fields[key]) || fields[key] < 0)) {
       res.status(400).json({ error: 'preço inválido' });
       return;

@@ -39,7 +39,7 @@
       <p class="hero-fork-label reveal is-visible">Como você quer seguir?</p>
       <div class="hero-actions reveal is-visible">
         <a href="#ferramentas" class="btn btn-solid">Quero seguir sozinha</a>
-        <a href="#contato" class="btn btn-ghost">Quero terceirizar</a>
+        <a href="/servicos" class="btn btn-ghost">Quero terceirizar</a>
       </div>
     </div>
   </section>
@@ -78,85 +78,67 @@
     </div>
   </section>
 
-  <!-- CTA FINAL -->
-  <section class="cta-final" id="contato">
+  <!-- NÃO SEI POR ONDE COMEÇAR -->
+  <section class="cta-final" id="comece-por-aqui">
     <div class="wrap">
       <div class="section-head">
-        <span class="eyebrow reveal">bora conversar?</span>
-        <h2 class="reveal" style="margin-top:18px;">Conta pra gente o que sua marca precisa dizer.</h2>
+        <span class="eyebrow reveal">não sabe por onde começar?</span>
+        <h2 class="reveal" style="margin-top:18px;">Depende do que faz mais sentido pra você agora.</h2>
+        <p class="reveal" style="margin-top:14px;">Duas perguntas rápidas e a gente te indica o caminho.</p>
       </div>
 
-      <div class="skip-form reveal">
-        <p><strong>Prefere conversar direto?</strong> Pula o formulário e manda um oi no WhatsApp — a gente responde por lá também.</p>
-        <a class="btn btn-solid" href="https://wa.me/5548999936071?text=Oi%21%20vim%20do%20site%20da%20rocho%20lab%20e%20quero%20conversar%20sobre%20um%20projeto." target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.8 14.09c-.24.68-1.4 1.32-1.93 1.36-.5.05-1 .25-3.36-.7-2.85-1.14-4.68-4.05-4.82-4.24-.14-.19-1.15-1.53-1.15-2.92s.72-2.07.97-2.35c.24-.28.53-.35.71-.35.18 0 .35 0 .5.01.16.01.38-.06.6.46.24.55.8 1.9.87 2.04.07.14.12.3.02.49-.1.19-.15.3-.29.46-.14.16-.3.36-.43.48-.14.14-.29.29-.13.57.17.28.74 1.22 1.59 1.98 1.09.97 2.01 1.27 2.29 1.41.28.14.44.12.6-.07.16-.19.7-.81.88-1.09.19-.28.37-.23.62-.14.26.09 1.62.77 1.9.9.28.14.46.21.53.32.07.12.07.65-.17 1.33z"/></svg>
-          pular formulário e mandar um oi
-        </a>
+      <div class="triagem reveal" id="triagem">
+
+        <div class="triagem-step" data-step="1">
+          <p class="triagem-question">Pra tirar sua marca do papel agora, você prefere investir…</p>
+          <div class="triagem-options">
+            <button type="button" class="btn btn-ghost" data-goto="terceirizar">meu dinheiro — quero terceirizar</button>
+            <button type="button" class="btn btn-ghost" data-goto="tempo">meu tempo — quero fazer sozinha</button>
+          </div>
+        </div>
+
+        <div class="triagem-step" data-step="tempo" hidden>
+          <p class="triagem-question">E qual dessas frases parece mais com o seu momento?</p>
+          <div class="triagem-options triagem-options-col">
+            <button type="button" class="btn btn-ghost" data-goto="diagnostico">não sei bem qual é meu diferencial</button>
+            <button type="button" class="btn btn-ghost" data-goto="guia">sei meu diferencial e o que quero vender, mas não sei por onde começar</button>
+            <button type="button" class="btn btn-ghost" data-goto="molda">sei meu diferencial, já tenho base estruturada no digital e quero lançar um infoproduto</button>
+            <button type="button" class="btn btn-ghost" data-goto="perdida">nada disso combina comigo</button>
+          </div>
+          <button type="button" class="triagem-back" data-goto="1">← voltar</button>
+        </div>
+
+        <div class="triagem-result" data-step="terceirizar" hidden>
+          <p>Depende também de quanto você quer se envolver — e terceirizar é isso: alguém cuidando do que sua marca precisa dizer, enquanto você cuida do resto da sua vida.</p>
+          <a href="/servicos" class="btn btn-solid">Conhecer os serviços →</a>
+          <button type="button" class="triagem-back" data-goto="1">← voltar</button>
+        </div>
+
+        <div class="triagem-result" data-step="diagnostico" hidden>
+          <p>Então o ponto de partida é clareza, não ferramenta. Antes de construir qualquer coisa, vale entender o que te diferencia de verdade — sem só validar o que você já imaginava. É pra isso que o diagnóstico existe.</p>
+          <a href="/diagnostico" class="btn btn-solid">Fazer o diagnóstico →</a>
+          <button type="button" class="triagem-back" data-goto="tempo">← voltar</button>
+        </div>
+
+        <div class="triagem-result" data-step="guia" hidden>
+          <p>Então o que falta é organização, não descoberta. O Marketing Essencial é o passo a passo pra colocar Google, WhatsApp, redes e conteúdo de pé — no seu ritmo, sem complicar.</p>
+          <a href="/guia-venda" class="btn btn-solid">Conhecer o Marketing Essencial →</a>
+          <button type="button" class="triagem-back" data-goto="tempo">← voltar</button>
+        </div>
+
+        <div class="triagem-result" data-step="molda" hidden>
+          <p>Com a base construída, o próximo passo é comunicar. O Molda te ajuda a criar o conteúdo do lançamento — do texto às imagens, já na sua identidade.</p>
+          <a href="/molda" class="btn btn-solid">Conhecer o Molda →</a>
+          <button type="button" class="triagem-back" data-goto="tempo">← voltar</button>
+        </div>
+
+        <div class="triagem-result" data-step="perdida" hidden>
+          <p>Tudo bem — às vezes o que deixa perdida é justamente não saber nomear o problema. Conta pra gente o que está te travando, que a gente usa isso como guia pro seu próximo passo.</p>
+          <a href="/servicos?interesse=outra+opcao#contato" class="btn btn-solid">Contar o que está acontecendo →</a>
+          <button type="button" class="triagem-back" data-goto="tempo">← voltar</button>
+        </div>
+
       </div>
-
-      <form class="contact-form reveal" action="https://formspree.io/f/xbgrznvb" method="POST" style="max-width:560px;">
-        <div class="form-row-pair">
-          <div class="form-row">
-            <label for="empresa">nome da marca/empresa*</label>
-            <input type="text" id="empresa" name="nome da empresa" required>
-          </div>
-          <div class="form-row">
-            <label for="nome">seu nome*</label>
-            <input type="text" id="nome" name="seu nome" required>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <span class="choice-label">o que você precisa?*</span>
-          <div class="choice-options">
-            <label class="choice-pill">
-              <input type="radio" name="interesse" value="modo avesso (marketing essencial)" required>
-              <span>Modo Avesso (marketing essencial)</span>
-            </label>
-            <label class="choice-pill">
-              <input type="radio" name="interesse" value="identidade visual modular" required>
-              <span>Identidade Visual Modular</span>
-            </label>
-            <label class="choice-pill">
-              <input type="radio" name="interesse" value="sistema visual" required>
-              <span>Sistema Visual</span>
-            </label>
-            <label class="choice-pill">
-              <input type="radio" name="interesse" value="site ou landing page" required>
-              <span>Site ou Landing Page</span>
-            </label>
-            <label class="choice-pill">
-              <input type="radio" name="interesse" value="outra opcao" required>
-              <span>Outra opção</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <label for="oquefaz">conte em poucas linhas o que sua marca faz, e pra quem*</label>
-          <textarea id="oquefaz" name="o que a empresa faz" rows="3" required></textarea>
-        </div>
-
-        <div class="form-row">
-          <label for="contexto">o que eu preciso saber antes de entrar em contato?</label>
-          <textarea id="contexto" name="contexto" rows="3"></textarea>
-        </div>
-
-        <div class="form-row-pair">
-          <div class="form-row">
-            <label for="email">seu e-mail*</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="form-row">
-            <label for="whats">seu whatsapp*</label>
-            <input type="tel" id="whats" name="whatsapp" placeholder="(48) 99999-9999" required>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-solid">Enviar mensagem</button>
-      </form>
-
-      <p class="contact-form-alt reveal">As respostas chegam direto pra gente. Sem newsletter, sem spam.</p>
     </div>
   </section>
 
@@ -191,6 +173,24 @@
     if (moldaEl && data.moldaPrice != null) moldaEl.textContent = fmt(data.moldaPrice);
     if (diagEl && data.diagnosticoPrice != null) diagEl.textContent = fmt(data.diagnosticoPrice);
   }).catch(function () { /* mantém o preço padrão do html se a chamada falhar */ });
+</script>
+<script>
+  // triagem "não sabe por onde começar" — troca de painel só no cliente,
+  // sem navegar nem perder o resto da página.
+  (function () {
+    var triagem = document.getElementById('triagem');
+    if (!triagem) return;
+    function irPara(step) {
+      triagem.querySelectorAll('[data-step]').forEach(function (el) {
+        el.hidden = el.getAttribute('data-step') !== step;
+      });
+    }
+    triagem.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-goto]');
+      if (!btn) return;
+      irPara(btn.getAttribute('data-goto'));
+    });
+  })();
 </script>
 </body>
 </html>

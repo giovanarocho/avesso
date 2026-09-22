@@ -33,7 +33,7 @@
   <section class="hero" style="padding-bottom: 40px;">
     <div class="wrap">
       <span class="eyebrow reveal is-visible">o que sai do laboratório</span>
-      <h1 class="reveal is-visible" style="font-size: clamp(28px, 4.2vw, 44px);">Duas frentes, uma linha de raciocínio só.</h1>
+      <h1 class="reveal is-visible" style="font-size: clamp(28px, 4.2vw, 44px);">Conheça nossos serviços.</h1>
       <p class="hero-sub reveal is-visible">Identidade visual, site e marketing essencial — pra quem quer uma marca autêntica e potente funcionando por ela, sem virar escrava do próprio negócio.</p>
     </div>
   </section>
@@ -43,10 +43,9 @@
       <span class="eyebrow reveal" style="display:flex; margin-bottom:20px;">frente 01 — comunicação &amp; marketing essencial</span>
       <div class="modo-avesso-card reveal">
         <h3>Modo Avesso</h3>
-        <p>Um método próprio pra fazer marketing essencial pra profissionais autônomas e pequenos negócios. Aqui você tem dois caminhos possíveis — o importante é se movimentar: investir seu tempo ou investir seu dinheiro.</p>
+        <p>Um método próprio pra fazer marketing essencial pra profissionais autônomas e pequenos negócios — organização, presença digital e conteúdo, sem virar mais um trabalho na sua vida.</p>
         <div class="modo-avesso-actions">
-          <a href="/#ferramentas" class="btn btn-solid">Quero seguir sozinha</a>
-          <a href="/#contato" class="btn btn-ghost">Quero terceirizar</a>
+          <a href="#contato" class="btn btn-ghost selecionar-servico" data-interesse="modo avesso (marketing essencial)">Selecionar serviço</a>
         </div>
       </div>
     </div>
@@ -60,31 +59,103 @@
           <span class="tag">01</span>
           <h3>Identidade Visual Modular</h3>
           <p>Mais do que logo e paleta — uma entrega completa pra todos os materiais da sua marca serem inconfundíveis. 100% personalizado conforme a necessidade da sua marca.</p>
+          <a href="#contato" class="btn btn-ghost selecionar-servico" data-interesse="identidade visual modular">Selecionar serviço</a>
         </div>
         <div class="service-card">
           <span class="tag">02</span>
           <h3>Sistema Visual</h3>
           <p>Pra quem começou improvisando ou cortando custo e só tem uma logo e uma paleta, mas sente que cada material começa do zero. A gente cria um padrão próprio — grafismos, composição, direção fotográfica e mais.</p>
+          <a href="#contato" class="btn btn-solid selecionar-servico" data-interesse="sistema visual">Selecionar serviço</a>
         </div>
         <div class="service-card">
           <span class="tag">03</span>
           <h3>Sites e Landing Pages</h3>
           <p>Pra sua comunicação não perder força quando alguém clica no link da bio — e pra sua marca ser encontrada em qualquer lugar, sem virar refém das redes sociais.</p>
+          <a href="#contato" class="btn btn-solid selecionar-servico" data-interesse="site ou landing page">Selecionar serviço</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="alt cta-final">
+  <!-- CTA FINAL / FORMULÁRIO -->
+  <section class="cta-final" id="contato">
     <div class="wrap">
       <div class="section-head">
         <span class="eyebrow reveal">bora conversar?</span>
         <h2 class="reveal" style="margin-top:18px;">Conta pra gente o que sua marca precisa dizer.</h2>
       </div>
-      <div class="hero-actions reveal" style="justify-content:center; margin-top:28px;">
-        <a href="/#contato" class="btn btn-solid">Falar com a gente</a>
-        <a href="/portfolio" class="btn btn-ghost">Ver o portfólio</a>
+
+      <div class="skip-form reveal">
+        <p><strong>Prefere conversar direto?</strong> Pula o formulário e manda um oi no WhatsApp — a gente responde por lá também.</p>
+        <a class="btn btn-solid" href="https://wa.me/5548999936071?text=Oi%21%20vim%20do%20site%20da%20rocho%20lab%20e%20quero%20conversar%20sobre%20um%20projeto." target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.8 14.09c-.24.68-1.4 1.32-1.93 1.36-.5.05-1 .25-3.36-.7-2.85-1.14-4.68-4.05-4.82-4.24-.14-.19-1.15-1.53-1.15-2.92s.72-2.07.97-2.35c.24-.28.53-.35.71-.35.18 0 .35 0 .5.01.16.01.38-.06.6.46.24.55.8 1.9.87 2.04.07.14.12.3.02.49-.1.19-.15.3-.29.46-.14.16-.3.36-.43.48-.14.14-.29.29-.13.57.17.28.74 1.22 1.59 1.98 1.09.97 2.01 1.27 2.29 1.41.28.14.44.12.6-.07.16-.19.7-.81.88-1.09.19-.28.37-.23.62-.14.26.09 1.62.77 1.9.9.28.14.46.21.53.32.07.12.07.65-.17 1.33z"/></svg>
+          pular formulário e mandar um oi
+        </a>
       </div>
+
+      <form class="contact-form reveal" action="https://formspree.io/f/xbgrznvb" method="POST" style="max-width:560px;">
+        <div class="form-row-pair">
+          <div class="form-row">
+            <label for="empresa">nome da marca/empresa*</label>
+            <input type="text" id="empresa" name="nome da empresa" required>
+          </div>
+          <div class="form-row">
+            <label for="nome">seu nome*</label>
+            <input type="text" id="nome" name="seu nome" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <span class="choice-label">o que você precisa?*</span>
+          <div class="choice-options">
+            <label class="choice-pill">
+              <input type="radio" name="interesse" value="modo avesso (marketing essencial)" required>
+              <span>Modo Avesso (marketing essencial)</span>
+            </label>
+            <label class="choice-pill">
+              <input type="radio" name="interesse" value="identidade visual modular" required>
+              <span>Identidade Visual Modular</span>
+            </label>
+            <label class="choice-pill">
+              <input type="radio" name="interesse" value="sistema visual" required>
+              <span>Sistema Visual</span>
+            </label>
+            <label class="choice-pill">
+              <input type="radio" name="interesse" value="site ou landing page" required>
+              <span>Site ou Landing Page</span>
+            </label>
+            <label class="choice-pill">
+              <input type="radio" name="interesse" value="outra opcao" required>
+              <span>Outra opção</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="oquefaz">conte em poucas linhas o que sua marca faz, e pra quem*</label>
+          <textarea id="oquefaz" name="o que a empresa faz" rows="3" required></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="contexto">o que eu preciso saber antes de entrar em contato?</label>
+          <textarea id="contexto" name="contexto" rows="3"></textarea>
+        </div>
+
+        <div class="form-row-pair">
+          <div class="form-row">
+            <label for="email">seu e-mail*</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-row">
+            <label for="whats">seu whatsapp*</label>
+            <input type="tel" id="whats" name="whatsapp" placeholder="(48) 99999-9999" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-solid">Enviar mensagem</button>
+      </form>
+
+      <p class="contact-form-alt reveal">As respostas chegam direto pra gente. Sem newsletter, sem spam.</p>
     </div>
   </section>
 
@@ -102,5 +173,23 @@
 </a>
 
 <script src="/js/main.js"></script>
+<script>
+  // clicar em "selecionar serviço" já marca a opção certa no formulário
+  // lá embaixo, antes da página rolar até ele.
+  function marcarInteresse(valor) {
+    var radio = document.querySelector('input[name="interesse"][value="' + valor + '"]');
+    if (radio) radio.checked = true;
+  }
+  document.querySelectorAll('.selecionar-servico').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      marcarInteresse(btn.getAttribute('data-interesse'));
+    });
+  });
+  // chegando aqui com ?interesse=... (ex.: vindo da triagem da home),
+  // já marca a opção certa também.
+  var params = new URLSearchParams(window.location.search);
+  var interesseUrl = params.get('interesse');
+  if (interesseUrl) marcarInteresse(interesseUrl);
+</script>
 </body>
 </html>
