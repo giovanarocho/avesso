@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Obrigada · afetue</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo-marrom.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;700&family=Gaegu:wght@400;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+main{min-height:70vh;display:grid;align-items:center;padding-block:72px}
+.caixa{display:grid;gap:18px;max-width:600px}
+.caixa ol{margin:0;padding-left:1.2em;display:grid;gap:8px}
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="wrap">
+    <a class="marca" href="index.html" aria-label="afetue, início"><img src="assets/logo-marrom.svg" alt="afetue" style="height:44px;width:auto"></a>
+    <nav class="nav" aria-label="Principal">
+      <a href="index.html">Início</a>
+      <a href="oficina.html">Oficina de Autor</a>
+      <a href="enviar.html">Enviar meu livro</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="caixa" id="caixa">
+    <p class="mao">que bom ter vocês aqui</p>
+    <h1 id="titulo">Obrigada pela compra!</h1>
+    <p class="lede" id="texto">O kit está a caminho do seu e-mail.</p>
+    <ol id="passos"></ol>
+    <p class="small">Não chegou em 15 minutos? Olhe o spam ou a aba Promoções. Se não estiver lá, fale com a gente pelo WhatsApp.</p>
+    <a class="btn linha" href="index.html" style="justify-self:start">Voltar pro início</a>
+  </div>
+</main>
+<footer class="rodape">
+  <div class="wrap">
+    <div style="display:grid;gap:14px">
+      <a class="marca" href="index.html" aria-label="afetue, início"><img src="assets/logo-amarelo.svg" alt="afetue" style="height:64px;width:auto"></a>
+      <p>Afeto como ato.</p>
+    </div>
+    <div style="display:grid;gap:10px;justify-items:start"><p>Para mais informações</p><a class="btn claro zap" href="https://wa.me/5548999936071?text=Oi!%20Vim%20pelo%20site%20da%20afetue%20e%20queria%20mais%20informa%C3%A7%C3%B5es." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1 2.7.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg> Falar no WhatsApp</a></div>
+  </div>
+</footer>
+<script>
+(() => {
+  const q = new URLSearchParams(location.search);
+  const plano = q.get("plano");
+  const st = q.get("collection_status") || q.get("status") || "approved";
+  const titulo = document.getElementById("titulo");
+  const texto = document.getElementById("texto");
+  const passos = document.getElementById("passos");
+  const add = (t) => { const li = document.createElement("li"); li.textContent = t; passos.appendChild(li); };
+
+  if (st === "pending" || st === "in_process") {
+    titulo.textContent = "Quase lá!";
+    texto.textContent = "Seu pagamento ainda está sendo confirmado. Assim que ele for aprovado, o e-mail chega sozinho.";
+    add("Se escolheu Pix, confira se o pagamento foi concluído no app do banco.");
+    return;
+  }
+  if (st === "rejected" || st === "null" || st === "failure") {
+    titulo.textContent = "O pagamento não foi concluído.";
+    texto.textContent = "Nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.";
+    const a = document.createElement("a");
+    a.className = "btn"; a.href = "oficina.html#turma"; a.textContent = "Tentar de novo";
+    a.style.justifySelf = "start";
+    document.getElementById("caixa").insertBefore(a, passos);
+    return;
+  }
+  if (plano === "kit_livro") {
+    texto.textContent = "Mandamos pro seu e-mail o kit e o seu link pessoal pra enviar o livro.";
+    add("Abra o e-mail e baixe a Oficina de Autor em Casa.");
+    add("Façam os 5 encontros, no ritmo de vocês.");
+    add("Fotografe as folhas e envie tudo pelo link do e-mail, dentro do prazo da turma.");
+    add("Eu faço o livro à mão, e ele chega na sua casa com frete incluso.");
+  } else {
+    add("Abra o e-mail e baixe a Oficina de Autor em Casa.");
+    add("Imprima as folhas em A4, tamanho real.");
+    add("Escolham uma tarde e comecem pelo encontro 1.");
+  }
+})();
+</script>
+</body>
+</html>

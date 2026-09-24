@@ -1,284 +1,119 @@
+// /api/admin — painel da afetue. Toda chamada precisa do cabeçalho x-admin-senha = ADMIN_SENHA.
+import crypto from "node:crypto";
 import {
-  adminConfigured,
-  checkAdminPassword,
-  dbConfigured,
-  dbListPagamentos,
-  dbSetConfigDetailed,
-  dbSetPrecoProdutoDetailed,
-  dbSetTutoriais,
-  issueAdminToken,
-  verifyAdminToken,
-  listProducts,
-  dbUpsertProduto,
-  dbDeleteProduto
-} from '../lib/services.js';
+  supabase, BUCKET, env, turma, linkEnvio, enviarEmail, anexoKit, emailKit, emailKitLivro, json,
+} from "./_lib.js";
 
-// login, lista de vendas e edição de preços do painel, juntos num arquivo
-// só (ações por ?action=) — pra caber com folga no limite de funções
-// serverless do plano hobby da vercel, mesmo depois de o catálogo de
-// ferramentas crescer.
+const STATUS_LIVRO = ["aguardando", "enviado", "em_producao", "na_grafica", "entregue"];
 
-function getToken(req) {
-  const auth = (req.headers && req.headers.authorization) || '';
-  return auth.indexOf('Bearer ') === 0 ? auth.slice(7) : null;
+function autorizado(req) {
+  const senha = String(req.headers["x-admin-senha"] || "");
+  const certa = env("ADMIN_SENHA");
+  const a = crypto.createHash("sha256").update(senha).digest();
+  const b = crypto.createHash("sha256").update(certa).digest();
+  return senha.length > 0 && crypto.timingSafeEqual(a, b);
 }
 
-async function actionLogin(req, res, body) {
-  if (!adminConfigured()) {
-    res.status(500).json({ error: 'ADMIN_PASSWORD não configurado no servidor' });
-    return;
-  }
-  if (!checkAdminPassword(body.password)) {
-    res.status(401).json({ error: 'senha incorreta' });
-    return;
-  }
-  res.status(200).json({ token: issueAdminToken() });
-}
+const caminhosDoEnvio = (e) =>
+  e ? [e.capa_path, e.dedicatoria_path, e.autor_foto_path, ...(e.paginas || []).map((p) => p.arquivo)].filter(Boolean) : [];
 
-async function actionSales(req, res) {
-  if (!verifyAdminToken(getToken(req))) {
-    res.status(401).json({ error: 'não autorizado' });
-    return;
+async function listarArquivos(db, pasta) {
+  const saida = [];
+  const { data } = await db.storage.from(BUCKET).list(pasta, { limit: 1000 });
+  for (const item of data || []) {
+    const caminho = `${pasta}/${item.name}`;
+    if (item.id === null) saida.push(...(await listarArquivos(db, caminho))); // subpasta
+    else saida.push(caminho);
   }
-  if (!dbConfigured()) {
-    res.status(200).json({ pagamentos: [], dbConfigured: false });
-    return;
-  }
-  const pagamentos = await dbListPagamentos(300);
-  res.status(200).json({ pagamentos: pagamentos, dbConfigured: true });
-}
-
-async function actionUpdateConfig(req, res, body) {
-  if (!verifyAdminToken(getToken(req))) {
-    res.status(401).json({ error: 'não autorizado' });
-    return;
-  }
-  if (!dbConfigured()) {
-    res.status(500).json({ error: 'banco de dados (supabase) não configurado no servidor' });
-    return;
-  }
-
-  const fields = {};
-  if (body.basePrice !== undefined && body.basePrice !== '') fields.base_price = parseFloat(body.basePrice);
-  if (body.manutencaoPrice !== undefined && body.manutencaoPrice !== '') {
-    fields.manutencao_price = parseFloat(body.manutencaoPrice);
-  }
-  if (body.acompanhamentoPrice !== undefined && body.acompanhamentoPrice !== '') {
-    fields.acompanhamento_price = parseFloat(body.acompanhamentoPrice);
-  }
-  if (body.manutencaoVagas !== undefined) fields.manutencao_vagas = String(body.manutencaoVagas);
-
-  for (const key of ['base_price', 'manutencao_price', 'acompanhamento_price']) {
-    if (key in fields && (isNaN(fields[key]) || fields[key] < 0)) {
-      res.status(400).json({ error: 'preço inválido' });
-      return;
-    }
-  }
-
-  // preços das ferramentas do catálogo (guia, molda, e qualquer uma nova)
-  // vêm num objeto único { guia: 39.9, molda: 29.9, ... } — cada um grava
-  // no lugar certo (coluna fixa pras duas de sempre, campo genérico pro
-  // resto) via dbSetPrecoProdutoDetailed. se uma falhar (ex.: coluna que
-  // ainda não existe porque falta rodar uma migração), não trava as
-  // outras — só avisa qual foi e por quê na resposta.
-  const precos = body.precos && typeof body.precos === 'object' ? body.precos : {};
-  const precosFalhados = [];
-  for (const slug of Object.keys(precos)) {
-    const valor = parseFloat(precos[slug]);
-    if (precos[slug] === '' || precos[slug] === undefined) continue;
-    if (isNaN(valor) || valor < 0) {
-      res.status(400).json({ error: 'preço inválido' });
-      return;
-    }
-    const r = await dbSetPrecoProdutoDetailed(slug, valor);
-    if (!r.ok) precosFalhados.push({ slug: slug, error: r.error });
-  }
-
-  // links dos vídeos-tutorial de cada marco do guia — objeto único
-  // { escopo: "https://drive...", "identidade-visual": "...", ... }.
-  // string vazia limpa o link (marco volta a mostrar "em breve").
-  const tutoriais = body.tutoriais && typeof body.tutoriais === 'object' ? body.tutoriais : {};
-  let tutoriaisChanged = false;
-  for (const key of Object.keys(tutoriais)) {
-    if (typeof tutoriais[key] !== 'string') { delete tutoriais[key]; continue; }
-    tutoriais[key] = tutoriais[key].trim();
-    tutoriaisChanged = true;
-  }
-  if (tutoriaisChanged) {
-    const ok = await dbSetTutoriais(tutoriais);
-    if (!ok) {
-      res.status(502).json({ error: 'falha ao salvar links de tutorial no banco' });
-      return;
-    }
-  }
-
-  if (Object.keys(fields).length === 0 && Object.keys(precos).length === 0 && !tutoriaisChanged) {
-    res.status(400).json({ error: 'nada pra atualizar' });
-    return;
-  }
-
-  if (Object.keys(fields).length > 0) {
-    fields.updated_at = new Date().toISOString();
-    const r = await dbSetConfigDetailed(fields);
-    if (!r.ok) {
-      res.status(502).json({ error: 'falha ao salvar no banco', detail: r.error });
-      return;
-    }
-  }
-
-  res.status(200).json({ ok: true, warnings: precosFalhados.length > 0 ? precosFalhados : undefined });
-}
-
-async function actionListProducts(req, res) {
-  if (!verifyAdminToken(getToken(req))) {
-    res.status(401).json({ error: 'não autorizado' });
-    return;
-  }
-  const produtos = await listProducts();
-  res.status(200).json({ produtos: produtos });
-}
-
-// cria ou atualiza uma ferramenta do catálogo (editor completo do painel).
-// pra guia/molda, isso só sobrescreve o conteúdo (nome, tagline, hero,
-// confiança, funcionalidades, passos, faq, depoimentos) — os campos
-// sensíveis a pagamento continuam fixos em lib/products.js e são
-// ignorados aqui mesmo se vierem no body. uma ferramenta nova (slug que
-// não é guia/molda) grava tudo, inclusive mp_description/app_path/venda_path.
-async function actionSaveProduct(req, res, body) {
-  if (!verifyAdminToken(getToken(req))) {
-    res.status(401).json({ error: 'não autorizado' });
-    return;
-  }
-  if (!dbConfigured()) {
-    res.status(500).json({ error: 'banco de dados (supabase) não configurado no servidor' });
-    return;
-  }
-
-  const slug = String(body.slug || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
-  const nome = String(body.nome || '').trim();
-  if (!slug || !nome) {
-    res.status(400).json({ error: 'slug e nome são obrigatórios' });
-    return;
-  }
-
-  const preco = body.preco !== undefined && body.preco !== '' ? parseFloat(body.preco) : null;
-  if (preco !== null && (isNaN(preco) || preco < 0)) {
-    res.status(400).json({ error: 'preço inválido' });
-    return;
-  }
-
-  const isFixo = slug === 'guia' || slug === 'molda' || slug === 'diagnostico';
-
-  const record = {
-    slug: slug,
-    nome: nome,
-    tagline: String(body.tagline || ''),
-    ativo: body.ativo !== false,
-    hero_titulo: String(body.heroTitulo || ''),
-    hero_subtitulo: String(body.heroSubtitulo || ''),
-    hero_positioning: String(body.heroPositioning || ''),
-    trust_items: Array.isArray(body.trustItems) ? body.trustItems : [],
-    features: Array.isArray(body.features) ? body.features : [],
-    passos: Array.isArray(body.passos) ? body.passos : [],
-    faq: Array.isArray(body.faq) ? body.faq : [],
-    depoimentos: Array.isArray(body.depoimentos) ? body.depoimentos : []
-  };
-
-  // ferramenta nova (fora do catálogo fixo): grava também preço e os
-  // campos de rota/pagamento, direto do formulário do painel.
-  if (!isFixo) {
-    record.preco = preco;
-    record.mp_description = String(body.mpDescription || (nome + ' - estúdio avesso'));
-    record.app_path = String(body.appPath || '');
-    // sem página de venda própria informada, usa a página genérica
-    // (/loja?p=slug), que já existe pronta e lê o conteúdo direto do que
-    // for preenchido aqui — assim toda ferramenta nova já nasce com um
-    // link pra divulgar, sem precisar de um html novo pra cada uma.
-    record.venda_path = String(body.vendaPath || '').trim() || ('/loja?p=' + slug);
-  }
-
-  const ok = await dbUpsertProduto(record);
-  if (!ok) {
-    res.status(502).json({ error: 'falha ao salvar ferramenta no banco' });
-    return;
-  }
-
-  // preço de guia/molda mora em `config` (colunas próprias), não em
-  // `produtos` — grava pelo mesmo caminho já usado na tela de preços.
-  if (isFixo && preco !== null) {
-    await dbSetPrecoProdutoDetailed(slug, preco);
-  }
-
-  res.status(200).json({ ok: true, slug: slug });
-}
-
-async function actionDeleteProduct(req, res, body) {
-  if (!verifyAdminToken(getToken(req))) {
-    res.status(401).json({ error: 'não autorizado' });
-    return;
-  }
-  const slug = String((req.query.slug || body.slug || '')).trim();
-  if (!slug) {
-    res.status(400).json({ error: 'slug obrigatório' });
-    return;
-  }
-  if (slug === 'guia' || slug === 'molda' || slug === 'diagnostico') {
-    res.status(400).json({ error: 'guia, molda e diagnóstico não podem ser removidos — desative em vez de excluir' });
-    return;
-  }
-  const ok = await dbDeleteProduto(slug);
-  if (!ok) {
-    res.status(502).json({ error: 'falha ao remover ferramenta no banco' });
-    return;
-  }
-  res.status(200).json({ ok: true });
+  return saida;
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+  if (!autorizado(req)) {
+    await new Promise((r) => setTimeout(r, 800)); // freia quem tenta adivinhar
+    return json(res, 401, { erro: "Senha incorreta." });
   }
+  const db = supabase();
+  const acao = req.method === "GET" ? req.query.acao : req.body?.acao;
 
   try {
-    if (req.method === 'GET' && req.query.action === 'sales') {
-      await actionSales(req, res);
-      return;
+    if (req.method === "GET" && acao === "lista") {
+      const { data, error } = await db.from("pedidos").select("*, envios(*)").order("criado_em", { ascending: false });
+      if (error) throw error;
+      const pedidos = data.map((p) => {
+        const envio = Array.isArray(p.envios) ? p.envios[0] || null : p.envios || null;
+        const { token, envios, ...resto } = p;
+        return {
+          ...resto,
+          envio,
+          link_envio: p.plano === "kit_livro" && p.status === "pago" ? linkEnvio(p) : null,
+        };
+      });
+      return json(res, 200, { pedidos, turma: await turma(db) });
     }
 
-    if (req.method === 'GET' && req.query.action === 'list-products') {
-      await actionListProducts(req, res);
-      return;
+    if (req.method === "GET" && acao === "fotos") {
+      const { data: e } = await db.from("envios").select("*").eq("pedido_id", req.query.pedido).maybeSingle();
+      const caminhos = caminhosDoEnvio(e);
+      if (!caminhos.length || e?.fotos_apagadas_em) return json(res, 200, { urls: {} });
+      const { data, error } = await db.storage.from(BUCKET).createSignedUrls(caminhos, 60 * 60);
+      if (error) throw error;
+      return json(res, 200, { urls: Object.fromEntries(data.filter((d) => d.signedUrl).map((d) => [d.path, d.signedUrl])) });
     }
 
-    if (req.method === 'DELETE' || (req.method === 'GET' && req.query.action === 'delete-product')) {
-      await actionDeleteProduct(req, res, {});
-      return;
+    if (req.method === "POST" && acao === "status") {
+      const { pedido, envio_status } = req.body;
+      if (!STATUS_LIVRO.includes(envio_status)) return json(res, 400, { erro: "Status inválido." });
+      const { error } = await db.from("pedidos").update({ envio_status }).eq("id", pedido);
+      if (error) throw error;
+      return json(res, 200, { ok: true });
     }
 
-    if (req.method !== 'POST') {
-      res.status(405).json({ error: 'method not allowed' });
-      return;
+    if (req.method === "POST" && acao === "reenviar-email") {
+      const { data: p } = await db.from("pedidos").select("*").eq("id", req.body.pedido).maybeSingle();
+      if (!p || p.status !== "pago") return json(res, 400, { erro: "Só dá pra reenviar e-mail de pedido pago." });
+      const m = p.plano === "kit_livro" ? emailKitLivro(p, await turma(db)) : emailKit(p);
+      await enviarEmail({ para: p.email, assunto: m.assunto, html: m.html, anexos: await anexoKit() });
+      return json(res, 200, { ok: true });
     }
 
-    let body = req.body;
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch (e) { body = {}; }
+    if (req.method === "POST" && acao === "apagar-fotos") {
+      const id = req.body.pedido;
+      if (!/^[0-9a-f-]{36}$/i.test(String(id))) return json(res, 400, { erro: "Pedido inválido." });
+      const arquivos = await listarArquivos(db, id);
+      if (arquivos.length) {
+        const { error } = await db.storage.from(BUCKET).remove(arquivos);
+        if (error) throw error;
+      }
+      await db.from("envios").update({ fotos_apagadas_em: new Date().toISOString() }).eq("pedido_id", id);
+      return json(res, 200, { ok: true, apagados: arquivos.length });
     }
-    body = body || {};
 
-    const action = req.query.action || body.action;
-    if (action === 'login') return actionLogin(req, res, body);
-    if (action === 'update-config') return actionUpdateConfig(req, res, body);
-    if (action === 'save-product') return actionSaveProduct(req, res, body);
-    if (action === 'delete-product') return actionDeleteProduct(req, res, body);
+    if (req.method === "POST" && acao === "config") {
+      const c = req.body.config || {};
+      const precoKit = Number(String(c.precoKit).replace(",", "."));
+      const precoKitLivro = Number(String(c.precoKitLivro).replace(",", "."));
+      const vagas = parseInt(c.vagasTotal, 10);
+      if (!(precoKit > 0) || !(precoKitLivro > 0)) return json(res, 400, { erro: "Preencha os dois preços com valores maiores que zero." });
+      if (!(vagas >= 0)) return json(res, 400, { erro: "Número de vagas inválido." });
+      const linha = {
+        id: 1,
+        preco_kit: Math.round(precoKit * 100) / 100,
+        preco_kit_livro: Math.round(precoKitLivro * 100) / 100,
+        vagas_livro: vagas,
+        inscricoes_ate: String(c.inscricoesAte || "").trim().slice(0, 40),
+        turma_nome: String(c.nome || "").trim().slice(0, 60) || "Turma",
+        turma_aberta: Boolean(c.aberta),
+        atualizado_em: new Date().toISOString(),
+      };
+      const { error } = await db.from("config").upsert(linha);
+      if (error) throw error;
+      return json(res, 200, { ok: true, turma: await turma(db) });
+    }
 
-    res.status(400).json({ error: 'ação inválida' });
-  } catch (err) {
-    res.status(500).json({ error: 'erro interno', message: err.message });
+    json(res, 400, { erro: "Ação desconhecida." });
+  } catch (e) {
+    console.error(e);
+    json(res, 500, { erro: "Algo deu errado no servidor. Tente de novo." });
   }
 }
